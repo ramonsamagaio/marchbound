@@ -1,4 +1,4 @@
-# MARCHBOUND — Current State
+# MARCHBOUND - Current State
 
 > Short canonical status ledger. Update this file whenever a development pass materially changes what is playable. The full design canon remains in `MARCHBOUND_MASTER.md`; historical changes remain in `CHANGELOG.md` and focused pass notes.
 
@@ -9,7 +9,7 @@
 
 ## Playable loop now
 
-`First March guidance → Dawnkeep → choose/upgrade army + Warden build → train/evolve unit families → inspect Contracts → choose reachable frontier tile → choose risk stance → objective expedition → harvest + Momentum + boss → regional loot/claim → equip/set-build/forge/build/research → collect Contracts → push farther`
+`First March guidance -> Dawnkeep -> choose/upgrade Warden + founding troops + Wild Bonds -> inspect Contracts -> target biome/mutation/bond on World Map -> choose risk stance -> objective expedition -> harvest + Momentum + Elites + boss -> regional loot / territory claim / possible creature bond -> equip/set-build/forge/build/research/train -> collect Contracts -> push farther`
 
 The design target remains: **the player should keep inventing a reason to play one more expedition.**
 
@@ -18,10 +18,10 @@ The design target remains: **the player should keep inventing a reason to play o
 New/unfinished saves see a compact non-blocking ribbon in the main shell. It disappears during expeditions and permanently hides once completed. It never prevents free navigation.
 
 The four rewarded goals teach the real loop:
-1. **Choose Your Oath** — spend the first Warden Talent Point. Reward: 100 Gold + 80 Food.
-2. **Raise the Warband** — recruit one more unit or train any unit family to Rank 2. Reward: 120 Gold + 60 Iron.
-3. **Take the First Step** — claim one territory beyond Dawnkeep. Reward: 160 Gold + 100 Wood + 80 Stone.
-4. **Turn Blood Into Growth** — upgrade a building or complete one research tier. Reward: 15 Renown + a Rare Dawnward **Sunwatch Helm** with Bannered (+1 Command) and Vigorous (+14 HP).
+1. **Choose Your Oath** - spend the first Warden Talent Point. Reward: 100 Gold + 80 Food.
+2. **Raise the Warband** - recruit one more unit or train any unit family to Rank 2. Reward: 120 Gold + 60 Iron.
+3. **Take the First Step** - claim one territory beyond Dawnkeep. Reward: 160 Gold + 100 Wood + 80 Stone.
+4. **Turn Blood Into Growth** - upgrade a building or complete one research tier. Reward: 15 Renown + a Rare Dawnward **Sunwatch Helm** with Bannered (+1 Command) and Vigorous (+14 HP).
 
 The final reward deliberately introduces regional set gear through play rather than a text tutorial. Progress lives inside `player.first_march` in the normal save and old saves receive the schema lazily.
 
@@ -39,7 +39,22 @@ The final reward deliberately introduces regional set gear through play rather t
 - three player-selected risk stances:
   - Standard March;
   - Prospector's Route (+1 Threat, +1 richness tier);
-  - Blood Oath (+3 effective Threat and corresponding Threat-scaled reward potential).
+  - Blood Oath (+3 effective Threat and corresponding Threat-scaled reward potential);
+- deterministic Frontier Mutations that change territory rules/rewards;
+- undiscovered regional Wild Bonds are exposed as explicit map targets.
+
+## Frontier Mutations
+
+Territories from Threat 2 onward can carry a deterministic modifier. Deeper territory can stack two mutations, and mutations stack with the selected risk stance.
+
+- **Swarming Brood** - extra enemies per wave, slightly softer bodies, +15% combat Gold.
+- **Frenzied Hunt** - faster/harder enemies, +20% expedition XP.
+- **Ironhide Territory** - +30% enemy HP, +10% gear-drop chance.
+- **Marked by Elites** - substantially more Elites, +15% combat Gold and +6% gear-drop chance.
+- **Rich Veins** - +2 harvest sites and +25% harvested yield.
+- **Arcane Storm** - faster hostile projectiles and harder hits, with bonus victory Mana and +4% gear-drop chance.
+
+The World Map marks mutated territory with `✦` and exposes the modifier before commitment. This allows intentional routing for farming, challenge or build testing instead of making procedural tiles interchangeable.
 
 ## Current action-combat systems
 
@@ -57,7 +72,9 @@ The final reward deliberately introduces regional set gear through play rather t
 - 12 stackable Field Doctrines creating multiple run-build directions;
 - crit/lifesteal/arc/army/dash/etc build hooks;
 - first unit-evolution combat layer with branch-specific range, cadence, damage, sustain and army-support behavior;
+- first six Wild Bonds with species-specific combat identities;
 - regional equipment set bonuses feed back into combat, harvesting, movement and army performance;
+- Frontier Mutations alter density, HP, speed, damage, Elite rates, projectiles, resources and rewards;
 - impact feedback, floating text and screen shake;
 - browser-minded active-entity caps.
 
@@ -66,9 +83,10 @@ The final reward deliberately introduces regional set gear through play rather t
 - Warden XP and levels;
 - six Warden Talent branches;
 - Command capacity progression;
-- four base unit families and unit ranks;
-- permanent first-tier unit evolutions unlocked at Rank 3;
-- eight evolution branches with two choices per unit family;
+- four founding unit families and unit ranks;
+- permanent first-tier founding-unit evolutions unlocked at Rank 3;
+- eight evolution branches with two choices per founding unit family;
+- six regional Wild Bonds that can be discovered, recruited and trained;
 - settlement buildings and upgrades;
 - six research branches;
 - passive and offline economy;
@@ -83,40 +101,57 @@ The final reward deliberately introduces regional set gear through play rather t
 - persistent optional Frontier Contract Board;
 - persistent First March onboarding state.
 
+## Wild Bonds - first regional roster
+
+Each MVP biome has one recruitable creature identity. The World Map marks an undiscovered local bond with `♢` so collection becomes a route-planning goal.
+
+- **Greenlands - Ridgeback:** wounded-target hunter. Deals extra damage below 45% enemy HP.
+- **Ancient Forest - Thornkin:** living bulwark. Having Thornkin deployed slightly reduces Warden damage taken.
+- **Iron Hills - Stone Golem:** heavy breaker. High Command cost, slow cadence, strong hits and bonus boss damage.
+- **Mistfen - Mire Leech:** sustain predator. Successful attacks restore a small amount of Warden HP.
+- **Ash Wastes - Ember Imp:** ranged splash pressure. Attacks splash part of their damage into a nearby target.
+- **Frostwild - Frost Wisp:** fast ranged pressure with long reach and high cadence.
+
+Discovery is not pure RNG. A normal victory can form the local bond; higher Threat and Elite kills improve the chance; Monster Hunt and Marked by Elites give additional bonuses; defeating a **named regional boss guarantees** the local bond if it is still undiscovered.
+
+Unlocked creature IDs persist under `player.monster_unlocks`. Old saves receive the schema lazily. Once unlocked, the creature is integrated into the existing `army` and `unit_levels` dictionaries and therefore uses the established Command, recruitment, training, Power, autosave and expedition deployment systems.
+
+Creature evolution is deliberately not part of this first pass. The initial six roles should be playtested before adding rare/evolved creature tiers.
+
 ## Regional equipment families
 
-Every MVP biome now owns a recognizable equipment family. A generated drop keeps procedural Power/rarity/affixes, but receives an authored regional identity and can contribute to set bonuses.
+Every MVP biome owns a recognizable equipment family. A generated drop keeps procedural Power/rarity/affixes, but receives an authored regional identity and can contribute to set bonuses.
 
-- **Greenlands — Dawnward:** command/army identity. 2pc gives army damage; 4pc improves army attack cadence.
-- **Ancient Forest — Briarbound:** gathering/mobility identity. 2pc improves harvest yield; 4pc improves movement.
-- **Iron Hills — Deepforge:** durability identity. 2pc increases max HP; 4pc reduces incoming damage.
-- **Mistfen — Mireglass:** sustain identity. 2pc grants lifesteal; 4pc adds more lifesteal.
-- **Ash Wastes — Cinderborn:** aggression identity. 2pc adds critical chance; 4pc increases Warden damage.
-- **Frostwild — Rimebound:** evasive mobility identity. 2pc shortens dash cooldown; 4pc improves movement.
+- **Greenlands - Dawnward:** command/army identity. 2pc gives army damage; 4pc improves army attack cadence.
+- **Ancient Forest - Briarbound:** gathering/mobility identity. 2pc improves harvest yield; 4pc improves movement.
+- **Iron Hills - Deepforge:** durability identity. 2pc increases max HP; 4pc reduces incoming damage.
+- **Mistfen - Mireglass:** sustain identity. 2pc grants lifesteal; 4pc adds more lifesteal.
+- **Ash Wastes - Cinderborn:** aggression identity. 2pc adds critical chance; 4pc increases Warden damage.
+- **Frostwild - Rimebound:** evasive mobility identity. 2pc shortens dash cooldown; 4pc improves movement.
 
 Each family currently has authored names for weapon, helm, shoulders, chest, gloves, belt, legs, boots and cape, producing **54 named regional item identities** before procedural affix combinations. Epic/Legendary equipment from named regional bosses may also carry boss provenance in the displayed name.
 
 Inventory exposes family lore, current equipped-piece count, 2pc/4pc bonus state and active set summary. This makes biome choice part of build planning instead of only resource geography.
 
-## Unit evolution — current first tier
+## Unit evolution - current first tier
 
-The first permanent branch unlocks when a base unit family reaches **Rank 3**. Current pre-alpha choices do not have respec yet.
+The first permanent branch unlocks when a founding unit family reaches **Rank 3**. Current pre-alpha choices do not have respec yet.
 
 ### Militia
-- **Vanguard** — boss breaker. Stronger attacks with a large bonus against guardians/regional bosses.
-- **Shieldwall** — Warden guard. Deployed Militia reduce incoming Warden damage and gain a smaller damage increase.
+- **Vanguard** - boss breaker. Stronger attacks with a large bonus against guardians/regional bosses.
+- **Shieldwall** - Warden guard. Deployed Militia reduce incoming Warden damage and gain a smaller damage increase.
 
 ### Archer
-- **Ranger** — mobile pressure. Much faster attacks and longer range with a minor per-shot damage tradeoff.
-- **Longbow** — heavy ranged damage. Very long range and much stronger individual shots at a slower cadence.
+- **Ranger** - mobile pressure. Much faster attacks and longer range with a minor per-shot damage tradeoff.
+- **Longbow** - heavy ranged damage. Very long range and much stronger individual shots at a slower cadence.
 
 ### War Wolf
-- **Dire Wolf** — executioner. Higher/faster damage with a large bonus against wounded targets.
-- **Pack Alpha** — army amplifier. Stronger wolves and a global army-damage buff while wolves are deployed.
+- **Dire Wolf** - executioner. Higher/faster damage with a large bonus against wounded targets.
+- **Pack Alpha** - army amplifier. Stronger wolves and a global army-damage buff while wolves are deployed.
 
 ### Mage
-- **Stormcaller** — chain damage. Primary attacks arc into nearby targets.
-- **Lifebinder** — sustain support. Faster casts with reduced damage; successful attacks heal the Warden.
+- **Stormcaller** - chain damage. Primary attacks arc into nearby targets.
+- **Lifebinder** - sustain support. Faster casts with reduced damage; successful attacks heal the Warden.
 
 Evolution choices are stored inside the existing player save dictionary under `unit_evolutions`, allowing old saves to receive the schema lazily instead of requiring a destructive reset.
 
@@ -160,12 +195,17 @@ World/combat art can stay graphically simpler and highly readable to preserve br
 
 ## Validation status
 
-The following major passes have each completed all three CI gates with Godot 4.7.2:
-- project parse;
-- headless main-scene smoke run;
-- Web export.
+Current CI validation is intentionally stricter than the original pipeline. Godot 4.7.2 can emit script errors while still returning exit code 0, so the workflow now captures logs and explicitly fails if parse/smoke/export output contains script or autoload failures. Web export must also produce a non-empty `build/web/index.html`.
 
-Validated passes include the objective frontier loop, M1 combat/talent/enemy pass, gear-affix pass, regional-boss pass, interactive Dawnkeep pass, Frontier Contracts pass, expedition risk-stance pass, first unit-evolution pass, regional-loot-families pass and First March onboarding pass.
+The active gates are:
+- clean project parse;
+- clean headless main-scene smoke run;
+- clean Web export;
+- Web artifact existence.
+
+During the CI-integrity pass, hidden pre-existing problems in `ContractManager`, `SettlementCanvas` and `PaperDoll` were fixed, including a collision between project helper functions and the Godot 4.7 `CanvasItem.draw_ellipse()` method.
+
+Validated under the hardened gates: **Frontier Mutations Pass** and **Wild Bonds Pass**. Earlier gameplay passes were validated by the previous CI and remain implemented, but future claims of a green build use the hardened standard.
 
 ## Architecture direction
 
@@ -183,9 +223,9 @@ Planned online phase:
 
 ## Highest-priority next passes
 
-1. **Public browser preview URL + Chrome persistence/performance validation.**
+1. **Public browser preview URL + interactive Chrome validation**, including save persistence, input/focus and a first performance budget.
 2. **Visual Bible v1 + approved body base + first modular armor set**, then replace procedural/placeholder visuals strategically.
-3. **Second-tier unit evolution / monster recruitment design**, once the first evolution choices have been playtested.
+3. **Wild Bonds balance + rare/evolved creature tier design** after the first six roles have been playtested.
 4. First Supabase-backed account/profile/cloud-save slice after the local loop is judged fun.
 5. Deeper itemization later: unique boss relics, regional crafting and set-targeting systems.
 
