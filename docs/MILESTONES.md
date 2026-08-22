@@ -17,6 +17,9 @@
 - [x] Recruitment and unit ranks
 - [x] Strategic world-map generator
 - [x] Biomes, threat, richness, bosses, PvP-preview tile metadata
+- [x] Persistent territory claims and adjacency/supply-line expansion
+- [x] Pannable world-map window over effectively unbounded coordinates
+- [x] First-claim frontier bounties
 - [x] Action expedition arena
 - [x] Player movement, dash and two abilities
 - [x] Auto attack
@@ -25,18 +28,21 @@
 - [x] Expedition boss
 - [x] Run-level upgrade choices
 - [x] Resource/XP rewards
+- [x] Biome-weighted resource sites harvested during expeditions
+- [x] Momentum kill-chain system with combat/economy payoff
 - [x] Procedural gear drops
 - [x] Inventory and equipment
 - [x] Forge upgrades
 - [x] Functional procedural paper-doll preview
 - [x] Marketplace concept with NPC listings
 - [x] Renown / Frontier Season long-game hook
-- [x] Parse validation in Godot 4.7.2
-- [x] Main-scene headless smoke run
+- [x] Parse validation in Godot 4.7.2 (foundation build)
+- [x] Main-scene headless smoke run (foundation build)
+- [ ] Parse/smoke validation after frontier-conquest update
 - [ ] First user playtest + balance pass
 
 ### M0.2 Browser build
-- [x] Web export generated successfully in CI
+- [x] Web export generated successfully in CI (foundation build)
 - [x] Automatic GitHub Actions build workflow
 - [ ] Web build validated interactively in Chrome
 - [ ] Public preview URL
@@ -64,7 +70,7 @@
 - 20+ equipment pieces
 - gear affixes
 - explicit expedition objectives besides survival
-- resource nodes / extraction interactions
+- [x] first resource nodes / extraction interactions
 - 3 meaningful build archetypes
 - first unit evolution choices
 - city placement/building scene instead of management cards only
