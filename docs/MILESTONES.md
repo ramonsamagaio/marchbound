@@ -21,11 +21,13 @@
 - [x] Pannable world-map window over effectively unbounded coordinates
 - [x] First-claim frontier bounties
 - [x] Action expedition arena
+- [x] Four deterministic expedition flows: Frontier Claim / Monster Hunt / Resource Sweep / Ruin Siege
+- [x] Objective-specific boss timing, pressure and reward profiles
 - [x] Player movement, dash and two abilities
 - [x] Auto attack
 - [x] Army followers with auto-combat
 - [x] Horde scaling
-- [x] Expedition boss
+- [x] Expedition guardian/boss
 - [x] Run-level upgrade choices
 - [x] Resource/XP rewards
 - [x] Biome-weighted resource sites harvested during expeditions
@@ -36,13 +38,13 @@
 - [x] Functional procedural paper-doll preview
 - [x] Marketplace concept with NPC listings
 - [x] Renown / Frontier Season long-game hook
-- [x] Parse validation in Godot 4.7.2 (foundation build)
-- [x] Main-scene headless smoke run (foundation build)
-- [ ] Parse/smoke validation after frontier-conquest update
+- [x] Godot 4.7.2 parse validation after frontier/objective update
+- [x] Main-scene headless smoke run after frontier/objective update
+- [x] Web export after frontier/objective update
 - [ ] First user playtest + balance pass
 
 ### M0.2 Browser build
-- [x] Web export generated successfully in CI (foundation build)
+- [x] Web export generated successfully in CI
 - [x] Automatic GitHub Actions build workflow
 - [ ] Web build validated interactively in Chrome
 - [ ] Public preview URL
@@ -69,7 +71,7 @@
 - 3 bosses
 - 20+ equipment pieces
 - gear affixes
-- explicit expedition objectives besides survival
+- [x] first explicit expedition objective variants besides survival
 - [x] first resource nodes / extraction interactions
 - 3 meaningful build archetypes
 - first unit evolution choices
