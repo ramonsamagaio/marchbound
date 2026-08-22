@@ -57,6 +57,10 @@ func _build() -> void:
 	var mutations:Array=tile.get("mutations",[])
 	if mutations.size()>0:
 		hud.add_child(UIFactory.label("✦ %s"%FrontierMutations.names(mutations),11,Color("#c9b5ef")))
+	var local_bond:String = MonsterRoster.id_for_biome(String(tile.get("biome","Greenlands")))
+	if local_bond != "" and not GameState.monster_unlocked(local_bond):
+		hud.add_child(UIFactory.label("♢ WILD BOND · %s"%MonsterRoster.display_name(local_bond),11,Color("#a9d8b9")))
+		hud.add_child(UIFactory.label("Victory can form the bond. A named regional boss guarantees it.",10,Color("#91ad9a")))
 	hud.add_child(UIFactory.hsep())
 	hud.add_child(UIFactory.label("OBJECTIVE · %s"%String(tile.get("objective","Frontier Claim")).to_upper(),14,Color("#f0dfae")))
 	hud.add_child(UIFactory.label(_objective_description(String(tile.get("objective","Frontier Claim"))),12,Color("#a5b1cb")))
@@ -129,8 +133,8 @@ func _finished(result: Dictionary) -> void:
 	SaveManager.save_game()
 	result_overlay=PanelContainer.new()
 	result_overlay.set_anchors_preset(Control.PRESET_CENTER)
-	result_overlay.position=Vector2(330,65)
-	result_overlay.size=Vector2(620,565)
+	result_overlay.position=Vector2(330,45)
+	result_overlay.size=Vector2(620,610)
 	result_overlay.add_theme_stylebox_override("panel",UIFactory.panel(Color("#111827"),15,Color("#856f48")))
 	add_child(result_overlay)
 	var v=VBoxContainer.new()
@@ -149,6 +153,11 @@ func _finished(result: Dictionary) -> void:
 	v.add_child(UIFactory.label("Best Momentum ×%d"%result.get("best_combo",0),13,Color("#d1bd85")))
 	if result.get("territory_claimed",false):
 		v.add_child(UIFactory.label("New adjacent territories are now reachable from this claim.",12,Color("#9fd3a7")))
+	if bool(result.get("wild_bond_unlocked",false)):
+		var bond_id:String = String(result.get("wild_bond",""))
+		v.add_child(UIFactory.hsep())
+		v.add_child(UIFactory.label("WILD BOND FORMED · %s"%MonsterRoster.display_name(bond_id),16,Color("#a9e0bc")))
+		v.add_child(UIFactory.label("%s · now recruitable and trainable from Warband."%MonsterRoster.role(bond_id),11,Color("#a8c8b1")))
 	v.add_child(UIFactory.hsep())
 	v.add_child(UIFactory.label("LOOT",15,Color("#f0dfae")))
 	for key in GameState.RESOURCE_ORDER:
