@@ -86,7 +86,10 @@
 - [x] Persistent Warden talent progression with six branches and Talent Points on level-up
 - [x] Player-selected expedition risk stances: Standard / Prospector / Blood Oath
 - [x] Risk stance integrates with effective Threat, resource richness and existing reward scaling
-- [ ] First unit evolution choices
+- [x] First unit evolution choices at Rank 3
+- [x] Eight first-tier branches across Militia / Archer / War Wolf / Mage
+- [x] Unit evolution branches change live expedition combat roles
+- [x] Evolution choices persist in existing player save data and migrate old saves lazily
 - [x] City placement/building scene instead of management cards only
 - [x] Buildings selectable/upgradable directly from settlement scene
 - [x] Draggable Dawnkeep building layout with local persistence
@@ -112,6 +115,9 @@
 - [x] Risk Stance Pass Godot 4.7.2 parse validation
 - [x] Risk Stance Pass headless main-scene smoke validation
 - [x] Risk Stance Pass Web export validation
+- [x] Unit Evolution Pass Godot 4.7.2 parse validation
+- [x] Unit Evolution Pass headless main-scene smoke validation
+- [x] Unit Evolution Pass Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth
