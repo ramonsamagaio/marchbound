@@ -133,3 +133,15 @@
 - Inventory now exposes family lore, equipped piece count, active/inactive set bonuses, active set summary and boss provenance.
 - Biome selection therefore begins to participate in build planning and targeted loot pursuit, strengthening the reason to revisit regions.
 - Regional Loot Families Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
+
+## 2026-08-22 — M1 First March Onboarding Pass
+- Added a compact **First March** ribbon to the normal game shell rather than a blocking modal tutorial.
+- The ribbon hides automatically during expeditions and permanently disappears once completed for that save.
+- Step 1, **Choose Your Oath**, asks the player to spend the first Talent Point and rewards 100 Gold + 80 Food.
+- Step 2, **Raise the Warband**, asks the player to recruit an additional unit or train a unit to Rank 2 and rewards 120 Gold + 60 Iron.
+- Step 3, **Take the First Step**, asks the player to claim the first territory beyond Dawnkeep and rewards 160 Gold + 100 Wood + 80 Stone.
+- Step 4, **Turn Blood Into Growth**, asks the player to reinvest in a building/research tier and completes the onboarding with 15 Renown plus a Rare **Sunwatch Helm** from the Dawnward family.
+- The final helmet carries Bannered (+1 Command) and Vigorous (+14 HP) affixes, so onboarding introduces regional set equipment through an actual reward rather than an explanatory overlay.
+- Each step exposes an optional navigation shortcut but never locks free navigation.
+- First March progress persists inside the main player save and old saves receive the schema lazily.
+- First March Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
