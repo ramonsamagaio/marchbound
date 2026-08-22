@@ -9,9 +9,21 @@
 
 ## Playable loop now
 
-`Dawnkeep → choose/upgrade army + Warden build → train/evolve unit families → inspect Contracts → choose reachable frontier tile → choose risk stance → objective expedition → harvest + Momentum + boss → regional loot/claim → equip/set-build/forge/build/research → collect Contracts → push farther`
+`First March guidance → Dawnkeep → choose/upgrade army + Warden build → train/evolve unit families → inspect Contracts → choose reachable frontier tile → choose risk stance → objective expedition → harvest + Momentum + boss → regional loot/claim → equip/set-build/forge/build/research → collect Contracts → push farther`
 
 The design target remains: **the player should keep inventing a reason to play one more expedition.**
+
+## First March onboarding
+
+New/unfinished saves see a compact non-blocking ribbon in the main shell. It disappears during expeditions and permanently hides once completed. It never prevents free navigation.
+
+The four rewarded goals teach the real loop:
+1. **Choose Your Oath** — spend the first Warden Talent Point. Reward: 100 Gold + 80 Food.
+2. **Raise the Warband** — recruit one more unit or train any unit family to Rank 2. Reward: 120 Gold + 60 Iron.
+3. **Take the First Step** — claim one territory beyond Dawnkeep. Reward: 160 Gold + 100 Wood + 80 Stone.
+4. **Turn Blood Into Growth** — upgrade a building or complete one research tier. Reward: 15 Renown + a Rare Dawnward **Sunwatch Helm** with Bannered (+1 Command) and Vigorous (+14 HP).
+
+The final reward deliberately introduces regional set gear through play rather than a text tutorial. Progress lives inside `player.first_march` in the normal save and old saves receive the schema lazily.
 
 ## Current strategic/world systems
 
@@ -68,7 +80,8 @@ The design target remains: **the player should keep inventing a reason to play o
 - equipment comparison and Forge upgrades;
 - Renown and Frontier Season prestige scaffold;
 - NPC Marketplace proof;
-- persistent optional Frontier Contract Board.
+- persistent optional Frontier Contract Board;
+- persistent First March onboarding state.
 
 ## Regional equipment families
 
@@ -152,7 +165,7 @@ The following major passes have each completed all three CI gates with Godot 4.7
 - headless main-scene smoke run;
 - Web export.
 
-Validated passes include the objective frontier loop, M1 combat/talent/enemy pass, gear-affix pass, regional-boss pass, interactive Dawnkeep pass, Frontier Contracts pass, expedition risk-stance pass, first unit-evolution pass and regional-loot-families pass.
+Validated passes include the objective frontier loop, M1 combat/talent/enemy pass, gear-affix pass, regional-boss pass, interactive Dawnkeep pass, Frontier Contracts pass, expedition risk-stance pass, first unit-evolution pass, regional-loot-families pass and First March onboarding pass.
 
 ## Architecture direction
 
@@ -170,12 +183,11 @@ Planned online phase:
 
 ## Highest-priority next passes
 
-1. **Onboarding / First March** that teaches the real loop through rewarded goals without a modal tutorial prison.
-2. **Public browser preview URL + Chrome persistence/performance validation.**
-3. **Visual Bible v1 + approved body base + first modular armor set**, then replace procedural/placeholder visuals strategically.
-4. **Second-tier unit evolution / monster recruitment design**, once the first evolution choices have been playtested.
-5. First Supabase-backed account/profile/cloud-save slice after the local loop is judged fun.
-6. Deeper itemization later: unique boss relics, regional crafting and set-targeting systems.
+1. **Public browser preview URL + Chrome persistence/performance validation.**
+2. **Visual Bible v1 + approved body base + first modular armor set**, then replace procedural/placeholder visuals strategically.
+3. **Second-tier unit evolution / monster recruitment design**, once the first evolution choices have been playtested.
+4. First Supabase-backed account/profile/cloud-save slice after the local loop is judged fun.
+5. Deeper itemization later: unique boss relics, regional crafting and set-targeting systems.
 
 ## Rule for future updates
 
