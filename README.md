@@ -9,8 +9,8 @@ Browser-first persistent fantasy strategy/action RPG built with Godot 4.
 1. Pull `main` in GitHub Desktop.
 2. Open `project.godot` in **Godot 4.7.2 stable**.
 3. Press **F5** to run the project.
-4. Start in **Settlement**, inspect upgrades/research, then open **World Map**.
-5. Dawnkeep is `[0,0]`. Pick one of the highlighted adjacent frontier tiles.
+4. Start in **Dawnkeep**. The settlement is now a visual interactive scene: click buildings to inspect/upgrade them and drag them to reshape the city. The cosmetic layout saves locally.
+5. Open **World Map**. Dawnkeep is `[0,0]`; pick one of the highlighted adjacent frontier tiles.
 6. Read the tile objective before entering. The current MVP generates four expedition flows: **Frontier Claim**, **Monster Hunt**, **Resource Sweep** and **Ruin Siege**.
 7. Win to claim an unowned tile. Its orthogonal neighbors become reachable, letting your supply line grow outward indefinitely.
 8. During combat, move onto glowing resource sites and remain nearby briefly to harvest them.
@@ -35,13 +35,14 @@ Browser-first persistent fantasy strategy/action RPG built with Godot 4.
 - **Resource Sweep:** harvest enough frontier sites to awaken the guardian; pays extra construction materials.
 - **Ruin Siege:** guardian arrives much earlier, is stronger and has improved high-rarity loot odds.
 
-Current systems also include passive/offline economy, settlement upgrades, six research branches, Command-limited armies, four unit types, an effectively unbounded deterministic world-map window, persistent adjacency-based territory claims, biome/threat/resource metadata, action combat, run doctrines, horde scaling, procedural equipment, inventory/paper-doll preview, forge upgrades, marketplace prototype, local persistence and Frontier Seasons.
+Current systems also include passive/offline economy, settlement upgrades, six research branches, Command-limited armies, four unit types, an effectively unbounded deterministic world-map window, persistent adjacency-based territory claims, biome/threat/resource metadata, action combat, run doctrines, horde scaling, procedural equipment and affixes, inventory/paper-doll preview, forge upgrades, marketplace prototype, local persistence, regional bosses, Warden talents and Frontier Seasons.
 
 ## What to judge in this build
 
 The most important question is whether the game creates the thought: **“one more territory, then I can afford/unlock/try that.”**
 
 Pay attention to:
+- whether Dawnkeep feels like a place worth returning to rather than only a menu;
 - whether the visible supply line makes the world feel like a campaign rather than a menu;
 - whether different objectives meaningfully change how you move and fight;
 - whether harvesting tempts you into dangerous positions;
@@ -60,7 +61,7 @@ These files are intentionally maintained as project memory whenever the design o
 
 ## Validation
 
-The current objective-driven frontier build passed Godot **4.7.2** project parsing, a headless main-scene smoke run and Web export through GitHub Actions.
+Gameplay code changes are continuously checked through GitHub Actions using Godot **4.7.2** project parsing, a headless main-scene smoke run and Web export.
 
 ## Online architecture direction
 
