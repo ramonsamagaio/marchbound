@@ -28,7 +28,7 @@ func _build()->void:
 	pan.add_child(UIFactory.button("EAST →",func():_pan(PAN_STEP,0),Color("#252e43")))
 	left.add_child(UIFactory.hsep())
 	grid=GridContainer.new(); grid.columns=GRID_W; grid.size_flags_vertical=Control.SIZE_EXPAND_FILL; grid.size_flags_horizontal=Control.SIZE_EXPAND_FILL; grid.add_theme_constant_override("h_separation",5); grid.add_theme_constant_override("v_separation",5); left.add_child(grid)
-	var side=PanelContainer.new(); side.custom_minimum_size.x=340; side.add_theme_stylebox_override("panel",UIFactory.panel(Color("#151b2a"),12,Color("#35415d"))); root.add_child(side); info=VBoxContainer.new(); info.add_theme_constant_override("separation",8); side.add_child(info)
+	var side=PanelContainer.new(); side.custom_minimum_size.x=350; side.add_theme_stylebox_override("panel",UIFactory.panel(Color("#151b2a"),12,Color("#35415d"))); root.add_child(side); info=VBoxContainer.new(); info.add_theme_constant_override("separation",7); side.add_child(info)
 
 func _focus()->Vector2i:
 	return Vector2i(int(GameState.world.get("focus_x",0)),int(GameState.world.get("focus_y",0)))
@@ -82,20 +82,35 @@ func biome_short(name:String)->String:return {"Greenlands":"GRN","Ancient Forest
 func objective_description(objective:String)->String:
 	return {"Frontier Claim":"Survive the frontier until its guardian appears, then break it.","Monster Hunt":"Keep the kill chain alive until the local alpha is forced into the open.","Resource Sweep":"Harvest enough frontier sites to draw out the territory guardian.","Ruin Siege":"A named regional boss controls this ruin. Expect a distinct combat pattern and premium rewards."}.get(objective,"Secure the territory.")
 
+func _launch_with_stance(tile:Dictionary,stance:String,threat_bonus:int,richness_bonus:int)->void:
+	if not bool(tile.get("accessible",false)):
+		return
+	var launch:=tile.duplicate(true)
+	launch["base_threat"]=int(tile.get("threat",1))
+	launch["risk_stance"]=stance
+	launch["threat"]=int(tile.get("threat",1))+threat_bonus
+	launch["richness"]=clamp(int(tile.get("richness",1))+richness_bonus,1,4)
+	GameState.world.selected_tile=launch
+	GameState.toast_requested.emit("%s · effective Threat %d"%[stance,int(launch.threat)])
+	GameState.screen_requested.emit("expedition")
+
 func select_tile(tile:Dictionary)->void:
 	selected=tile; GameState.world.selected_tile=tile; UIFactory.clear_children(info)
 	if tile.home:
 		info.add_child(UIFactory.title("Dawnkeep",23)); info.add_child(UIFactory.label("Your capital · Territory [0,0]",12,Color("#8f9cbc"))); info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("THE HEART OF THE MARCH",18,Color("#f0dfae"))); info.add_child(UIFactory.label("Every frontier begins here. Expand through adjacent territories and build a supply line into danger.",13,Color("#aeb9d4"))); info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("Claimed territories: %d"%GameState.claimed_count(),14)); info.add_child(UIFactory.label("Highest threat conquered: %d"%GameState.world.highest_threat,13)); info.add_child(UIFactory.spacer()); var home=UIFactory.button("RETURN TO SETTLEMENT",func():GameState.screen_requested.emit("city"),Color("#4d563d")); home.custom_minimum_size.y=48; info.add_child(home); return
 	info.add_child(UIFactory.title(tile.biome,23)); info.add_child(UIFactory.label("Territory [%d,%d] · Distance %.1f"%[tile.x,tile.y,Vector2(float(tile.x),float(tile.y)).length()],12,Color("#8f9cbc"))); info.add_child(UIFactory.hsep())
-	var threat_color=Color("#e3c58f") if tile.threat<5 else Color("#ef8e7f"); info.add_child(UIFactory.label("THREAT %d"%tile.threat,22,threat_color)); info.add_child(UIFactory.label("Objective: %s"%tile.objective,14,Color("#e4cf98"))); info.add_child(UIFactory.label(objective_description(tile.objective),12,Color("#aeb9d4"))); info.add_child(UIFactory.label("Expected power: ~%d"%(tile.threat*130),13)); info.add_child(UIFactory.label("Your current power: %d"%GameState.total_power(),13,Color("#9fd3a7"))); info.add_child(UIFactory.label("Resource richness: %s"%["Poor","Fair","Rich","Abundant"][tile.richness-1],13))
-	if tile.conquered: info.add_child(UIFactory.label("✓ CLAIMED · safe supply route established",13,Color("#9fd3a7")))
-	elif tile.accessible: info.add_child(UIFactory.label("◆ FRONTIER · victory will claim this territory",13,Color("#e7cb86")))
-	else: info.add_child(UIFactory.label("LOCKED · claim an adjacent territory first",13,Color("#a47777")))
+	var threat_color=Color("#e3c58f") if tile.threat<5 else Color("#ef8e7f"); info.add_child(UIFactory.label("BASE THREAT %d"%tile.threat,22,threat_color)); info.add_child(UIFactory.label("Objective: %s"%tile.objective,14,Color("#e4cf98"))); info.add_child(UIFactory.label(objective_description(tile.objective),12,Color("#aeb9d4"))); info.add_child(UIFactory.label("Expected power: ~%d · Yours: %d"%[tile.threat*130,GameState.total_power()],12,Color("#9fd3a7"))); info.add_child(UIFactory.label("Resource richness: %s"%["Poor","Fair","Rich","Abundant"][tile.richness-1],12))
+	if tile.conquered: info.add_child(UIFactory.label("✓ CLAIMED · safe supply route established",12,Color("#9fd3a7")))
+	elif tile.accessible: info.add_child(UIFactory.label("◆ FRONTIER · victory will claim this territory",12,Color("#e7cb86")))
+	else: info.add_child(UIFactory.label("LOCKED · claim an adjacent territory first",12,Color("#a47777")))
 	if tile.boss:
-		info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("★ %s"%String(tile.boss_name),17,Color("#f0b7c0"))); info.add_child(UIFactory.label(String(tile.boss_tell),12,Color("#c9a8ba")))
-	if tile.pvp:info.add_child(UIFactory.label("⚔ Frontier PvP territory (future online rules)",12,Color("#d9a2a2")))
-	if tile.accessible and not tile.conquered: info.add_child(UIFactory.label("First-claim bounty: +%d Gold + frontier materials"%(tile.threat*35),12,Color("#cfb77e")))
-	info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("Expedition party",15,Color("#f0dfae"))); info.add_child(UIFactory.label("%d / %d command · Army power %d"%[GameState.command_used(),GameState.command_capacity(),GameState.army_power()],13))
-	for unit in GameState.army:
-		if GameState.army[unit]>0:info.add_child(UIFactory.label("%s ×%d · rank %d"%[GameState.pretty(unit),GameState.army[unit],GameState.unit_levels[unit]],12,Color("#aeb9d4")))
-	info.add_child(UIFactory.spacer()); var label="PATROL TERRITORY" if tile.conquered else "CLAIM TERRITORY"; var enter=UIFactory.button(label,func():GameState.screen_requested.emit("expedition"),Color("#6a4c35")); enter.custom_minimum_size.y=48; enter.disabled=not tile.accessible; info.add_child(enter); info.add_child(UIFactory.label("WASD move · Space dash · Q rally · E shockwave",11,Color("#7f8ba7")))
+		info.add_child(UIFactory.label("★ %s"%String(tile.boss_name),16,Color("#f0b7c0"))); info.add_child(UIFactory.label(String(tile.boss_tell),11,Color("#c9a8ba")))
+	if tile.pvp:info.add_child(UIFactory.label("⚔ Frontier PvP territory (future online rules)",11,Color("#d9a2a2")))
+	if tile.accessible and not tile.conquered: info.add_child(UIFactory.label("First-claim bounty: +%d Gold + frontier materials"%(tile.threat*35),11,Color("#cfb77e")))
+	info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("Expedition party",14,Color("#f0dfae"))); info.add_child(UIFactory.label("%d / %d Command · Army %d"%[GameState.command_used(),GameState.command_capacity(),GameState.army_power()],12))
+	info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("CHOOSE YOUR MARCH",14,Color("#f0dfae")))
+	info.add_child(UIFactory.label("Risk stance modifies the effective Threat seen by combat, XP, Renown and loot systems.",10,Color("#8f9bb8")))
+	var normal=UIFactory.button("STANDARD · T%d"%tile.threat,func(t=tile):_launch_with_stance(t,"Standard March",0,0),Color("#465241")); normal.disabled=not tile.accessible; info.add_child(normal)
+	var prospect=UIFactory.button("PROSPECTOR · T%d · richer"%(tile.threat+1),func(t=tile):_launch_with_stance(t,"Prospector's Route",1,1),Color("#4c5363")); prospect.disabled=not tile.accessible; info.add_child(prospect)
+	var blood=UIFactory.button("BLOOD OATH · T%d · premium"%(tile.threat+3),func(t=tile):_launch_with_stance(t,"Blood Oath",3,0),Color("#6a3c43")); blood.disabled=not tile.accessible; info.add_child(blood)
+	info.add_child(UIFactory.label("Prospector adds resource richness. Blood Oath sharply raises combat scaling and the rewards that scale with Threat.",10,Color("#a78f96")))
