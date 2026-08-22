@@ -42,9 +42,35 @@ func _choose_upgrade(id: String) -> void:
 		upgrade_overlay=null
 
 func _finished(result: Dictionary) -> void:
-	GameState.expedition_completed(result); SaveManager.save_game(); result_overlay=PanelContainer.new(); result_overlay.set_anchors_preset(Control.PRESET_CENTER); result_overlay.position=Vector2(330,105); result_overlay.size=Vector2(620,485); result_overlay.add_theme_stylebox_override("panel",UIFactory.panel(Color("#111827"),15,Color("#856f48"))); add_child(result_overlay); var v=VBoxContainer.new(); result_overlay.add_child(v); var text="VICTORY · TERRITORY CLAIMED" if result.get("territory_claimed",false) else ("VICTORY · FRONTIER SECURED" if result.victory else "EXPEDITION BROKEN"); var tl=UIFactory.title(text,25); tl.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER; v.add_child(tl); v.add_child(UIFactory.label("Threat %d · %d kills · %d XP"%[result.threat,result.kills,result.xp],14,Color("#aebad2"))); v.add_child(UIFactory.label("Harvested %d/%d sites · Best Momentum ×%d"%[result.get("nodes_collected",0),result.get("nodes_total",0),result.get("best_combo",0)],13,Color("#d1bd85"))); if result.get("territory_claimed",false): v.add_child(UIFactory.label("New adjacent territories are now reachable from this claim.",12,Color("#9fd3a7"))); v.add_child(UIFactory.hsep()); v.add_child(UIFactory.label("LOOT",15,Color("#f0dfae")))
+	GameState.expedition_completed(result)
+	SaveManager.save_game()
+	result_overlay=PanelContainer.new()
+	result_overlay.set_anchors_preset(Control.PRESET_CENTER)
+	result_overlay.position=Vector2(330,105)
+	result_overlay.size=Vector2(620,485)
+	result_overlay.add_theme_stylebox_override("panel",UIFactory.panel(Color("#111827"),15,Color("#856f48")))
+	add_child(result_overlay)
+	var v=VBoxContainer.new()
+	result_overlay.add_child(v)
+	var text="VICTORY · TERRITORY CLAIMED" if result.get("territory_claimed",false) else ("VICTORY · FRONTIER SECURED" if result.victory else "EXPEDITION BROKEN")
+	var tl=UIFactory.title(text,25)
+	tl.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(tl)
+	v.add_child(UIFactory.label("Threat %d · %d kills · %d XP"%[result.threat,result.kills,result.xp],14,Color("#aebad2")))
+	v.add_child(UIFactory.label("Harvested %d/%d sites · Best Momentum ×%d"%[result.get("nodes_collected",0),result.get("nodes_total",0),result.get("best_combo",0)],13,Color("#d1bd85")))
+	if result.get("territory_claimed",false):
+		v.add_child(UIFactory.label("New adjacent territories are now reachable from this claim.",12,Color("#9fd3a7")))
+	v.add_child(UIFactory.hsep())
+	v.add_child(UIFactory.label("LOOT",15,Color("#f0dfae")))
 	for key in GameState.RESOURCE_ORDER:
 		var amount=float(result.loot.get(key,0))
-		if amount>0:v.add_child(UIFactory.label("%s +%d"%[key.capitalize(),int(amount)],13))
-	if not result.item.is_empty():v.add_child(UIFactory.label("GEAR DROP: %s · %s"%[result.item.name,result.item.rarity.capitalize()],15,Color("#9fc6f1")))
-	v.add_child(UIFactory.spacer()); var next=UIFactory.button("Return to World Map" if result.victory else "Return to Settlement",func():GameState.screen_requested.emit("world" if result.victory else "city"),Color("#4d563d")); next.custom_minimum_size.y=50; v.add_child(next)
+		if amount>0:
+			v.add_child(UIFactory.label("%s +%d"%[key.capitalize(),int(amount)],13))
+	if not result.item.is_empty():
+		v.add_child(UIFactory.label("GEAR DROP: %s · %s"%[result.item.name,result.item.rarity.capitalize()],15,Color("#9fc6f1")))
+	v.add_child(UIFactory.spacer())
+	var return_screen="world" if result.victory else "city"
+	var return_label="Return to World Map" if result.victory else "Return to Settlement"
+	var next=UIFactory.button(return_label,func():GameState.screen_requested.emit(return_screen),Color("#4d563d"))
+	next.custom_minimum_size.y=50
+	v.add_child(next)
