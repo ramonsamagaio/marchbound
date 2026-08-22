@@ -36,15 +36,36 @@ jobs:
           cp -r /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.7.2.stable/
 
       - name: Parse project
-        run: godot --headless --path . --editor --quit
+        shell: bash
+        run: |
+          set -o pipefail
+          godot --headless --path . --editor --quit 2>&1 | tee /tmp/marchbound-pages-parse.log
+          if grep -Eq 'SCRIPT ERROR:|ERROR: Failed to (load script|create an autoload|instantiate an autoload)' /tmp/marchbound-pages-parse.log; then
+            echo '::error::Godot reported script errors during project parsing.'
+            exit 1
+          fi
 
       - name: Smoke run main scene
-        run: godot --headless --path . --quit-after 4
+        shell: bash
+        run: |
+          set -o pipefail
+          godot --headless --path . --quit-after 4 2>&1 | tee /tmp/marchbound-pages-smoke.log
+          if grep -Eq 'SCRIPT ERROR:|ERROR: Failed to (load script|create an autoload|instantiate an autoload)' /tmp/marchbound-pages-smoke.log; then
+            echo '::error::Godot reported script/runtime errors during the smoke run.'
+            exit 1
+          fi
 
       - name: Export Web
+        shell: bash
         run: |
+          set -o pipefail
           mkdir -p build/web
-          godot --headless --path . --export-release Web build/web/index.html
+          godot --headless --path . --export-release Web build/web/index.html 2>&1 | tee /tmp/marchbound-pages-export.log
+          if grep -Eq 'SCRIPT ERROR:|ERROR: Failed to (load script|create an autoload|instantiate an autoload)|ERROR:.*export' /tmp/marchbound-pages-export.log; then
+            echo '::error::Godot reported errors during the Web export.'
+            exit 1
+          fi
+          test -s build/web/index.html
           touch build/web/.nojekyll
 
       - name: Configure Pages
