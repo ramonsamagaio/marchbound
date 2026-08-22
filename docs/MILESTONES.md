@@ -59,7 +59,8 @@
 - [ ] First complete modular armor set
 - [ ] Weapon set
 - [ ] Resource icons
-- [ ] Settlement visual kit
+- [x] First interactive settlement visual scene / procedural kit
+- [ ] Final settlement visual kit assets
 - [ ] World-map tile language
 - [ ] Combat sprite language
 - [ ] Inventory/Inspect UI pass
@@ -84,7 +85,9 @@
 - [x] 3+ meaningful run-build directions through 12 stackable Field Doctrines
 - [x] Persistent Warden talent progression with six branches and Talent Points on level-up
 - [ ] First unit evolution choices
-- [ ] City placement/building scene instead of management cards only
+- [x] City placement/building scene instead of management cards only
+- [x] Buildings selectable/upgradable directly from settlement scene
+- [x] Draggable Dawnkeep building layout with local persistence
 - [ ] Quests/contracts
 - [ ] Onboarding
 - [x] M1 Fun Pass 1 Godot 4.7.2 parse validation
@@ -96,6 +99,9 @@
 - [x] Regional Boss Pass Godot 4.7.2 parse validation
 - [x] Regional Boss Pass headless main-scene smoke validation
 - [x] Regional Boss Pass Web export validation
+- [x] Dawnkeep Scene Pass Godot 4.7.2 parse validation
+- [x] Dawnkeep Scene Pass headless main-scene smoke validation
+- [x] Dawnkeep Scene Pass Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth
