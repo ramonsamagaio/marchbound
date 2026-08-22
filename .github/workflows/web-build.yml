@@ -32,6 +32,9 @@ jobs:
       - name: Parse project
         run: godot --headless --path . --editor --quit
 
+      - name: Smoke run main scene
+        run: godot --headless --path . --quit-after 4
+
       - name: Export Web
         run: |
           mkdir -p build/web
