@@ -32,7 +32,7 @@ func _ready() -> void:
 	arena.begin(tile)
 
 func _objective_description(name:String) -> String:
-	return {"Frontier Claim":"Survive until the territory guardian is forced into the open.","Monster Hunt":"Kill aggressively. Enough kills force the local alpha to reveal itself.","Resource Sweep":"Harvest frontier sites while fighting. Enough extraction awakens the guardian.","Ruin Siege":"Hold against an early, stronger guardian controlling this ruin."}.get(name,"Secure the territory and defeat its guardian.")
+	return {"Frontier Claim":"Survive until the territory guardian is forced into the open.","Monster Hunt":"Kill aggressively. Enough kills force the local alpha to reveal itself.","Resource Sweep":"Harvest frontier sites while fighting. Enough extraction awakens the guardian.","Ruin Siege":"A named regional boss controls this ruin. Read its pattern and survive the early confrontation."}.get(name,"Secure the territory and defeat its guardian.")
 
 func _build() -> void:
 	var bg=ColorRect.new(); bg.color=Color("#0d111c"); bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); add_child(bg)
@@ -43,6 +43,9 @@ func _build() -> void:
 	var hud=VBoxContainer.new(); side.add_child(hud)
 	hud.add_child(UIFactory.title(tile.biome,22))
 	hud.add_child(UIFactory.label("Territory [%d,%d] · Threat %d%s"%[tile.x,tile.y,tile.threat," · BOSS TERRITORY" if tile.boss else ""],13,Color("#e0b58d")))
+	if bool(tile.get("boss",false)):
+		hud.add_child(UIFactory.label("★ %s"%String(tile.get("boss_name","Regional Boss")),17,Color("#f0b7c0")))
+		hud.add_child(UIFactory.label(String(tile.get("boss_tell","Expect an unusual boss pattern.")),11,Color("#c5a8bb")))
 	hud.add_child(UIFactory.hsep())
 	hud.add_child(UIFactory.label("OBJECTIVE · %s"%String(tile.get("objective","Frontier Claim")).to_upper(),14,Color("#f0dfae")))
 	hud.add_child(UIFactory.label(_objective_description(String(tile.get("objective","Frontier Claim"))),12,Color("#a5b1cb")))
@@ -53,7 +56,7 @@ func _build() -> void:
 	cooldowns=UIFactory.label("",12,Color("#98a7c6")); hud.add_child(cooldowns)
 	hud.add_child(UIFactory.hsep())
 	hud.add_child(UIFactory.label("FRONTIER RULES",14,Color("#f0dfae")))
-	hud.add_child(UIFactory.label("Purple-ring enemies are Elites: tougher, richer and worth extra XP. Ranged enemies and guardians fire projectiles. Your dash is briefly invulnerable, so timing matters now.",12,Color("#a5b1cb")))
+	hud.add_child(UIFactory.label("Purple-ring enemies are Elites. Ranged threats and bosses fire projectiles. Dash is briefly invulnerable, so read tells instead of treating movement as decoration.",12,Color("#a5b1cb")))
 	hud.add_child(UIFactory.hsep())
 	hud.add_child(UIFactory.label("CONTROLS",14,Color("#f0dfae")))
 	hud.add_child(UIFactory.label("WASD  move\nSpace  dash / evade\nQ  rally army\nE  shockwave\n\nWarden auto-attacks. Your army fights around you.",12,Color("#a5b1cb")))
@@ -62,21 +65,22 @@ func _build() -> void:
 
 func _objective_progress_text(data:Dictionary) -> String:
 	if bool(data.boss):
-		return "★ GUARDIAN ACTIVE · defeat it to secure the tile"
+		return "★ %s ACTIVE · read the pattern and break it"%String(data.get("boss_name","Guardian"))
 	var name=String(data.objective)
 	var progress=int(data.objective_progress)
 	var target=int(data.objective_target)
 	match name:
 		"Monster Hunt": return "Hunt progress  %d / %d kills"%[min(progress,target),target]
 		"Resource Sweep": return "Extraction  %d / %d sites"%[min(progress,target),target]
-		"Ruin Siege": return "Guardian incoming  %d / %ds"%[min(progress,target),target]
+		"Ruin Siege": return "%s incoming  %d / %ds"%[String(tile.get("boss_name","Regional Boss")),min(progress,target),target]
 		_: return "Hold the frontier  %d / %ds"%[min(progress,target),target]
 
 func _hud(data: Dictionary) -> void:
 	hp_bar.max_value=data.hp_max; hp_bar.value=data.hp
 	objective_label.text=_objective_progress_text(data)
 	var combo_text=" · Momentum ×%d"%data.combo if int(data.combo)>1 else ""
-	status.text="HP %d / %d\nRun Lv.%d · Kills %d · Elites %d%s\nHarvest %d / %d · %ds%s"%[data.hp,data.hp_max,data.level,data.kills,data.elite_kills,combo_text,data.nodes,data.nodes_total,int(data.time),"\n★ GUARDIAN ARRIVED" if data.boss else ""]
+	var boss_line="\n★ %s"%String(data.get("boss_name","Guardian")) if bool(data.boss) else ""
+	status.text="HP %d / %d\nRun Lv.%d · Kills %d · Elites %d%s\nHarvest %d / %d · %ds%s"%[data.hp,data.hp_max,data.level,data.kills,data.elite_kills,combo_text,data.nodes,data.nodes_total,int(data.time),boss_line]
 	cooldowns.text="Dash %.1fs · Rally %.1fs · Burst %.1fs"%[data.dash_cd,data.rally_cd,data.burst_cd]
 
 func _show_upgrade() -> void:
@@ -111,8 +115,8 @@ func _finished(result: Dictionary) -> void:
 	SaveManager.save_game()
 	result_overlay=PanelContainer.new()
 	result_overlay.set_anchors_preset(Control.PRESET_CENTER)
-	result_overlay.position=Vector2(330,75)
-	result_overlay.size=Vector2(620,545)
+	result_overlay.position=Vector2(330,65)
+	result_overlay.size=Vector2(620,565)
 	result_overlay.add_theme_stylebox_override("panel",UIFactory.panel(Color("#111827"),15,Color("#856f48")))
 	add_child(result_overlay)
 	var v=VBoxContainer.new()
@@ -122,6 +126,8 @@ func _finished(result: Dictionary) -> void:
 	tl.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(tl)
 	v.add_child(UIFactory.label("%s · Threat %d"%[String(result.get("objective","Expedition")),result.threat],14,Color("#e0c684")))
+	if bool(tile.get("boss",false)):
+		v.add_child(UIFactory.label("Regional Boss: %s"%String(result.get("boss_name",tile.get("boss_name","Unknown"))),14,Color("#f0b7c0")))
 	v.add_child(UIFactory.label("%d kills · %d elites · %d XP · Harvested %d/%d"%[result.kills,result.get("elite_kills",0),result.xp,result.get("nodes_collected",0),result.get("nodes_total",0)],13,Color("#aebad2")))
 	v.add_child(UIFactory.label("Best Momentum ×%d"%result.get("best_combo",0),13,Color("#d1bd85")))
 	if result.get("territory_claimed",false):

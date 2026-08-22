@@ -69,3 +69,16 @@
 - Old saves are migrated so existing inventory entries receive safe empty affix arrays without invalidating the save.
 - Starter gear bonus keys were normalized to the same live-stat system used by generated affixes.
 - Gear Affix Pass passed Godot 4.7.2 project parsing, headless main-scene smoke test and Web export before documentation-only follow-up commits.
+
+## 2026-08-22 — M1 Regional Boss Pass
+- Ruin Siege tiles now expose a deterministic **named boss identity** before the expedition begins.
+- Added six named biome variants mapped to three mechanical archetypes: **Redfang Matriarch**, **Thorn Regent**, **Iron Colossus**, **Mire Oracle**, **Cinder Titan** and **White Maw**.
+- **Beast** bosses use telegraphed high-speed charge windows that reward dash timing and punish passive kiting.
+- **Oracle** bosses maintain range, fire aimed projectile fans and periodically create rotating projectile rings that reshape safe space.
+- **Colossus** bosses are slower and much tougher, fire heavy aimed shots and trigger large radial Ground Break eruptions.
+- Boss archetypes now have visibly different procedural silhouettes and projectile colors even before final authored sprites arrive.
+- World Map exposes boss name and a concise behavior tell before the player commits to a Ruin Siege.
+- Expedition HUD continues that telegraphing and names the active boss during combat and on the result screen.
+- Named regional bosses grant a premium Gold/Mana bounty on top of Ruin Siege rewards.
+- Ordinary non-boss expedition guardians preserve the baseline radial-volley behavior, so regional bosses remain special rather than replacing every guardian.
+- Regional Boss Pass passed Godot 4.7.2 project parsing, headless main-scene smoke test and Web export before documentation-only follow-up commits.

@@ -71,7 +71,10 @@
 - [x] Ranged enemy behavior and hostile projectiles
 - [x] Elite enemy variants with extra risk/reward
 - [x] Dash invulnerability timing / active evasion
-- [ ] 3 distinct regional bosses
+- [x] 3 distinct regional boss archetypes with named biome variants
+- [x] Beast charge boss pattern
+- [x] Oracle fan/ring projectile-control boss pattern
+- [x] Colossus radial eruption / heavy-shot boss pattern
 - [ ] 20+ equipment pieces / named loot families
 - [x] First gear-affix system with rarity-scaled slot-specific rolls
 - [x] Equipped affixes modify combat, Command, harvest and drop economy
@@ -90,6 +93,9 @@
 - [x] Gear Affix Pass Godot 4.7.2 parse validation
 - [x] Gear Affix Pass headless main-scene smoke validation
 - [x] Gear Affix Pass Web export validation
+- [x] Regional Boss Pass Godot 4.7.2 parse validation
+- [x] Regional Boss Pass headless main-scene smoke validation
+- [x] Regional Boss Pass Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth

@@ -9,6 +9,8 @@ var bounds := Rect2(0, 0, 900, 560)
 var tile := {}
 var objective := "Frontier Claim"
 var objective_target := 44
+var boss_name := "Frontier Guardian"
+var boss_archetype := "guardian"
 
 var player_pos := Vector2(450, 280)
 var player_hp := 100.0
@@ -68,6 +70,8 @@ var rng := RandomNumberGenerator.new()
 func begin(data: Dictionary) -> void:
 	tile = data.duplicate(true)
 	objective = String(tile.get("objective", "Frontier Claim"))
+	boss_name = String(tile.get("boss_name","Frontier Guardian"))
+	boss_archetype = String(tile.get("boss_archetype","guardian")) if bool(tile.get("boss",false)) else "guardian"
 	rng.seed = int(tile.get("seed", Time.get_ticks_msec()))
 	gear_bonuses = GameState.equipped_bonuses()
 	var ironheart = GameState.talent_rank("ironheart")
@@ -191,7 +195,7 @@ func _process(delta: float) -> void:
 	_auto_attack()
 	_check_level()
 	_check_end()
-	hud_changed.emit({"hp":player_hp,"hp_max":player_hp_max,"time":elapsed,"kills":kills,"elite_kills":elite_kills,"level":run_level,"threat":tile.get("threat",1),"boss":boss_spawned,"dash_cd":dash_cd,"rally_cd":rally_cd,"burst_cd":burst_cd,"combo":combo,"best_combo":best_combo,"nodes":nodes_collected,"nodes_total":resource_nodes.size(),"objective":objective,"objective_progress":_objective_progress(),"objective_target":objective_target})
+	hud_changed.emit({"hp":player_hp,"hp_max":player_hp_max,"time":elapsed,"kills":kills,"elite_kills":elite_kills,"level":run_level,"threat":tile.get("threat",1),"boss":boss_spawned,"boss_name":boss_name,"boss_archetype":boss_archetype,"dash_cd":dash_cd,"rally_cd":rally_cd,"burst_cd":burst_cd,"combo":combo,"best_combo":best_combo,"nodes":nodes_collected,"nodes_total":resource_nodes.size(),"objective":objective,"objective_progress":_objective_progress(),"objective_target":objective_target})
 	queue_redraw()
 
 func _handle_input(delta: float) -> void:
@@ -246,7 +250,7 @@ func _spawn_logic() -> void:
 		_spawn_enemy(true)
 		boss_spawned = true
 		_spawn_ring(player_pos, Color("#e3b76e"))
-		_float_text(player_pos+Vector2(0,-54),"GUARDIAN AWAKENED",Color("#f2c56f"),1.2)
+		_float_text(player_pos+Vector2(0,-54),(boss_name if bool(tile.get("boss",false)) else "GUARDIAN")+" AWAKENED",Color("#f2c56f"),1.2)
 		_shake(0.22,7.0)
 	if spawn_timer <= 0.0 and enemies.size() < 150:
 		var objective_pressure = 1 if objective == "Monster Hunt" else 0
@@ -295,16 +299,35 @@ func _spawn_enemy(boss: bool) -> void:
 			damage_mult = 1.45
 	if boss:
 		etype = "boss"
-		behavior = "boss"
+		var regional = bool(tile.get("boss",false))
+		var archetype = boss_archetype if regional else "guardian"
+		behavior = "boss_"+archetype
 		hp = 520.0 + threat*115.0
 		speed = 42.0 + threat
 		radius = 34.0
 		damage_mult = 1.15
+		match archetype:
+			"beast":
+				hp *= 1.18
+				speed *= 1.22
+				radius = 30.0
+				damage_mult = 1.25
+			"oracle":
+				hp *= 1.08
+				speed *= 0.92
+				radius = 32.0
+				damage_mult = 1.10
+			"colossus":
+				hp *= 1.48
+				speed *= 0.62
+				radius = 42.0
+				damage_mult = 1.55
 		if objective == "Ruin Siege":
-			hp *= 1.45
-			speed *= 1.08
-			damage_mult = 1.35
-	enemies.append({"pos":p,"hp":hp,"max_hp":hp,"speed":speed,"type":etype,"behavior":behavior,"radius":radius,"boss":boss,"elite":elite,"flash":0.0,"attack_cd":0.0,"shoot_cd":rng.randf_range(0.5,1.5),"damage_mult":damage_mult})
+			hp *= 1.25
+			damage_mult *= 1.12
+		enemies.append({"pos":p,"hp":hp,"max_hp":hp,"speed":speed,"type":etype,"behavior":behavior,"radius":radius,"boss":boss,"elite":elite,"flash":0.0,"attack_cd":0.0,"shoot_cd":rng.randf_range(0.5,1.2),"special_cd":rng.randf_range(1.5,2.8),"damage_mult":damage_mult,"charge_time":0.0,"charge_dir":Vector2.ZERO,"archetype":archetype,"name":boss_name if regional else "Frontier Guardian"})
+		return
+	enemies.append({"pos":p,"hp":hp,"max_hp":hp,"speed":speed,"type":etype,"behavior":behavior,"radius":radius,"boss":boss,"elite":elite,"flash":0.0,"attack_cd":0.0,"shoot_cd":rng.randf_range(0.5,1.5),"special_cd":0.0,"damage_mult":damage_mult,"charge_time":0.0,"charge_dir":Vector2.ZERO,"archetype":"","name":""})
 
 func _update_enemies(delta: float) -> void:
 	for i in range(enemies.size()-1,-1,-1):
@@ -312,29 +335,38 @@ func _update_enemies(delta: float) -> void:
 		e.flash = max(0.0,float(e.flash)-delta)
 		e.attack_cd = max(0.0,float(e.attack_cd)-delta)
 		e.shoot_cd = max(0.0,float(e.shoot_cd)-delta)
+		e.special_cd = max(0.0,float(e.get("special_cd",0.0))-delta)
+		e.charge_time = max(0.0,float(e.get("charge_time",0.0))-delta)
 		if e.hp <= 0:
 			_kill_enemy(e)
 			enemies.remove_at(i)
 			continue
 		var distance = e.pos.distance_to(player_pos)
 		var dir = (player_pos-e.pos).normalized()
-		if e.behavior == "ranged":
-			if distance > 245.0:
+		match String(e.behavior):
+			"ranged":
+				if distance > 245.0:
+					e.pos += dir * e.speed * delta
+				elif distance < 150.0:
+					e.pos -= dir * e.speed * 0.65 * delta
+				else:
+					e.pos += dir.rotated(PI/2.0) * e.speed * 0.35 * delta
+				if e.shoot_cd <= 0.0 and distance < 360.0:
+					_spawn_enemy_shot(e.pos,dir,7.0+int(tile.get("threat",1))*1.25,e.elite)
+					e.shoot_cd = 1.65 if not e.elite else 1.18
+			"boss_beast":
+				_update_beast_boss(e,dir,delta)
+			"boss_oracle":
+				_update_oracle_boss(e,dir,distance,delta)
+			"boss_colossus":
+				_update_colossus_boss(e,dir,delta)
+			"boss_guardian":
 				e.pos += dir * e.speed * delta
-			elif distance < 150.0:
-				e.pos -= dir * e.speed * 0.65 * delta
-			else:
-				e.pos += dir.rotated(PI/2.0) * e.speed * 0.35 * delta
-			if e.shoot_cd <= 0.0 and distance < 360.0:
-				_spawn_enemy_shot(e.pos,dir,7.0+int(tile.get("threat",1))*1.25,e.elite)
-				e.shoot_cd = 1.65 if not e.elite else 1.18
-		elif e.behavior == "boss":
-			e.pos += dir * e.speed * delta
-			if e.shoot_cd <= 0.0:
-				_spawn_boss_volley(e.pos)
-				e.shoot_cd = 2.8
-		else:
-			e.pos += dir * e.speed * delta
+				if e.shoot_cd <= 0.0:
+					_spawn_boss_volley(e.pos)
+					e.shoot_cd = 2.8
+			_:
+				e.pos += dir * e.speed * delta
 		if distance < e.radius + 16 and e.attack_cd <= 0:
 			var hit = (7.0 + int(tile.get("threat",1))*1.7) * float(e.get("damage_mult",1.0))
 			if e.boss:
@@ -343,11 +375,53 @@ func _update_enemies(delta: float) -> void:
 			e.attack_cd = 0.75
 		enemies[i] = e
 
-func _spawn_enemy_shot(pos:Vector2,dir:Vector2,shot_damage:float,elite:bool=false) -> void:
+func _update_beast_boss(e:Dictionary,dir:Vector2,delta:float)->void:
+	if float(e.charge_time)>0.0:
+		e.pos += Vector2(e.charge_dir) * e.speed * 3.25 * delta
+		if rng.randf()<0.16:
+			particles.append({"pos":e.pos,"life":0.22,"max":0.22,"color":Color("#c9e5f2")})
+		return
+	e.pos += dir * e.speed * 0.70 * delta
+	if e.special_cd<=0.0:
+		e.charge_dir=dir
+		e.charge_time=0.72
+		e.special_cd=2.8
+		_float_text(e.pos+Vector2(0,-50),"CHARGE",Color("#f4d6a0"),0.75)
+		_spawn_ring(e.pos,Color("#e7c58c"))
+		_shake(0.09,3.5)
+
+func _update_oracle_boss(e:Dictionary,dir:Vector2,distance:float,delta:float)->void:
+	if distance>270.0:
+		e.pos += dir*e.speed*delta
+	elif distance<180.0:
+		e.pos -= dir*e.speed*0.9*delta
+	else:
+		e.pos += dir.rotated(PI/2.0)*e.speed*0.55*delta
+	if e.shoot_cd<=0.0:
+		_spawn_oracle_fan(e.pos,dir)
+		e.shoot_cd=1.55
+	if e.special_cd<=0.0:
+		_spawn_oracle_ring(e.pos)
+		e.special_cd=5.2
+		_float_text(e.pos+Vector2(0,-48),"HEX BLOOM",Color("#c9a6e8"),0.8)
+
+func _update_colossus_boss(e:Dictionary,dir:Vector2,delta:float)->void:
+	e.pos += dir*e.speed*delta
+	if e.special_cd<=0.0:
+		_spawn_colossus_burst(e.pos)
+		e.special_cd=3.5
+		_float_text(e.pos+Vector2(0,-58),"GROUND BREAK",Color("#e7b986"),0.85)
+		_shake(0.20,6.5)
+	elif e.shoot_cd<=0.0:
+		for offset in [-0.22,0.0,0.22]:
+			_spawn_enemy_shot(e.pos,(player_pos-e.pos).normalized().rotated(offset),9.0+int(tile.get("threat",1))*1.6,true,Color("#c79a72"),220.0)
+		e.shoot_cd=2.1
+
+func _spawn_enemy_shot(pos:Vector2,dir:Vector2,shot_damage:float,elite:bool=false,color:Color=Color("#e89975"),speed_override:float=0.0) -> void:
 	if enemy_projectiles.size() >= 180:
 		return
-	var speed = 250.0 if not elite else 300.0
-	enemy_projectiles.append({"pos":pos,"vel":dir.normalized()*speed,"damage":shot_damage*(1.25 if elite else 1.0),"life":3.0,"radius":5.0 if not elite else 7.0})
+	var speed = speed_override if speed_override>0.0 else (250.0 if not elite else 300.0)
+	enemy_projectiles.append({"pos":pos,"vel":dir.normalized()*speed,"damage":shot_damage*(1.25 if elite else 1.0),"life":3.4,"radius":5.0 if not elite else 7.0,"color":color})
 
 func _spawn_boss_volley(pos:Vector2) -> void:
 	var threat = int(tile.get("threat",1))
@@ -355,6 +429,25 @@ func _spawn_boss_volley(pos:Vector2) -> void:
 		var dir = Vector2.RIGHT.rotated(TAU*float(i)/8.0 + elapsed*0.12)
 		_spawn_enemy_shot(pos,dir,8.0+threat*1.5,true)
 	_shake(0.09,3.0)
+
+func _spawn_oracle_fan(pos:Vector2,dir:Vector2)->void:
+	var threat=int(tile.get("threat",1))
+	for angle in [-0.36,-0.18,0.0,0.18,0.36]:
+		_spawn_enemy_shot(pos,dir.rotated(angle),7.0+threat*1.35,true,Color("#a88bd5"),285.0)
+
+func _spawn_oracle_ring(pos:Vector2)->void:
+	var threat=int(tile.get("threat",1))
+	for i in 12:
+		var dir=Vector2.RIGHT.rotated(TAU*float(i)/12.0+elapsed*0.18)
+		_spawn_enemy_shot(pos,dir,6.0+threat*1.15,false,Color("#8fc3b0"),205.0)
+	_spawn_ring(pos,Color("#9f82c7"))
+
+func _spawn_colossus_burst(pos:Vector2)->void:
+	var threat=int(tile.get("threat",1))
+	for i in 16:
+		var dir=Vector2.RIGHT.rotated(TAU*float(i)/16.0)
+		_spawn_enemy_shot(pos,dir,9.0+threat*1.55,true,Color("#c79666"),185.0)
+	_spawn_ring(pos,Color("#d39a69"))
 
 func _update_enemy_projectiles(delta:float) -> void:
 	for i in range(enemy_projectiles.size()-1,-1,-1):
@@ -415,8 +508,11 @@ func _kill_enemy(e: Dictionary) -> void:
 		boss_killed = true
 		loot.gold += 120 * int(tile.get("threat",1))
 		loot.mana += 5 + int(tile.get("threat",1))
+		if bool(tile.get("boss",false)):
+			loot.gold += 45*int(tile.get("threat",1))
+			loot.mana += 3+int(tile.get("threat",1))/2
 		_spawn_ring(e.pos, Color("#f1c36e"))
-		_float_text(e.pos+Vector2(0,-52),"GUARDIAN BROKEN",Color("#f1c36e"),1.1)
+		_float_text(e.pos+Vector2(0,-52),(boss_name if bool(tile.get("boss",false)) else "GUARDIAN")+" BROKEN",Color("#f1c36e"),1.1)
 		_shake(0.3,8.0)
 	else:
 		_spawn_ring(e.pos, Color("#ad8c67"))
@@ -603,7 +699,7 @@ func _finish(victory: bool) -> void:
 		chance += 0.20
 	if rng.randf() < chance:
 		item = generate_loot_item(threat)
-	finished.emit({"victory":victory,"kills":kills,"elite_kills":elite_kills,"xp":xp+objective_xp+(80*threat if victory else 0),"loot":loot.duplicate(true),"threat":threat,"boss_killed":boss_killed,"item":item,"nodes_collected":nodes_collected,"nodes_total":resource_nodes.size(),"best_combo":best_combo,"objective":objective,"objective_progress":_objective_progress(),"objective_target":objective_target})
+	finished.emit({"victory":victory,"kills":kills,"elite_kills":elite_kills,"xp":xp+objective_xp+(80*threat if victory else 0),"loot":loot.duplicate(true),"threat":threat,"boss_killed":boss_killed,"boss_name":boss_name if bool(tile.get("boss",false)) else "Frontier Guardian","boss_archetype":boss_archetype,"item":item,"nodes_collected":nodes_collected,"nodes_total":resource_nodes.size(),"best_combo":best_combo,"objective":objective,"objective_progress":_objective_progress(),"objective_target":objective_target})
 
 func _affix_count(rarity:String) -> int:
 	return {"common":0,"uncommon":1,"rare":2,"epic":3,"legendary":4}.get(rarity,0)
@@ -708,8 +804,9 @@ func _draw() -> void:
 		draw_circle(p.pos,5,Color("#bfe4ff"))
 		draw_circle(p.pos,2,Color.WHITE)
 	for p in enemy_projectiles:
-		draw_circle(p.pos,float(p.radius),Color("#e89975"))
-		draw_circle(p.pos,float(p.radius)+4,Color(0.95,0.35,0.22,0.12),false,2)
+		var pc:Color=p.get("color",Color("#e89975"))
+		draw_circle(p.pos,float(p.radius),pc)
+		draw_circle(p.pos,float(p.radius)+4,Color(pc,0.12),false,2)
 	_draw_player()
 	var font = ThemeDB.fallback_font
 	for f in floating_texts:
@@ -809,32 +906,51 @@ func _enemy_color(type:String)->Color:
 		"frostling":Color("#8eb8cf"),"boss":Color("#b14761")
 	}.get(type,Color("#bb6666"))
 
+func _boss_color(archetype:String)->Color:
+	return {"beast":Color("#9d6d62"),"oracle":Color("#8971b6"),"colossus":Color("#a17c61"),"guardian":Color("#b14761")}.get(archetype,Color("#b14761"))
+
 func _draw_enemy(e: Dictionary) -> void:
-	var c=_enemy_color(String(e.type))
+	var c=_boss_color(String(e.get("archetype","guardian"))) if bool(e.boss) else _enemy_color(String(e.type))
 	if e.flash>0:
 		c=Color.WHITE
 	if bool(e.get("elite",false)):
 		draw_circle(e.pos,e.radius+7,Color("#c68be8"),false,3)
-	match String(e.type):
-		"slime","leech":
-			draw_circle(e.pos,e.radius,c)
-			draw_rect(Rect2(e.pos+Vector2(-e.radius,e.radius-5),Vector2(e.radius*2,7)),c.darkened(0.08))
-		"wolf","frostling":
-			draw_colored_polygon(PackedVector2Array([e.pos+Vector2(-e.radius,8),e.pos+Vector2(0,-e.radius),e.pos+Vector2(e.radius,8)]),c)
-		"wisp","imp":
-			draw_circle(e.pos,e.radius,c)
-			draw_circle(e.pos,e.radius+7,Color(c,0.18),false,3)
-		"golem":
-			draw_rect(Rect2(e.pos-Vector2(e.radius*0.75,e.radius*0.75),Vector2(e.radius*1.5,e.radius*1.5)),c)
-			draw_circle(e.pos+Vector2(0,-3),5,c.lightened(0.2))
-		"bramble":
-			draw_circle(e.pos,e.radius,c)
-			for n in 5:
-				var d=Vector2.RIGHT.rotated(TAU*float(n)/5.0)
-				draw_line(e.pos+d*e.radius*0.6,e.pos+d*e.radius*1.25,c.lightened(0.12),3)
-		_:
-			draw_circle(e.pos,e.radius,c)
-			draw_colored_polygon(PackedVector2Array([e.pos+Vector2(-e.radius*.6,-e.radius*.7),e.pos+Vector2(0,-e.radius*1.35),e.pos+Vector2(e.radius*.6,-e.radius*.7)]),c.darkened(0.2))
+	if bool(e.boss):
+		match String(e.get("archetype","guardian")):
+			"beast":
+				draw_colored_polygon(PackedVector2Array([e.pos+Vector2(-e.radius,12),e.pos+Vector2(-10,-e.radius),e.pos+Vector2(0,-e.radius*.55),e.pos+Vector2(10,-e.radius),e.pos+Vector2(e.radius,12),e.pos+Vector2(0,e.radius)]),c)
+				draw_circle(e.pos+Vector2(-8,-8),3,Color("#f5e6b1")); draw_circle(e.pos+Vector2(8,-8),3,Color("#f5e6b1"))
+			"oracle":
+				draw_circle(e.pos,e.radius,c)
+				draw_circle(e.pos,e.radius+10,Color(c,0.32),false,3)
+				draw_arc(e.pos,e.radius+17,elapsed,elapsed+PI,20,c.lightened(0.25),2)
+			"colossus":
+				draw_rect(Rect2(e.pos-Vector2(e.radius*.72,e.radius*.72),Vector2(e.radius*1.44,e.radius*1.44)),c)
+				draw_circle(e.pos,8,c.lightened(0.28)); draw_line(e.pos+Vector2(-e.radius*.7,0),e.pos+Vector2(e.radius*.7,0),c.darkened(0.2),4)
+			_:
+				draw_circle(e.pos,e.radius,c)
+				draw_colored_polygon(PackedVector2Array([e.pos+Vector2(-e.radius*.6,-e.radius*.7),e.pos+Vector2(0,-e.radius*1.35),e.pos+Vector2(e.radius*.6,-e.radius*.7)]),c.darkened(0.2))
+	else:
+		match String(e.type):
+			"slime","leech":
+				draw_circle(e.pos,e.radius,c)
+				draw_rect(Rect2(e.pos+Vector2(-e.radius,e.radius-5),Vector2(e.radius*2,7)),c.darkened(0.08))
+			"wolf","frostling":
+				draw_colored_polygon(PackedVector2Array([e.pos+Vector2(-e.radius,8),e.pos+Vector2(0,-e.radius),e.pos+Vector2(e.radius,8)]),c)
+			"wisp","imp":
+				draw_circle(e.pos,e.radius,c)
+				draw_circle(e.pos,e.radius+7,Color(c,0.18),false,3)
+			"golem":
+				draw_rect(Rect2(e.pos-Vector2(e.radius*0.75,e.radius*0.75),Vector2(e.radius*1.5,e.radius*1.5)),c)
+				draw_circle(e.pos+Vector2(0,-3),5,c.lightened(0.2))
+			"bramble":
+				draw_circle(e.pos,e.radius,c)
+				for n in 5:
+					var d=Vector2.RIGHT.rotated(TAU*float(n)/5.0)
+					draw_line(e.pos+d*e.radius*0.6,e.pos+d*e.radius*1.25,c.lightened(0.12),3)
+			_:
+				draw_circle(e.pos,e.radius,c)
+				draw_colored_polygon(PackedVector2Array([e.pos+Vector2(-e.radius*.6,-e.radius*.7),e.pos+Vector2(0,-e.radius*1.35),e.pos+Vector2(e.radius*.6,-e.radius*.7)]),c.darkened(0.2))
 	if e.boss:
 		draw_arc(e.pos,e.radius+10,0,TAU,30,Color("#f3c65d"),3)
 	var ratio=max(0.0,float(e.hp)/float(e.max_hp))
