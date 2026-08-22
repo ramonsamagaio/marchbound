@@ -34,11 +34,19 @@ func _ready() -> void:
 func _objective_description(name:String) -> String:
 	return {"Frontier Claim":"Survive until the territory guardian is forced into the open.","Monster Hunt":"Kill aggressively. Enough kills force the local alpha to reveal itself.","Resource Sweep":"Harvest frontier sites while fighting. Enough extraction awakens the guardian.","Ruin Siege":"A named regional boss controls this ruin. Read its pattern and survive the early confrontation."}.get(name,"Secure the territory and defeat its guardian.")
 
+func _active_evolutions_text() -> String:
+	UnitProgression.ensure_schema()
+	var names := []
+	for unit in UnitProgression.UNIT_ORDER:
+		if int(GameState.army.get(unit,0)) > 0 and UnitProgression.is_evolved(unit):
+			names.append(UnitProgression.display_name(unit))
+	return " · ".join(names)
+
 func _build() -> void:
 	var bg=ColorRect.new(); bg.color=Color("#0d111c"); bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); add_child(bg)
 	var layout=HBoxContainer.new(); layout.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); layout.add_theme_constant_override("separation",12); layout.offset_left=14; layout.offset_top=14; layout.offset_right=-14; layout.offset_bottom=-14; add_child(layout)
 	var arena_panel=PanelContainer.new(); arena_panel.size_flags_horizontal=Control.SIZE_EXPAND_FILL; arena_panel.size_flags_vertical=Control.SIZE_EXPAND_FILL; arena_panel.add_theme_stylebox_override("panel",UIFactory.panel(Color("#111724"),12,Color("#33405c"))); layout.add_child(arena_panel)
-	var holder=Control.new(); holder.custom_minimum_size=Vector2(900,560); arena_panel.add_child(holder); arena=CombatArena.new(); holder.add_child(arena); arena.hud_changed.connect(_hud); arena.upgrade_requested.connect(_show_upgrade); arena.finished.connect(_finished)
+	var holder=Control.new(); holder.custom_minimum_size=Vector2(900,560); arena_panel.add_child(holder); arena=EvolvedCombatArena.new(); holder.add_child(arena); arena.hud_changed.connect(_hud); arena.upgrade_requested.connect(_show_upgrade); arena.finished.connect(_finished)
 	var side=PanelContainer.new(); side.custom_minimum_size.x=310; side.add_theme_stylebox_override("panel",UIFactory.panel(Color("#151b2a"),12,Color("#35415d"))); layout.add_child(side)
 	var hud=VBoxContainer.new(); side.add_child(hud)
 	hud.add_child(UIFactory.title(tile.biome,22))
@@ -50,6 +58,9 @@ func _build() -> void:
 	hud.add_child(UIFactory.label("OBJECTIVE · %s"%String(tile.get("objective","Frontier Claim")).to_upper(),14,Color("#f0dfae")))
 	hud.add_child(UIFactory.label(_objective_description(String(tile.get("objective","Frontier Claim"))),12,Color("#a5b1cb")))
 	objective_label=UIFactory.label("Preparing objective...",13,Color("#e0c684")); hud.add_child(objective_label)
+	var evolved = _active_evolutions_text()
+	if evolved != "":
+		hud.add_child(UIFactory.label("EVOLVED WAR-BAND · %s"%evolved,11,Color("#a7d9c5")))
 	hud.add_child(UIFactory.hsep())
 	hp_bar=ProgressBar.new(); hp_bar.custom_minimum_size.y=26; hp_bar.show_percentage=false; hud.add_child(hp_bar)
 	status=UIFactory.label("Entering the frontier...",14); hud.add_child(status)
