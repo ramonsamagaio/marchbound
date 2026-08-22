@@ -76,7 +76,11 @@
 - [x] Beast charge boss pattern
 - [x] Oracle fan/ring projectile-control boss pattern
 - [x] Colossus radial eruption / heavy-shot boss pattern
-- [ ] 20+ equipment pieces / named loot families
+- [x] 20+ equipment pieces / named loot families
+- [x] Six biome-bound equipment families with 54 authored slot identities
+- [x] 2pc / 4pc regional set bonuses that modify live expedition systems
+- [x] Named boss provenance on high-rarity regional drops
+- [x] Inventory shows family lore, active pieces and set-bonus state
 - [x] First gear-affix system with rarity-scaled slot-specific rolls
 - [x] Equipped affixes modify combat, Command, harvest and drop economy
 - [x] Inventory affix display and same-slot comparison
@@ -118,6 +122,9 @@
 - [x] Unit Evolution Pass Godot 4.7.2 parse validation
 - [x] Unit Evolution Pass headless main-scene smoke validation
 - [x] Unit Evolution Pass Web export validation
+- [x] Regional Loot Families Pass Godot 4.7.2 parse validation
+- [x] Regional Loot Families Pass headless main-scene smoke validation
+- [x] Regional Loot Families Pass Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth
