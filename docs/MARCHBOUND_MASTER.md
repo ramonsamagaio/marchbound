@@ -25,16 +25,17 @@ MARCHBOUND is not five games glued together. Each reference owns a layer:
 
 1. Settlement: collect passive production, build, research, forge, recruit.
 2. Army preparation: spend Command capacity on a chosen composition.
-3. World map: evaluate biome, threat, richness, boss/PvP properties and strategic value.
+3. World map: evaluate biome, threat, richness, objective, boss/PvP properties and strategic value.
 4. Frontier choice: patrol owned land or claim an adjacent unowned territory connected to the supply line.
 5. Expedition: enter the tile personally.
 6. Action: WASD movement, dash, active abilities, Warden auto-attacks, army AI, enemy hordes, run upgrades, resource-site harvesting and Momentum kill chains.
-7. Extraction: survive/kill boss, return with resources, XP, renown and equipment.
-8. Claim: first victory permanently claims that territory for the current Frontier Season and opens adjacent territory.
-9. Power conversion: upgrade settlement, research, units and gear.
-10. Push farther: higher-threat territory yields better rewards.
-11. Season/frontier advancement: reset/expand portions of world pressure while preserving meaningful meta-progression.
-12. Repeat with more possibilities, not merely larger numbers.
+7. Objective pressure: the tile's objective determines what forces the guardian into the open.
+8. Extraction: kill the guardian, return with resources, XP, renown and equipment.
+9. Claim: first victory permanently claims that territory for the current Frontier Season and opens adjacent territory.
+10. Power conversion: upgrade settlement, research, units and gear.
+11. Push farther: higher-threat territory yields better rewards.
+12. Season/frontier advancement: reset/expand portions of world pressure while preserving meaningful meta-progression.
+13. Repeat with more possibilities, not merely larger numbers.
 
 The player should repeatedly think: **“one more expedition, then I can afford/unlock/try that.”**
 
@@ -48,7 +49,7 @@ The player should repeatedly think: **“one more expedition, then I can afford/
 - First victory in a reachable unclaimed tile claims it and pays an extra frontier bounty.
 - Threat increases primarily with distance from Dawnkeep plus Frontier Season pressure and deterministic local variance.
 - Huge biomes and difficulty bands.
-- Each tile may expose threat, resource richness, rare resources, faction influence, PvP state, event/boss state.
+- Each tile may expose threat, resource richness, objective, rare resources, faction influence, PvP state and event/boss state.
 - Safe/core lands, optional PvP frontier, and later high-risk Wildlands.
 - Resource geography creates organic trade and diplomacy.
 - World events and bosses create social convergence.
@@ -73,7 +74,7 @@ Player:
 - Active abilities.
 - Equipment stats and build identity.
 - Temporary run upgrades.
-- Movement incentives from resource harvesting and future objectives, so optimal play is not just orbiting the arena edge.
+- Movement incentives from resource harvesting and objectives, so optimal play is not just orbiting the arena edge.
 
 Army:
 - Follows hero with lightweight AI.
@@ -87,6 +88,18 @@ MVP controls:
 - Q Rally
 - E Shockwave
 - Auto attack nearest enemy
+
+### Expedition objectives
+Objectives are deterministic properties of world tiles. They alter player behavior, guardian timing/strength and reward weighting while retaining a common readable win condition: force the guardian into the open and defeat it.
+
+Current MVP objective set:
+
+- **Frontier Claim:** baseline territorial expedition. Survive approximately 44 seconds, then defeat the guardian. Balanced reward profile.
+- **Monster Hunt:** aggressive combat objective. Reach a kill target based on Threat to spawn the alpha; higher enemy pressure, bonus Gold and XP. A time fail-safe prevents a stalled run.
+- **Resource Sweep:** movement/extraction objective. Harvest a target number of biome-weighted resource sites to awaken the guardian; bonus construction materials. A time fail-safe prevents a soft lock.
+- **Ruin Siege:** special boss territory. Guardian arrives early, has substantially higher health/damage and improved high-rarity gear odds plus bonus Gold/Mana.
+
+Objective progress is visible live in the expedition HUD. The design goal is for adjacent world tiles to represent different play decisions, not merely different numerical difficulty.
 
 ### Momentum
 Fast consecutive kills build a short-lived Momentum chain. Momentum temporarily increases Warden and army damage. Each 10-kill threshold also awards a small Gold bonus. The intended feel is controlled aggression: the player has a reason to keep moving toward the next pack rather than merely survive passively.
@@ -236,12 +249,13 @@ PvP should create risk/reward without forcing casual players to become prey.
 ## 14. Bosses / events
 
 - regional bosses
-- tile bosses
+- tile guardians
+- special Ruin Siege guardians
 - world events
 - later cooperative world bosses
 - reward tables that justify travel and danger
 
-MVP expedition spawns a boss after a short survival phase.
+MVP guardian timing is objective-driven rather than always timer-driven.
 
 ## 15. Near-infinite progression strategy
 
@@ -251,6 +265,7 @@ Pillars:
 - effectively unbounded deterministic world coordinates
 - adjacency-based frontier conquest and visible supply lines
 - escalating threat with distance from Dawnkeep
+- deterministic objective variation across the frontier
 - seasonal frontier advancement that redraws territorial pressure
 - player levels with widening Command
 - unit ranks/evolutions
@@ -305,11 +320,11 @@ Do not block MVP on full guild wars, 100-player realtime PvP, elaborate siege si
 
 ## 19. MVP mandate
 
-The first playable slice should already demonstrate settlement, passive/offline economy, buildings, tech, army recruitment/ranks/Command, world map, biomes/threat, adjacency-based territory conquest, real action expedition, player movement/combat, army followers, hordes, boss, run upgrades, active resource harvesting, Momentum kill chains, loot/resources/XP, equipment drops, inventory/paper-doll concept, gear upgrades, marketplace concept, Renown/Frontier Seasons and save persistence.
+The first playable slice should already demonstrate settlement, passive/offline economy, buildings, tech, army recruitment/ranks/Command, world map, biomes/threat, adjacency-based territory conquest, objective-driven action expeditions, player movement/combat, army followers, hordes, guardian encounters, run upgrades, active resource harvesting, Momentum kill chains, loot/resources/XP, equipment drops, inventory/paper-doll concept, gear upgrades, marketplace concept, Renown/Frontier Seasons and save persistence.
 
 ## 20. Current implementation snapshot — 2026-08-22
 
-The repository currently contains the broad MVP foundation plus the first major loop-strengthening pass:
+The repository currently contains the broad MVP foundation plus the first major loop-strengthening passes:
 
 - Dawnkeep at `[0,0]`
 - pannable deterministic frontier coordinates
@@ -318,10 +333,13 @@ The repository currently contains the broad MVP foundation plus the first major 
 - first-claim bounties
 - distance-scaled threat
 - biome/resource richness metadata
+- four deterministic expedition objectives
+- objective-specific guardian triggers, pressure, rewards and Ruin Siege rarity boost
+- live objective progress HUD
 - action expeditions
 - resource-site harvesting
 - Momentum kill chains
-- horde scaling and boss phase
+- horde scaling and guardian phase
 - temporary field doctrines/run upgrades
 - Command-limited army followers
 - settlement/passive economy/research/recruitment
@@ -330,5 +348,6 @@ The repository currently contains the broad MVP foundation plus the first major 
 - local save/offline progress
 - Frontier Season prestige scaffold
 - automated Godot parse/smoke/Web-export workflow
+- current objective-driven build validated successfully in Godot 4.7.2 CI: project parse, headless main-scene smoke test and Web export all passed
 
-The next design priority is **feel**: validate the frontier loop in an actual user playtest, then improve combat feedback, biome-specific enemies/objectives and the visual foundation without sacrificing browser performance.
+The next design priority is **feel**: the first hands-on user playtest should tell us where the loop drags. Then prioritize combat feedback, biome-specific enemy families, stronger tile identity and the visual foundation without sacrificing browser performance.
