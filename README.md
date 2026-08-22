@@ -60,7 +60,7 @@ These files are intentionally maintained as project memory whenever the design o
 
 ## Validation
 
-The foundation build passed Godot **4.7.2** project parsing, a headless main-scene smoke run and Web export through GitHub Actions. The current objective-driven frontier pass is being run through the same validation before its milestone checkbox is closed.
+The current objective-driven frontier build passed Godot **4.7.2** project parsing, a headless main-scene smoke run and Web export through GitHub Actions.
 
 ## Online architecture direction
 
