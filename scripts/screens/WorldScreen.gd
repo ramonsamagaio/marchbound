@@ -9,6 +9,7 @@ var selected:={}
 var map_status:Label
 var biome_names=["Greenlands","Ancient Forest","Iron Hills","Mistfen","Ash Wastes","Frostwild"]
 var biome_colors=[Color("#496d48"),Color("#294d3c"),Color("#5b5a58"),Color("#3e5f65"),Color("#6b4439"),Color("#52677d")]
+var objective_names=["Frontier Claim","Monster Hunt","Resource Sweep"]
 
 func _ready()->void:
 	GameState.ensure_schema(); _build(); _generate_map()
@@ -56,24 +57,27 @@ func _generate_map()->void:
 			elif tile.boss:c=c.lightened(0.12)
 			var border=Color("#d8bd78") if tile.accessible and not tile.conquered else c.lightened(0.16)
 			if tile.home:border=Color("#eadc9d")
-			b.add_theme_stylebox_override("normal",UIFactory.panel(c.darkened(0.16),7,border)); b.add_theme_stylebox_override("hover",UIFactory.panel(c,7,border.lightened(0.18))); b.tooltip_text="%s [%d,%d] · Threat %d"%["Dawnkeep" if tile.home else tile.biome,tile.x,tile.y,tile.threat]; b.pressed.connect(func(t=tile):select_tile(t)); grid.add_child(b)
+			b.add_theme_stylebox_override("normal",UIFactory.panel(c.darkened(0.16),7,border)); b.add_theme_stylebox_override("hover",UIFactory.panel(c,7,border.lightened(0.18))); b.tooltip_text="%s [%d,%d] · Threat %d · %s"%["Dawnkeep" if tile.home else tile.biome,tile.x,tile.y,tile.threat,tile.objective]; b.pressed.connect(func(t=tile):select_tile(t)); grid.add_child(b)
 	var remembered=GameState.world.get("selected_tile",{})
 	if not remembered.is_empty() and abs(int(remembered.get("x",0))-focus.x)<=int(GRID_W/2) and abs(int(remembered.get("y",0))-focus.y)<=int(GRID_H/2): select_tile(make_tile(int(remembered.x),int(remembered.y)))
 	else: select_tile(make_tile(focus.x,focus.y))
 
 func make_tile(x:int,y:int)->Dictionary:
 	var hashv=abs(hash("%s:%s:%s:%s"%[GameState.world.seed,GameState.world.season,x,y])); var biome_index=hashv%biome_names.size(); var dist=Vector2(float(x),float(y)).length(); var home=x==0 and y==0
-	var threat=0 if home else max(1,int(dist*0.72)+int(GameState.world.frontier_depth)+int((hashv/13)%3)); var boss=not home and threat>=3 and hashv%9==0; var pvp=not home and threat>=7 and hashv%5==0; var richness=1+(hashv%4)
-	return {"x":x,"y":y,"biome":"Greenlands" if home else biome_names[biome_index],"biome_index":0 if home else biome_index,"threat":threat,"boss":boss,"pvp":pvp,"richness":richness,"seed":hashv,"home":home,"conquered":GameState.is_conquered(x,y),"accessible":GameState.is_accessible(x,y)}
+	var threat=0 if home else max(1,int(dist*0.72)+int(GameState.world.frontier_depth)+int((hashv/13)%3)); var boss=not home and threat>=3 and hashv%9==0; var pvp=not home and threat>=7 and hashv%5==0; var richness=1+(hashv%4); var objective="Home" if home else ("Ruin Siege" if boss else objective_names[int((hashv/29)%objective_names.size())])
+	return {"x":x,"y":y,"biome":"Greenlands" if home else biome_names[biome_index],"biome_index":0 if home else biome_index,"threat":threat,"boss":boss,"pvp":pvp,"richness":richness,"seed":hashv,"home":home,"conquered":GameState.is_conquered(x,y),"accessible":GameState.is_accessible(x,y),"objective":objective}
 
 func biome_short(name:String)->String:return {"Greenlands":"GRN","Ancient Forest":"FOR","Iron Hills":"IRON","Mistfen":"FEN","Ash Wastes":"ASH","Frostwild":"FROST"}.get(name,"???")
+
+func objective_description(objective:String)->String:
+	return {"Frontier Claim":"Survive the frontier until its guardian appears, then break it.","Monster Hunt":"Keep the kill chain alive until the local alpha is forced into the open.","Resource Sweep":"Harvest enough frontier sites to draw out the territory guardian.","Ruin Siege":"A stronger guardian already controls this ruin. It arrives early and hits harder."}.get(objective,"Secure the territory.")
 
 func select_tile(tile:Dictionary)->void:
 	selected=tile; GameState.world.selected_tile=tile; UIFactory.clear_children(info)
 	if tile.home:
 		info.add_child(UIFactory.title("Dawnkeep",23)); info.add_child(UIFactory.label("Your capital · Territory [0,0]",12,Color("#8f9cbc"))); info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("THE HEART OF THE MARCH",18,Color("#f0dfae"))); info.add_child(UIFactory.label("Every frontier begins here. Expand through adjacent territories and build a supply line into danger.",13,Color("#aeb9d4"))); info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("Claimed territories: %d"%GameState.claimed_count(),14)); info.add_child(UIFactory.label("Highest threat conquered: %d"%GameState.world.highest_threat,13)); info.add_child(UIFactory.spacer()); var home=UIFactory.button("RETURN TO SETTLEMENT",func():GameState.screen_requested.emit("city"),Color("#4d563d")); home.custom_minimum_size.y=48; info.add_child(home); return
 	info.add_child(UIFactory.title(tile.biome,23)); info.add_child(UIFactory.label("Territory [%d,%d] · Distance %.1f"%[tile.x,tile.y,Vector2(float(tile.x),float(tile.y)).length()],12,Color("#8f9cbc"))); info.add_child(UIFactory.hsep())
-	var threat_color=Color("#e3c58f") if tile.threat<5 else Color("#ef8e7f"); info.add_child(UIFactory.label("THREAT %d"%tile.threat,22,threat_color)); info.add_child(UIFactory.label("Expected power: ~%d"%(tile.threat*130),13)); info.add_child(UIFactory.label("Your current power: %d"%GameState.total_power(),13,Color("#9fd3a7"))); info.add_child(UIFactory.label("Resource richness: %s"%["Poor","Fair","Rich","Abundant"][tile.richness-1],13))
+	var threat_color=Color("#e3c58f") if tile.threat<5 else Color("#ef8e7f"); info.add_child(UIFactory.label("THREAT %d"%tile.threat,22,threat_color)); info.add_child(UIFactory.label("Objective: %s"%tile.objective,14,Color("#e4cf98"))); info.add_child(UIFactory.label(objective_description(tile.objective),12,Color("#aeb9d4"))); info.add_child(UIFactory.label("Expected power: ~%d"%(tile.threat*130),13)); info.add_child(UIFactory.label("Your current power: %d"%GameState.total_power(),13,Color("#9fd3a7"))); info.add_child(UIFactory.label("Resource richness: %s"%["Poor","Fair","Rich","Abundant"][tile.richness-1],13))
 	if tile.conquered: info.add_child(UIFactory.label("✓ CLAIMED · safe supply route established",13,Color("#9fd3a7")))
 	elif tile.accessible: info.add_child(UIFactory.label("◆ FRONTIER · victory will claim this territory",13,Color("#e7cb86")))
 	else: info.add_child(UIFactory.label("LOCKED · claim an adjacent territory first",13,Color("#a47777")))
