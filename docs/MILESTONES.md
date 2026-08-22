@@ -88,7 +88,9 @@
 - [x] City placement/building scene instead of management cards only
 - [x] Buildings selectable/upgradable directly from settlement scene
 - [x] Draggable Dawnkeep building layout with local persistence
-- [ ] Quests/contracts
+- [x] First quests/contracts layer: persistent Frontier Contract Board
+- [x] Contract families for kills, claims, victories, bosses, gear, Gold and Threat progression
+- [x] Optional contract rewards, Renown payout and Gold board-refresh sink
 - [ ] Onboarding
 - [x] M1 Fun Pass 1 Godot 4.7.2 parse validation
 - [x] M1 Fun Pass 1 headless main-scene smoke validation
@@ -102,6 +104,9 @@
 - [x] Dawnkeep Scene Pass Godot 4.7.2 parse validation
 - [x] Dawnkeep Scene Pass headless main-scene smoke validation
 - [x] Dawnkeep Scene Pass Web export validation
+- [x] Frontier Contracts Pass Godot 4.7.2 parse validation
+- [x] Frontier Contracts Pass headless main-scene smoke validation
+- [x] Frontier Contracts Pass Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth
