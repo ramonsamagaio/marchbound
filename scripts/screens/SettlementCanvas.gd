@@ -38,19 +38,19 @@ func _on_game_state_changed() -> void:
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		var mouse := event.position
+		var mouse:Vector2 = event.position
 		if dragging_id != "":
 			positions[dragging_id] = _clamp_position(mouse - drag_offset)
 			queue_redraw()
 			accept_event()
 			return
-		var next_hover := _building_at(mouse)
+		var next_hover:String = _building_at(mouse)
 		if next_hover != hover_id:
 			hover_id = next_hover
 			queue_redraw()
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
-			var id := _building_at(event.position)
+			var id:String = _building_at(event.position)
 			if id != "":
 				selected_id = id
 				dragging_id = id
@@ -69,8 +69,8 @@ func _building_at(point: Vector2) -> String:
 	var best := ""
 	var best_distance := 99999.0
 	for id in BUILDING_IDS:
-		var p := Vector2(positions[id])
-		var d := p.distance_to(point)
+		var p:Vector2 = Vector2(positions[id])
+		var d:float = p.distance_to(point)
 		if d < 48.0 and d < best_distance:
 			best = id
 			best_distance = d
@@ -84,7 +84,7 @@ func _load_layout() -> void:
 	if cfg.load(LAYOUT_PATH) != OK:
 		return
 	for id in BUILDING_IDS:
-		var value = cfg.get_value("buildings",id,null)
+		var value:Variant = cfg.get_value("buildings",id,null)
 		if value is Vector2:
 			positions[id] = value
 
@@ -114,34 +114,32 @@ func _draw_land() -> void:
 	draw_rect(Rect2(Vector2.ZERO,size),Color("#26382c"))
 	for y in range(26,int(size.y),52):
 		for x in range(26,int(size.x),52):
-			var wobble := float(abs(hash("%d:%d"%[x,y]))%9)-4.0
+			var wobble:float = float(abs(hash("%d:%d"%[x,y]))%9)-4.0
 			draw_circle(Vector2(x+wobble,y),2.0,Color("#3d5140"))
-	# river / moat edge
 	var river := PackedVector2Array([Vector2(0,50),Vector2(95,63),Vector2(175,48),Vector2(245,68),Vector2(318,55),Vector2(390,68),Vector2(470,54),Vector2(555,70),Vector2(640,53),Vector2(size.x,70)])
 	for i in range(river.size()-1):
 		draw_line(river[i],river[i+1],Color("#334d56"),16.0)
 		draw_line(river[i],river[i+1],Color("#496873"),3.0)
-	# palisade hints
 	draw_arc(Vector2(size.x*0.5,size.y*0.55),min(size.x,size.y)*0.43,PI*0.12,PI*0.88,42,Color("#6d5a3b"),3.0)
 
 func _draw_paths() -> void:
-	var center := Vector2(positions["town_hall"])
+	var center:Vector2 = Vector2(positions["town_hall"])
 	for id in BUILDING_IDS:
 		if id == "town_hall":
 			continue
-		var p := Vector2(positions[id])
+		var p:Vector2 = Vector2(positions[id])
 		var mid := Vector2((center.x+p.x)*0.5,center.y)
 		draw_polyline(PackedVector2Array([center,mid,p]),Color("#776d55"),9.0,true)
 		draw_polyline(PackedVector2Array([center,mid,p]),Color("#a0916d"),2.0,true)
 
 func _draw_building(id:String,p:Vector2,level:int,is_selected:bool,is_hover:bool) -> void:
-	var built := level > 0
-	var scale_bonus := 1.0 + min(level,8)*0.025
-	var wall := Color("#b7a27c") if built else Color("#5c615c")
-	var roof := Color("#76514a") if built else Color("#4a4e4c")
-	var accent := _accent(id)
-	var shadow_size := Vector2(70,34)*scale_bonus
-	draw_ellipse(p+Vector2(2,22),shadow_size,Color(0,0,0,0.28))
+	var built:bool = level > 0
+	var scale_bonus:float = 1.0 + float(min(level,8))*0.025
+	var wall:Color = Color("#b7a27c") if built else Color("#5c615c")
+	var roof:Color = Color("#76514a") if built else Color("#4a4e4c")
+	var accent:Color = _accent(id)
+	var shadow_size:Vector2 = Vector2(70,34)*scale_bonus
+	_draw_flat_ellipse(p+Vector2(2,22),shadow_size,Color(0,0,0,0.28))
 	if is_hover or is_selected:
 		draw_arc(p,49.0,0,TAU,34,Color("#e7ce86") if is_selected else Color("#b8c8a5"),3.0)
 	match id:
@@ -156,13 +154,13 @@ func _draw_building(id:String,p:Vector2,level:int,is_selected:bool,is_hover:bool
 	if not built:
 		draw_rect(Rect2(p+Vector2(-28,22),Vector2(56,7)),Color("#80755f"),false,2.0)
 		draw_line(p+Vector2(-26,26),p+Vector2(24,-24),Color("#a79676"),3.0)
-	var label := "%s  Lv.%d" % [_short_name(id),level]
+	var label:String = "%s  Lv.%d" % [_short_name(id),level]
 	draw_string(ThemeDB.fallback_font,p+Vector2(-38,48),label,HORIZONTAL_ALIGNMENT_CENTER,76,12,Color("#e9dfc3"))
 
-func draw_ellipse(center:Vector2,radii:Vector2,color:Color) -> void:
+func _draw_flat_ellipse(center:Vector2,radii:Vector2,color:Color) -> void:
 	var pts := PackedVector2Array()
 	for i in 24:
-		var a := TAU*float(i)/24.0
+		var a:float = TAU*float(i)/24.0
 		pts.append(center+Vector2(cos(a)*radii.x*0.5,sin(a)*radii.y*0.5))
 	draw_colored_polygon(pts,color)
 
@@ -181,14 +179,14 @@ func _draw_town_hall(p:Vector2,wall:Color,roof:Color,accent:Color,s:float) -> vo
 func _draw_lumberyard(p:Vector2,wall:Color,roof:Color,accent:Color) -> void:
 	_draw_house(p+Vector2(12,-4),wall,roof,48,30)
 	for i in 3:
-		var y := 8.0+i*7.0
+		var y:float = 8.0+i*7.0
 		draw_line(p+Vector2(-34,y),p+Vector2(-5,y-3),accent,6.0)
 		draw_circle(p+Vector2(-34,y),3.0,accent.lightened(0.18))
 
 func _draw_quarry(p:Vector2,accent:Color) -> void:
 	for off in [Vector2(-20,8),Vector2(4,-9),Vector2(24,11),Vector2(-2,16)]:
-		var q := p+off
-		draw_colored_polygon(PackedVector2Array([q+Vector2(-12,8),q+Vector2(-8,-7),q+Vector2(2,-13),q+Vector2(12,-3),q+Vector2(10,10)]),accent.darkened(0.15+off.y*0.002))
+		var q:Vector2 = p+Vector2(off)
+		draw_colored_polygon(PackedVector2Array([q+Vector2(-12,8),q+Vector2(-8,-7),q+Vector2(2,-13),q+Vector2(12,-3),q+Vector2(10,10)]),accent.darkened(0.15+Vector2(off).y*0.002))
 	draw_line(p+Vector2(22,-20),p+Vector2(35,-38),Color("#9c865f"),4.0)
 	draw_line(p+Vector2(35,-38),p+Vector2(44,-29),Color("#9c865f"),4.0)
 
@@ -215,14 +213,14 @@ func _draw_arcane(p:Vector2,wall:Color,roof:Color,accent:Color) -> void:
 	draw_circle(p,25,Color(accent,0.10))
 	_draw_house(p+Vector2(0,5),wall.darkened(0.08),roof.darkened(0.15),42,34)
 	for off in [Vector2(-24,-16),Vector2(0,-40),Vector2(24,-16)]:
-		var q := p+off
+		var q:Vector2 = p+Vector2(off)
 		draw_colored_polygon(PackedVector2Array([q+Vector2(0,-11),q+Vector2(7,2),q+Vector2(2,13),q+Vector2(-6,4)]),accent)
 
 func _draw_market(p:Vector2,accent:Color) -> void:
 	for off in [Vector2(-23,0),Vector2(20,3),Vector2(0,-18)]:
-		var q := p+off
+		var q:Vector2 = p+Vector2(off)
 		draw_rect(Rect2(q+Vector2(-14,0),Vector2(28,18)),Color("#bca77d"))
-		draw_colored_polygon(PackedVector2Array([q+Vector2(-17,0),q+Vector2(-10,-12),q+Vector2(10,-12),q+Vector2(17,0)]),accent if off.x<=0 else accent.lightened(0.12))
+		draw_colored_polygon(PackedVector2Array([q+Vector2(-17,0),q+Vector2(-10,-12),q+Vector2(10,-12),q+Vector2(17,0)]),accent if Vector2(off).x<=0 else accent.lightened(0.12))
 		draw_line(q+Vector2(-12,18),q+Vector2(-12,25),Color("#6b5b41"),2.0)
 		draw_line(q+Vector2(12,18),q+Vector2(12,25),Color("#6b5b41"),2.0)
 
