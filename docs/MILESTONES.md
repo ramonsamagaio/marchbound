@@ -84,6 +84,8 @@
 - [x] First resource nodes / extraction interactions
 - [x] 3+ meaningful run-build directions through 12 stackable Field Doctrines
 - [x] Persistent Warden talent progression with six branches and Talent Points on level-up
+- [x] Player-selected expedition risk stances: Standard / Prospector / Blood Oath
+- [x] Risk stance integrates with effective Threat, resource richness and existing reward scaling
 - [ ] First unit evolution choices
 - [x] City placement/building scene instead of management cards only
 - [x] Buildings selectable/upgradable directly from settlement scene
@@ -107,6 +109,9 @@
 - [x] Frontier Contracts Pass Godot 4.7.2 parse validation
 - [x] Frontier Contracts Pass headless main-scene smoke validation
 - [x] Frontier Contracts Pass Web export validation
+- [x] Risk Stance Pass Godot 4.7.2 parse validation
+- [x] Risk Stance Pass headless main-scene smoke validation
+- [x] Risk Stance Pass Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth
