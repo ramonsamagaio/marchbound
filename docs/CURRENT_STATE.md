@@ -9,7 +9,7 @@
 
 ## Playable loop now
 
-`Dawnkeep → choose/upgrade army + Warden build → inspect Contracts → choose reachable frontier tile → choose risk stance → objective expedition → harvest + Momentum + boss → loot/claim → equip/forge/build/research → collect Contracts → push farther`
+`Dawnkeep → choose/upgrade army + Warden build → train/evolve unit families → inspect Contracts → choose reachable frontier tile → choose risk stance → objective expedition → harvest + Momentum + boss → loot/claim → equip/forge/build/research → collect Contracts → push farther`
 
 The design target remains: **the player should keep inventing a reason to play one more expedition.**
 
@@ -44,6 +44,7 @@ The design target remains: **the player should keep inventing a reason to play o
 - biome-weighted harvest nodes inside combat;
 - 12 stackable Field Doctrines creating multiple run-build directions;
 - crit/lifesteal/arc/army/dash/etc build hooks;
+- first unit-evolution combat layer with branch-specific range, cadence, damage, sustain and army-support behavior;
 - impact feedback, floating text and screen shake;
 - browser-minded active-entity caps.
 
@@ -52,7 +53,9 @@ The design target remains: **the player should keep inventing a reason to play o
 - Warden XP and levels;
 - six Warden Talent branches;
 - Command capacity progression;
-- four base unit types and unit ranks;
+- four base unit families and unit ranks;
+- permanent first-tier unit evolutions unlocked at Rank 3;
+- eight evolution branches with two choices per unit family;
 - settlement buildings and upgrades;
 - six research branches;
 - passive and offline economy;
@@ -63,6 +66,28 @@ The design target remains: **the player should keep inventing a reason to play o
 - Renown and Frontier Season prestige scaffold;
 - NPC Marketplace proof;
 - persistent optional Frontier Contract Board.
+
+## Unit evolution — current first tier
+
+The first permanent branch unlocks when a base unit family reaches **Rank 3**. Current pre-alpha choices do not have respec yet.
+
+### Militia
+- **Vanguard** — boss breaker. Stronger attacks with a large bonus against guardians/regional bosses.
+- **Shieldwall** — Warden guard. Deployed Militia reduce incoming Warden damage and gain a smaller damage increase.
+
+### Archer
+- **Ranger** — mobile pressure. Much faster attacks and longer range with a minor per-shot damage tradeoff.
+- **Longbow** — heavy ranged damage. Very long range and much stronger individual shots at a slower cadence.
+
+### War Wolf
+- **Dire Wolf** — executioner. Higher/faster damage with a large bonus against wounded targets.
+- **Pack Alpha** — army amplifier. Stronger wolves and a global army-damage buff while wolves are deployed.
+
+### Mage
+- **Stormcaller** — chain damage. Primary attacks arc into nearby targets.
+- **Lifebinder** — sustain support. Faster casts with reduced damage; successful attacks heal the Warden.
+
+Evolution choices are stored inside the existing player save dictionary under `unit_evolutions`, allowing old saves to receive the schema lazily instead of requiring a destructive reset.
 
 ## Frontier Contracts
 
@@ -109,7 +134,7 @@ The following major passes have each completed all three CI gates with Godot 4.7
 - headless main-scene smoke run;
 - Web export.
 
-Validated passes include the objective frontier loop, M1 combat/talent/enemy pass, gear-affix pass, regional-boss pass, interactive Dawnkeep pass, Frontier Contracts pass and expedition risk-stance pass.
+Validated passes include the objective frontier loop, M1 combat/talent/enemy pass, gear-affix pass, regional-boss pass, interactive Dawnkeep pass, Frontier Contracts pass, expedition risk-stance pass and the first unit-evolution pass.
 
 ## Architecture direction
 
@@ -127,11 +152,11 @@ Planned online phase:
 
 ## Highest-priority next passes
 
-1. **First unit evolution branches** so army composition gains Pokémon/Heroes-like long-term identity beyond rank numbers.
-2. **Named equipment families / 20+ authored loot identities** on top of the affix generator.
-3. **Onboarding** that teaches the loop without turning the first session into a tutorial prison.
-4. **Public browser preview URL + Chrome persistence/performance validation.**
-5. **Visual Bible v1 + approved body base + first modular armor set**, then replace procedural/placeholder visuals strategically.
+1. **Named equipment families / 20+ authored loot identities** on top of the affix generator so drops become memorable objects rather than mainly procedural stat packages.
+2. **Onboarding** that teaches Dawnkeep → Warband → World → Expedition → return loop without turning the first session into a tutorial prison.
+3. **Public browser preview URL + Chrome persistence/performance validation.**
+4. **Visual Bible v1 + approved body base + first modular armor set**, then replace procedural/placeholder visuals strategically.
+5. **Second-tier unit evolution / monster recruitment design**, once the first evolution choices have been playtested.
 6. First Supabase-backed account/profile/cloud-save slice after the local loop is judged fun.
 
 ## Rule for future updates
