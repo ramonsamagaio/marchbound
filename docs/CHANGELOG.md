@@ -25,3 +25,17 @@
 - Added Momentum kill chains: fast consecutive kills raise temporary Warden/army damage and every 10-kill chain pays an extra Gold reward.
 - Expedition result screen now reports harvested sites, best Momentum and whether the territory was newly claimed.
 - Settlement summary now surfaces claimed-territory count, highest conquered threat and Renown.
+
+## 2026-08-22 — Objective-Driven Frontier Pass
+- World tiles now deterministically advertise an expedition objective before the player commits.
+- Added four initial objective flows: **Frontier Claim**, **Monster Hunt**, **Resource Sweep** and **Ruin Siege**.
+- Frontier Claim uses survival pressure before the guardian appears.
+- Monster Hunt requires aggressive kill progression, adds extra enemy pressure and rewards bonus Gold/XP.
+- Resource Sweep requires active harvesting/movement and rewards extra construction materials.
+- Ruin Siege spawns an early guardian with increased health/damage and improved high-rarity equipment odds plus Gold/Mana rewards.
+- Objective-specific fail-safe timers prevent stalled or unwinnable runs.
+- Expedition HUD now exposes live objective progress and clearly signals when the guardian becomes active.
+- Result screens identify the objective alongside kills, XP, harvesting, Momentum and loot.
+- Refreshed the first-playtest guide around the new loop: Dawnkeep → reachable frontier → objective → guardian → claim → spend → push farther.
+- Revalidated the current build in GitHub Actions using Godot 4.7.2: project parse passed, headless main-scene smoke test passed and Web export passed.
+- Validation PR #4 was merged; obsolete validation PR #3 was closed.
