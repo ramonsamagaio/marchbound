@@ -88,6 +88,22 @@ func _kill_enemy(e:Dictionary) -> void:
 	if xp_mult>1.0 and xp_delta>0:
 		xp+=int(round(float(xp_delta)*(xp_mult-1.0)))
 
+func _roll_wild_bond(victory:bool,threat:int) -> String:
+	if not victory:
+		return ""
+	var id:String = MonsterRoster.id_for_biome(String(tile.get("biome","Greenlands")))
+	if id == "" or GameState.monster_unlocked(id):
+		return ""
+	if boss_killed and bool(tile.get("boss",false)):
+		return id
+	var chance:float = 0.12 + float(elite_kills)*0.025 + float(threat)*0.008
+	if objective == "Monster Hunt":
+		chance += 0.08
+	if "elite_hunt" in mutation_ids:
+		chance += 0.08
+	chance = min(0.48,chance)
+	return id if rng.randf() < chance else ""
+
 func _finish(victory:bool) -> void:
 	if ended:
 		return
@@ -109,4 +125,5 @@ func _finish(victory:bool) -> void:
 		item=generate_loot_item(threat)
 	var bonus_xp=objective_xp+(80*threat if victory else 0)
 	bonus_xp=int(round(float(bonus_xp)*float(mutation_fx.get("xp",1.0))))
-	finished.emit({"victory":victory,"kills":kills,"elite_kills":elite_kills,"xp":xp+bonus_xp,"loot":loot.duplicate(true),"threat":threat,"boss_killed":boss_killed,"boss_name":boss_name if bool(tile.get("boss",false)) else "Frontier Guardian","boss_archetype":boss_archetype,"item":item,"nodes_collected":nodes_collected,"nodes_total":resource_nodes.size(),"best_combo":best_combo,"objective":objective,"objective_progress":_objective_progress(),"objective_target":objective_target,"mutations":mutation_ids.duplicate(true)})
+	var wild_bond:String = _roll_wild_bond(victory,threat)
+	finished.emit({"victory":victory,"kills":kills,"elite_kills":elite_kills,"xp":xp+bonus_xp,"loot":loot.duplicate(true),"threat":threat,"boss_killed":boss_killed,"boss_name":boss_name if bool(tile.get("boss",false)) else "Frontier Guardian","boss_archetype":boss_archetype,"item":item,"nodes_collected":nodes_collected,"nodes_total":resource_nodes.size(),"best_combo":best_combo,"objective":objective,"objective_progress":_objective_progress(),"objective_target":objective_target,"mutations":mutation_ids.duplicate(true),"wild_bond":wild_bond})
