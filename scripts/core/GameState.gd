@@ -32,9 +32,44 @@ func reset_new_game(emit_signal := true) -> void:
 	equipped = {"weapon":"","helm":"","shoulders":"","chest":"","gloves":"","belt":"","legs":"","boots":"","cape":""}
 	for item in inventory:
 		if item.slot in ["weapon","chest","boots"]: equipped[item.slot] = item.uid
-	world = {"seed":947213,"day":1,"frontier_depth":1,"highest_threat":1,"selected_tile":{},"season":1}
-	stats = {"expeditions":0,"victories":0,"defeats":0,"kills":0,"bosses":0,"gold_earned":0.0,"items_found":0}
+	world = {"seed":947213,"day":1,"frontier_depth":1,"highest_threat":1,"selected_tile":{},"season":1,"focus_x":0,"focus_y":0,"conquered":{"0:0":true}}
+	stats = {"expeditions":0,"victories":0,"defeats":0,"kills":0,"bosses":0,"gold_earned":0.0,"items_found":0,"territories_claimed":1}
 	if emit_signal: changed.emit()
+
+func ensure_schema() -> void:
+	if not world.has("focus_x"): world["focus_x"] = 0
+	if not world.has("focus_y"): world["focus_y"] = 0
+	if not world.has("conquered") or typeof(world["conquered"]) != TYPE_DICTIONARY:
+		world["conquered"] = {"0:0":true}
+	if not world["conquered"].has("0:0"): world["conquered"]["0:0"] = true
+	if not stats.has("territories_claimed"): stats["territories_claimed"] = world["conquered"].size()
+
+func tile_key(x:int, y:int) -> String:
+	return "%d:%d" % [x,y]
+
+func is_conquered(x:int, y:int) -> bool:
+	ensure_schema()
+	return bool(world["conquered"].get(tile_key(x,y), false))
+
+func is_accessible(x:int, y:int) -> bool:
+	if is_conquered(x,y): return true
+	for dir in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+		if is_conquered(x+dir.x,y+dir.y): return true
+	return false
+
+func claim_tile(tile:Dictionary) -> bool:
+	if tile.is_empty(): return false
+	ensure_schema()
+	var key = tile_key(int(tile.get("x",0)),int(tile.get("y",0)))
+	if world["conquered"].has(key): return false
+	world["conquered"][key] = true
+	stats["territories_claimed"] = int(stats.get("territories_claimed",1)) + 1
+	changed.emit()
+	return true
+
+func claimed_count() -> int:
+	ensure_schema()
+	return world["conquered"].size()
 
 func make_item(name:String, slot:String, rarity:String, power:int, bonuses:={}) -> Dictionary:
 	var uid = "%s_%s_%s" % [slot, Time.get_ticks_msec(), randi_range(100,999)]
@@ -163,10 +198,24 @@ func add_xp(amount:int) -> void:
 
 func expedition_completed(result:Dictionary) -> void:
 	stats.expeditions += 1; stats.kills += int(result.get("kills",0))
+	var threat = int(result.get("threat",1))
 	if result.get("victory",false):
-		stats.victories += 1; world.highest_threat=max(int(world.highest_threat),int(result.get("threat",1))); player.renown += int(result.get("threat",1))*2
+		stats.victories += 1; world.highest_threat=max(int(world.highest_threat),threat); player.renown += threat*2
 		if result.get("boss_killed",false): stats.bosses += 1; player.renown += 5
-	else: stats.defeats += 1
+		var first_claim = claim_tile(world.get("selected_tile",{}))
+		result["territory_claimed"] = first_claim
+		if first_claim:
+			var tile = world.get("selected_tile",{})
+			var richness = int(tile.get("richness",1))
+			var claim_loot = result.get("loot",{}).duplicate(true)
+			claim_loot["gold"] = float(claim_loot.get("gold",0.0)) + 35.0*threat
+			claim_loot["wood"] = float(claim_loot.get("wood",0.0)) + 4.0*richness
+			claim_loot["stone"] = float(claim_loot.get("stone",0.0)) + 3.0*richness
+			result["loot"] = claim_loot
+			toast_requested.emit("Frontier claimed! New adjacent territories are now reachable.")
+	else:
+		stats.defeats += 1
+		result["territory_claimed"] = false
 	add_resources(result.get("loot",{})); add_xp(int(result.get("xp",0)))
 	if result.has("item") and not result.item.is_empty(): add_item(result.item)
 	changed.emit()
@@ -175,11 +224,12 @@ func prestige_requirement() -> int: return 3000+int(world.season)*1800
 func can_advance_season() -> bool: return int(player.renown)>=prestige_requirement() and int(world.highest_threat)>=8+int(world.season)*2
 func advance_season() -> void:
 	if not can_advance_season(): toast_requested.emit("Conquer deeper threats and earn more Renown first."); return
-	world.season += 1; world.frontier_depth += 1; world.seed=randi(); player.renown=int(player.renown*0.35); resources.gold += 500*world.season; toast_requested.emit("A new Frontier Season begins. The world grows harsher."); changed.emit()
+	world.season += 1; world.frontier_depth += 1; world.seed=randi(); world.focus_x=0; world.focus_y=0; world.conquered={"0:0":true}; player.renown=int(player.renown*0.35); resources.gold += 500*world.season; stats.territories_claimed=1; toast_requested.emit("A new Frontier Season begins. The frontier is reborn and harsher."); changed.emit()
 func pretty(value:String) -> String: return value.replace("_"," ").capitalize()
 func to_dict() -> Dictionary: return {"resources":resources,"player":player,"army":army,"unit_levels":unit_levels,"buildings":buildings,"tech":tech,"inventory":inventory,"equipped":equipped,"world":world,"stats":stats,"market_seed":market_seed}
 func from_dict(data:Dictionary) -> void:
 	for key in ["resources","player","army","unit_levels","buildings","tech","inventory","equipped","world","stats"]:
 		if data.has(key): set(key,data[key])
 	if data.has("market_seed"): market_seed=int(data.market_seed)
+	ensure_schema()
 	changed.emit()
