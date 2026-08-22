@@ -9,7 +9,7 @@
 
 ## Playable loop now
 
-`Dawnkeep → choose/upgrade army + Warden build → train/evolve unit families → inspect Contracts → choose reachable frontier tile → choose risk stance → objective expedition → harvest + Momentum + boss → loot/claim → equip/forge/build/research → collect Contracts → push farther`
+`Dawnkeep → choose/upgrade army + Warden build → train/evolve unit families → inspect Contracts → choose reachable frontier tile → choose risk stance → objective expedition → harvest + Momentum + boss → regional loot/claim → equip/set-build/forge/build/research → collect Contracts → push farther`
 
 The design target remains: **the player should keep inventing a reason to play one more expedition.**
 
@@ -45,6 +45,7 @@ The design target remains: **the player should keep inventing a reason to play o
 - 12 stackable Field Doctrines creating multiple run-build directions;
 - crit/lifesteal/arc/army/dash/etc build hooks;
 - first unit-evolution combat layer with branch-specific range, cadence, damage, sustain and army-support behavior;
+- regional equipment set bonuses feed back into combat, harvesting, movement and army performance;
 - impact feedback, floating text and screen shake;
 - browser-minded active-entity caps.
 
@@ -60,12 +61,29 @@ The design target remains: **the player should keep inventing a reason to play o
 - six research branches;
 - passive and offline economy;
 - local save persistence;
-- procedural gear drops;
-- rarity-scaled slot-specific affixes;
+- procedural gear power/rarity and slot-specific affixes;
+- six biome-bound equipment families with 54 authored item identities;
+- 2pc / 4pc set bonuses;
+- boss provenance on qualifying high-rarity drops;
 - equipment comparison and Forge upgrades;
 - Renown and Frontier Season prestige scaffold;
 - NPC Marketplace proof;
 - persistent optional Frontier Contract Board.
+
+## Regional equipment families
+
+Every MVP biome now owns a recognizable equipment family. A generated drop keeps procedural Power/rarity/affixes, but receives an authored regional identity and can contribute to set bonuses.
+
+- **Greenlands — Dawnward:** command/army identity. 2pc gives army damage; 4pc improves army attack cadence.
+- **Ancient Forest — Briarbound:** gathering/mobility identity. 2pc improves harvest yield; 4pc improves movement.
+- **Iron Hills — Deepforge:** durability identity. 2pc increases max HP; 4pc reduces incoming damage.
+- **Mistfen — Mireglass:** sustain identity. 2pc grants lifesteal; 4pc adds more lifesteal.
+- **Ash Wastes — Cinderborn:** aggression identity. 2pc adds critical chance; 4pc increases Warden damage.
+- **Frostwild — Rimebound:** evasive mobility identity. 2pc shortens dash cooldown; 4pc improves movement.
+
+Each family currently has authored names for weapon, helm, shoulders, chest, gloves, belt, legs, boots and cape, producing **54 named regional item identities** before procedural affix combinations. Epic/Legendary equipment from named regional bosses may also carry boss provenance in the displayed name.
+
+Inventory exposes family lore, current equipped-piece count, 2pc/4pc bonus state and active set summary. This makes biome choice part of build planning instead of only resource geography.
 
 ## Unit evolution — current first tier
 
@@ -134,7 +152,7 @@ The following major passes have each completed all three CI gates with Godot 4.7
 - headless main-scene smoke run;
 - Web export.
 
-Validated passes include the objective frontier loop, M1 combat/talent/enemy pass, gear-affix pass, regional-boss pass, interactive Dawnkeep pass, Frontier Contracts pass, expedition risk-stance pass and the first unit-evolution pass.
+Validated passes include the objective frontier loop, M1 combat/talent/enemy pass, gear-affix pass, regional-boss pass, interactive Dawnkeep pass, Frontier Contracts pass, expedition risk-stance pass, first unit-evolution pass and regional-loot-families pass.
 
 ## Architecture direction
 
@@ -152,12 +170,12 @@ Planned online phase:
 
 ## Highest-priority next passes
 
-1. **Named equipment families / 20+ authored loot identities** on top of the affix generator so drops become memorable objects rather than mainly procedural stat packages.
-2. **Onboarding** that teaches Dawnkeep → Warband → World → Expedition → return loop without turning the first session into a tutorial prison.
-3. **Public browser preview URL + Chrome persistence/performance validation.**
-4. **Visual Bible v1 + approved body base + first modular armor set**, then replace procedural/placeholder visuals strategically.
-5. **Second-tier unit evolution / monster recruitment design**, once the first evolution choices have been playtested.
-6. First Supabase-backed account/profile/cloud-save slice after the local loop is judged fun.
+1. **Onboarding / First March** that teaches the real loop through rewarded goals without a modal tutorial prison.
+2. **Public browser preview URL + Chrome persistence/performance validation.**
+3. **Visual Bible v1 + approved body base + first modular armor set**, then replace procedural/placeholder visuals strategically.
+4. **Second-tier unit evolution / monster recruitment design**, once the first evolution choices have been playtested.
+5. First Supabase-backed account/profile/cloud-save slice after the local loop is judged fun.
+6. Deeper itemization later: unique boss relics, regional crafting and set-targeting systems.
 
 ## Rule for future updates
 
