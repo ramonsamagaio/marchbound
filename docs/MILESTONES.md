@@ -31,12 +31,14 @@
 - [x] Functional procedural paper-doll preview
 - [x] Marketplace concept with NPC listings
 - [x] Renown / Frontier Season long-game hook
-- [ ] Parse/runtime validation in Godot 4.7.2
+- [x] Parse validation in Godot 4.7.2
+- [x] Main-scene headless smoke run
 - [ ] First user playtest + balance pass
 
 ### M0.2 Browser build
-- [ ] Web export validated in Chrome
-- [ ] Deployment workflow
+- [x] Web export generated successfully in CI
+- [x] Automatic GitHub Actions build workflow
+- [ ] Web build validated interactively in Chrome
 - [ ] Public preview URL
 - [ ] Browser save persistence verified
 - [ ] Input/focus/fullscreen UX checked
