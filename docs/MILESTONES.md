@@ -100,7 +100,9 @@
 - [x] First quests/contracts layer: persistent Frontier Contract Board
 - [x] Contract families for kills, claims, victories, bosses, gear, Gold and Threat progression
 - [x] Optional contract rewards, Renown payout and Gold board-refresh sink
-- [ ] Onboarding
+- [x] First March onboarding ribbon with four rewarded gameplay goals
+- [x] First March persists in the main save and disappears after completion
+- [x] First March final reward introduces regional set gear
 - [x] M1 Fun Pass 1 Godot 4.7.2 parse validation
 - [x] M1 Fun Pass 1 headless main-scene smoke validation
 - [x] M1 Fun Pass 1 Web export validation
@@ -125,6 +127,9 @@
 - [x] Regional Loot Families Pass Godot 4.7.2 parse validation
 - [x] Regional Loot Families Pass headless main-scene smoke validation
 - [x] Regional Loot Families Pass Web export validation
+- [x] First March Pass Godot 4.7.2 parse validation
+- [x] First March Pass headless main-scene smoke validation
+- [x] First March Pass Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth
