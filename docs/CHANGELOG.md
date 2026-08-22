@@ -1,18 +1,18 @@
-# MARCHBOUND — Changelog
+# MARCHBOUND - Changelog
 
-## 2026-08-22 — Project Start / MVP Foundation
+## 2026-08-22 - Project Start / MVP Foundation
 - Name locked as **MARCHBOUND**.
 - Project officially initiated.
 - Established living documentation requirement so project decisions are not lost.
 - Defined game as browser-first persistent fantasy strategy/action RPG.
 - Locked core reference layering: Heroes of Might & Magic + Necesse + Vampire Survivors + Tribal Wars + simplified RimWorld + Pokémon-like army capacity/progression.
-- Locked strong-loop mandate: Settlement → Army → World Tile → Expedition → Loot → Progress → Harder Frontier.
+- Locked strong-loop mandate: Settlement -> Army -> World Tile -> Expedition -> Loot -> Progress -> Harder Frontier.
 - Locked near-infinite progression mandate.
 - Chosen technical direction: Godot/GDScript/Compatibility, GitHub, later Supabase authoritative backend.
 - Implemented initial broad MVP code foundation covering settlement, economy, research, army, world, action expedition, boss, run upgrades, equipment, inventory, marketplace concept, save and Frontier Seasons.
 - Visual paper-doll placeholder is intentionally a functional layered rig preview, not final art.
 
-## 2026-08-22 — Frontier Conquest / Combat Loop Pass
+## 2026-08-22 - Frontier Conquest / Combat Loop Pass
 - Replaced the finite-feeling world grid with a pannable window over global world coordinates.
 - Dawnkeep is fixed at world coordinate `[0,0]`.
 - Territories now persist as claimed state in the save game.
@@ -26,7 +26,7 @@
 - Expedition result screen now reports harvested sites, best Momentum and whether the territory was newly claimed.
 - Settlement summary now surfaces claimed-territory count, highest conquered threat and Renown.
 
-## 2026-08-22 — Objective-Driven Frontier Pass
+## 2026-08-22 - Objective-Driven Frontier Pass
 - World tiles now deterministically advertise an expedition objective before the player commits.
 - Added four initial objective flows: **Frontier Claim**, **Monster Hunt**, **Resource Sweep** and **Ruin Siege**.
 - Frontier Claim uses survival pressure before the guardian appears.
@@ -36,11 +36,11 @@
 - Objective-specific fail-safe timers prevent stalled or unwinnable runs.
 - Expedition HUD now exposes live objective progress and clearly signals when the guardian becomes active.
 - Result screens identify the objective alongside kills, XP, harvesting, Momentum and loot.
-- Refreshed the first-playtest guide around the new loop: Dawnkeep → reachable frontier → objective → guardian → claim → spend → push farther.
+- Refreshed the first-playtest guide around the new loop: Dawnkeep -> reachable frontier -> objective -> guardian -> claim -> spend -> push farther.
 - Revalidated the current build in GitHub Actions using Godot 4.7.2: project parse passed, headless main-scene smoke test passed and Web export passed.
 - Validation PR #4 was merged; obsolete validation PR #3 was closed.
 
-## 2026-08-22 — M1 Fun Pass 1: Builds, Talents and Enemy Identity
+## 2026-08-22 - M1 Fun Pass 1: Builds, Talents and Enemy Identity
 - Added a persistent **Warden Talent** system. Every Warden level awards a Talent Point; new games begin with one point so build identity starts immediately.
 - Added six permanent talent branches: **Bladecraft** (damage), **Ironheart** (max HP), **Pathfinder** (movement), **Commander** (Command capacity), **Scavenger** (resource-site yield) and **Fortune** (gear-drop chance).
 - Added a dedicated Warden Growth / talent panel to the Warband screen so permanent progression and army construction live together.
@@ -57,7 +57,7 @@
 - Scavenger and Fortune talents are already connected to expedition calculations; Commander directly modifies Command capacity; Bladecraft, Ironheart and Pathfinder modify live combat stats.
 - M1 Fun Pass 1 passed Godot 4.7.2 project parsing, the headless main-scene smoke test and Web export in CI before merge.
 
-## 2026-08-22 — M1 Loot Identity / Gear Affix Pass
+## 2026-08-22 - M1 Loot Identity / Gear Affix Pass
 - Equipment drops now roll **rarity-scaled affixes** instead of functioning mainly as larger Item Power numbers.
 - Affix count scales by rarity: Common 0, Uncommon 1, Rare 2, Epic 3, Legendary 4.
 - Slots use different weighted affix pools so boots naturally favor mobility, weapons favor offense, shoulders/chest favor army/Command durability, and utility pieces can support harvest or Fortune builds.
@@ -70,7 +70,7 @@
 - Starter gear bonus keys were normalized to the same live-stat system used by generated affixes.
 - Gear Affix Pass passed Godot 4.7.2 project parsing, headless main-scene smoke test and Web export before documentation-only follow-up commits.
 
-## 2026-08-22 — M1 Regional Boss Pass
+## 2026-08-22 - M1 Regional Boss Pass
 - Ruin Siege tiles now expose a deterministic **named boss identity** before the expedition begins.
 - Added six named biome variants mapped to three mechanical archetypes: **Redfang Matriarch**, **Thorn Regent**, **Iron Colossus**, **Mire Oracle**, **Cinder Titan** and **White Maw**.
 - **Beast** bosses use telegraphed high-speed charge windows that reward dash timing and punish passive kiting.
@@ -83,7 +83,7 @@
 - Ordinary non-boss expedition guardians preserve the baseline radial-volley behavior, so regional bosses remain special rather than replacing every guardian.
 - Regional Boss Pass passed Godot 4.7.2 project parsing, headless main-scene smoke test and Web export before documentation-only follow-up commits.
 
-## 2026-08-22 — M1 Interactive Dawnkeep Pass
+## 2026-08-22 - M1 Interactive Dawnkeep Pass
 - Replaced the settlement's card-grid-first presentation with a visual top-down **Dawnkeep settlement canvas**.
 - Added eight procedural building silhouettes with distinct visual identities for Town Hall, Lumberyard, Quarry, Farmstead, Barracks, Forge, Arcane Lab and Trade Hall.
 - Roads connect the settlement back toward Town Hall so the city reads as a place rather than a menu.
@@ -93,7 +93,7 @@
 - The procedural settlement kit is explicitly temporary scaffolding for future authored visual assets, not the final art target.
 - Dawnkeep Scene Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
 
-## 2026-08-22 — M1 Frontier Contracts Pass
+## 2026-08-22 - M1 Frontier Contracts Pass
 - Added a persistent **Frontier Contract Board** as a parallel retention loop.
 - Players can carry up to three optional contracts at once.
 - Initial contract families track kills, new territory claims, expedition victories, guardian/boss kills, gear recovery, expedition Gold and reaching higher Threat.
@@ -102,7 +102,7 @@
 - Contract state persists locally while the online backend is not yet authoritative.
 - Frontier Contracts Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
 
-## 2026-08-22 — M1 Expedition Risk Stances Pass
+## 2026-08-22 - M1 Expedition Risk Stances Pass
 - Added a player-selected risk layer before entering reachable territories.
 - **Standard March** keeps the territory at its normal profile.
 - **Prospector's Route** raises effective Threat by 1 and resource richness by one tier, creating a deliberate farming-risk choice.
@@ -110,7 +110,7 @@
 - Existing Threat-scaled XP, Renown, loot and enemy/boss systems see the increased risk instead of the stance being only UI flavor.
 - Risk Stance Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
 
-## 2026-08-22 — M1 Unit Evolution Pass
+## 2026-08-22 - M1 Unit Evolution Pass
 - Added the first permanent unit-evolution tier, unlocked when a base unit family reaches **Rank 3**.
 - Added eight branches with two meaningful choices for each initial unit family.
 - Militia can become **Vanguard** (boss breaker) or **Shieldwall** (Warden protection).
@@ -123,7 +123,7 @@
 - The current pre-alpha deliberately has no evolution respec yet so the first balance pass can expose whether choices feel distinct enough.
 - Unit Evolution Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
 
-## 2026-08-22 — M1 Regional Loot Families Pass
+## 2026-08-22 - M1 Regional Loot Families Pass
 - Added six biome-bound equipment families so loot identity reflects **where the player fought**, not only rarity and affix rolls.
 - Families are **Dawnward** (Greenlands), **Briarbound** (Ancient Forest), **Deepforge** (Iron Hills), **Mireglass** (Mistfen), **Cinderborn** (Ash Wastes) and **Rimebound** (Frostwild).
 - Each family has authored names across all nine current equipment slots, producing **54 named regional item identities** before procedural affix combinations.
@@ -134,7 +134,7 @@
 - Biome selection therefore begins to participate in build planning and targeted loot pursuit, strengthening the reason to revisit regions.
 - Regional Loot Families Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
 
-## 2026-08-22 — M1 First March Onboarding Pass
+## 2026-08-22 - M1 First March Onboarding Pass
 - Added a compact **First March** ribbon to the normal game shell rather than a blocking modal tutorial.
 - The ribbon hides automatically during expeditions and permanently disappears once completed for that save.
 - Step 1, **Choose Your Oath**, asks the player to spend the first Talent Point and rewards 100 Gold + 80 Food.
@@ -145,3 +145,34 @@
 - Each step exposes an optional navigation shortcut but never locks free navigation.
 - First March progress persists inside the main player save and old saves receive the schema lazily.
 - First March Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
+
+## 2026-08-22 - M1 Frontier Mutations + CI Integrity Pass
+- Added six deterministic **Frontier Mutations** that make territories mechanically distinct beyond biome, Threat and objective.
+- **Swarming Brood** adds enemies per wave with slightly softer bodies and increased combat Gold.
+- **Frenzied Hunt** accelerates and strengthens enemies while increasing expedition XP.
+- **Ironhide Territory** substantially raises enemy HP and improves gear-drop odds.
+- **Marked by Elites** increases Elite frequency and improves combat Gold plus gear-drop odds.
+- **Rich Veins** adds harvest sites and increases resource yield.
+- **Arcane Storm** accelerates hostile projectiles, increases enemy damage and adds victory Mana plus gear-drop odds.
+- Threat 7+ territory can stack two mutations. Mutations stack with Standard March, Prospector's Route and Blood Oath.
+- World Map and expedition UI expose mutations before the player commits, turning them into route/farm/build decisions rather than invisible randomness.
+- Investigation of CI logs revealed that Godot 4.7.2 could print `SCRIPT ERROR` while still returning exit code 0, producing false-positive green workflow runs.
+- Fixed hidden script problems in `ContractManager`, `SettlementCanvas` and `PaperDoll`, including Variant inference warnings treated as errors.
+- Renamed custom ellipse helpers after Godot 4.7 introduced a native `CanvasItem.draw_ellipse()` method that collided with project helpers.
+- Hardened GitHub Actions to capture Godot logs and explicitly fail on script/autoload errors during parse, smoke or export.
+- Web validation now also requires a non-empty exported `build/web/index.html`.
+- Frontier Mutations Pass passed the new strict Godot 4.7.2 parse, smoke and Web export gates before PR #14 was merged.
+
+## 2026-08-22 - M1 Wild Bonds Pass
+- Added the first **Wild Bonds** collection/recruitment layer with one recruitable regional creature per MVP biome.
+- **Ridgeback** (Greenlands) executes wounded enemies; **Thornkin** (Ancient Forest) protects the Warden; **Stone Golem** (Iron Hills) is a heavy boss breaker; **Mire Leech** (Mistfen) restores Warden HP; **Ember Imp** (Ash Wastes) splashes ranged damage; **Frost Wisp** (Frostwild) provides fast long-range pressure.
+- Every creature has an authored Command cost, army Power value, damage, cadence, range and recruitment cost.
+- Normal expedition victory can form the local Wild Bond. Effective Threat and Elite kills improve the chance.
+- Monster Hunt and Marked by Elites territory provide additional discovery bonuses.
+- Defeating a named regional boss guarantees the local Wild Bond if it has not yet been discovered, preventing the system from becoming pure RNG.
+- The World Map marks undiscovered regional bonds with `♢` and exposes the creature's name, role and pursuit hint before the expedition.
+- Wild Bond IDs persist in the normal player save under `monster_unlocks`; old saves migrate lazily.
+- Unlocked creatures reuse the existing army and unit-rank data structures, so Command, recruitment, training, Power calculation, autosave and expedition deployment stay inside the established Warband architecture.
+- Warband UI now has a separate discovered-creature section with biome, role, quantity, Rank, Command cost and Recruit/Train actions.
+- Creature evolutions are deliberately deferred until the six first-tier identities have been playtested.
+- Wild Bonds Pass passed the hardened Godot 4.7.2 project parse, headless smoke and Web export gates before PR #15 was merged.
