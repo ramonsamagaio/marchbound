@@ -3,7 +3,7 @@
 ## M0 — The Loop Exists
 **Goal:** one sitting proves why the player wants another sitting.
 
-### M0.1 Broad MVP foundation — ACTIVE
+### M0.1 Broad MVP foundation — PLAYTEST READY
 - [x] Repository initialized
 - [x] Living project bible
 - [x] Godot project shell
@@ -65,19 +65,26 @@
 - [ ] Inventory/Inspect UI pass
 
 ## M1 — I Want One More Expedition
-- combat feel pass
-- hit feedback / sound / camera feedback
-- 3 biome-specific enemy families
-- 3 bosses
-- 20+ equipment pieces
-- gear affixes
-- [x] first explicit expedition objective variants besides survival
-- [x] first resource nodes / extraction interactions
-- 3 meaningful build archetypes
-- first unit evolution choices
-- city placement/building scene instead of management cards only
-- quests/contracts
-- onboarding
+- [x] First combat-feel pass: shake, floating feedback, crit callouts, elite callouts and clearer impacts
+- [ ] Sound / music / deeper camera feedback
+- [x] First biome-specific enemy families across all six MVP biomes
+- [x] Ranged enemy behavior and hostile projectiles
+- [x] Elite enemy variants with extra risk/reward
+- [x] Dash invulnerability timing / active evasion
+- [ ] 3 distinct regional bosses
+- [ ] 20+ equipment pieces
+- [ ] Gear affixes
+- [x] First explicit expedition objective variants besides survival
+- [x] First resource nodes / extraction interactions
+- [x] 3+ meaningful run-build directions through 12 stackable Field Doctrines
+- [x] Persistent Warden talent progression with six branches and Talent Points on level-up
+- [ ] First unit evolution choices
+- [ ] City placement/building scene instead of management cards only
+- [ ] Quests/contracts
+- [ ] Onboarding
+- [x] M1 Fun Pass 1 Godot 4.7.2 parse validation
+- [x] M1 Fun Pass 1 headless main-scene smoke validation
+- [x] M1 Fun Pass 1 Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth
