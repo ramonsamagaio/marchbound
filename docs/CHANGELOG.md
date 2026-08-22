@@ -39,3 +39,20 @@
 - Refreshed the first-playtest guide around the new loop: Dawnkeep → reachable frontier → objective → guardian → claim → spend → push farther.
 - Revalidated the current build in GitHub Actions using Godot 4.7.2: project parse passed, headless main-scene smoke test passed and Web export passed.
 - Validation PR #4 was merged; obsolete validation PR #3 was closed.
+
+## 2026-08-22 — M1 Fun Pass 1: Builds, Talents and Enemy Identity
+- Added a persistent **Warden Talent** system. Every Warden level awards a Talent Point; new games begin with one point so build identity starts immediately.
+- Added six permanent talent branches: **Bladecraft** (damage), **Ironheart** (max HP), **Pathfinder** (movement), **Commander** (Command capacity), **Scavenger** (resource-site yield) and **Fortune** (gear-drop chance).
+- Added a dedicated Warden Growth / talent panel to the Warband screen so permanent progression and army construction live together.
+- Expanded temporary Field Doctrines from six simple stat boosts to twelve stackable run-build choices including crit, lifesteal, arc damage, improved Shockwave, War Drums and faster dash recovery.
+- Added distinct enemy rosters for all six MVP biomes instead of drawing from one global enemy pool.
+- Added new enemy identities: Bramble, Golem, Leech, Imp and Frostling alongside the existing Raider, Slime, Wolf and Wisp archetypes.
+- Added behavior classes for melee, rush, tank and ranged enemies.
+- Added hostile ranged projectiles and guardian radial volleys, giving positioning and dodging more importance.
+- Dash now grants a brief invulnerability window, turning movement into active defense instead of pure relocation.
+- Added Elite enemy variants. Elites have stronger stats, a visible purple ring and enhanced Gold/XP rewards; elite kills slightly improve end-of-run rarity rolls.
+- Added impact feedback through screen shake, floating damage/crit/resource text, Momentum callouts, Elite Down and Guardian Broken callouts.
+- Added browser-minded hard caps for active enemies, friendly projectiles and hostile projectiles so density can rise without intentionally allowing runaway entity counts.
+- Biomes now also have lightweight procedural ground markings to improve battlefield identity before final art assets arrive.
+- Scavenger and Fortune talents are already connected to expedition calculations; Commander directly modifies Command capacity; Bladecraft, Ironheart and Pathfinder modify live combat stats.
+- M1 Fun Pass 1 passed Godot 4.7.2 project parsing, the headless main-scene smoke test and Web export in CI before merge.
