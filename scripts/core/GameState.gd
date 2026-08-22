@@ -26,7 +26,7 @@ func _ready() -> void:
 
 func reset_new_game(emit_signal := true) -> void:
 	resources = {"gold":620.0,"wood":260.0,"stone":180.0,"iron":95.0,"food":330.0,"mana":22.0}
-	player = {"name":"Warden","level":1,"xp":0,"xp_next":120,"hp_bonus":0.0,"damage_bonus":0.0,"command_base":12,"skill_points":1,"renown":0}
+	player = {"name":"Warden","level":1,"xp":0,"xp_next":120,"hp_bonus":0.0,"damage_bonus":0.0,"command_base":12,"skill_points":1,"renown":0,"monster_unlocks":[]}
 	army = {"militia":4,"archer":2,"wolf":1,"mage":0}
 	unit_levels = {"militia":1,"archer":1,"wolf":1,"mage":1}
 	buildings = {"town_hall":1,"lumberyard":1,"quarry":1,"farm":1,"barracks":1,"forge":0,"arcane_lab":0,"market":0}
@@ -38,7 +38,7 @@ func reset_new_game(emit_signal := true) -> void:
 		if item.slot in ["weapon","chest","boots"]:
 			equipped[item.slot] = item.uid
 	world = {"seed":947213,"day":1,"frontier_depth":1,"highest_threat":1,"selected_tile":{},"season":1,"focus_x":0,"focus_y":0,"conquered":{"0:0":true}}
-	stats = {"expeditions":0,"victories":0,"defeats":0,"kills":0,"bosses":0,"gold_earned":0.0,"items_found":0,"territories_claimed":1}
+	stats = {"expeditions":0,"victories":0,"defeats":0,"kills":0,"bosses":0,"gold_earned":0.0,"items_found":0,"territories_claimed":1,"wild_bonds":0}
 	if emit_signal:
 		changed.emit()
 
@@ -49,7 +49,18 @@ func ensure_schema() -> void:
 		world["conquered"] = {"0:0":true}
 	if not world["conquered"].has("0:0"): world["conquered"]["0:0"] = true
 	if not stats.has("territories_claimed"): stats["territories_claimed"] = world["conquered"].size()
+	if not stats.has("wild_bonds"): stats["wild_bonds"] = 0
 	if not player.has("skill_points"): player["skill_points"] = 0
+	if not player.has("monster_unlocks") or typeof(player.get("monster_unlocks",[])) != TYPE_ARRAY:
+		player["monster_unlocks"] = []
+	var clean_unlocks:Array[String] = []
+	for raw_id in player["monster_unlocks"]:
+		var monster_id:String = String(raw_id)
+		if MonsterRoster.has(monster_id) and monster_id not in clean_unlocks:
+			clean_unlocks.append(monster_id)
+			if not army.has(monster_id): army[monster_id] = 0
+			if not unit_levels.has(monster_id): unit_levels[monster_id] = 1
+	player["monster_unlocks"] = clean_unlocks
 	if typeof(talents) != TYPE_DICTIONARY:
 		talents = {}
 	for id in TALENT_ORDER:
@@ -61,6 +72,31 @@ func ensure_schema() -> void:
 		if not item.has("affixes") or typeof(item["affixes"]) != TYPE_ARRAY:
 			item["affixes"] = []
 		inventory[i] = item
+
+func monster_unlocked(id:String) -> bool:
+	ensure_schema()
+	return id in player["monster_unlocks"]
+
+func unlocked_monsters() -> Array[String]:
+	ensure_schema()
+	var result:Array[String] = []
+	for id in player["monster_unlocks"]:
+		result.append(String(id))
+	return result
+
+func unlock_monster(id:String) -> bool:
+	ensure_schema()
+	if not MonsterRoster.has(id) or monster_unlocked(id):
+		return false
+	var unlocks:Array = player["monster_unlocks"]
+	unlocks.append(id)
+	player["monster_unlocks"] = unlocks
+	army[id] = int(army.get(id,0))
+	unit_levels[id] = max(1,int(unit_levels.get(id,1)))
+	stats["wild_bonds"] = int(stats.get("wild_bonds",0))+1
+	toast_requested.emit("WILD BOND FORMED · %s can now join your Warband." % MonsterRoster.display_name(id))
+	changed.emit()
+	return true
 
 func talent_rank(id:String) -> int:
 	ensure_schema()
@@ -153,7 +189,9 @@ func command_capacity() -> int:
 	return int(player.command_base)+int(player.level)*2+int(tech.leadership)*4+int(buildings.town_hall)*2+talent_rank("commander")*2+int(round(equipped_bonus("command")))
 
 func unit_command_cost(unit:String) -> int:
-	return {"militia":1,"archer":2,"wolf":3,"mage":4}.get(unit,1)
+	if MonsterRoster.has(unit):
+		return MonsterRoster.command_cost(unit)
+	return int({"militia":1,"archer":2,"wolf":3,"mage":4}.get(unit,1))
 
 func command_used() -> int:
 	var used := 0
@@ -165,7 +203,8 @@ func army_power() -> int:
 	var base = {"militia":12,"archer":22,"wolf":31,"mage":48}
 	var total := 0
 	for unit in army:
-		total += int(army[unit]) * int(base.get(unit,10)) * int(unit_levels.get(unit,1))
+		var unit_power:int = MonsterRoster.power(String(unit)) if MonsterRoster.has(String(unit)) else int(base.get(unit,10))
+		total += int(army[unit]) * unit_power * int(unit_levels.get(unit,1))
 	return total
 
 func gear_power() -> int:
@@ -271,6 +310,8 @@ func research(branch:String) -> bool:
 	return true
 
 func recruitment_cost(unit:String, amount:=1) -> Dictionary:
+	if MonsterRoster.has(unit):
+		return MonsterRoster.recruitment_cost(unit,int(amount))
 	var base={"militia":{"gold":24,"food":18},"archer":{"gold":45,"food":28,"wood":12},"wolf":{"gold":52,"food":45},"mage":{"gold":90,"food":25,"mana":8}}.get(unit,{"gold":20,"food":20})
 	var result={}
 	for key in base:
@@ -278,11 +319,14 @@ func recruitment_cost(unit:String, amount:=1) -> Dictionary:
 	return result
 
 func recruit(unit:String) -> bool:
+	if MonsterRoster.has(unit) and not monster_unlocked(unit):
+		toast_requested.emit("That Wild Bond has not been discovered yet.")
+		return false
 	if command_used()+unit_command_cost(unit)>command_capacity():
 		toast_requested.emit("Command capacity reached.")
 		return false
-	var required_barracks={"militia":1,"archer":1,"wolf":1,"mage":2}.get(unit,1)
-	if buildings.barracks<required_barracks:
+	var required_barracks:int = int({"militia":1,"archer":1,"wolf":1,"mage":2}.get(unit,1))
+	if int(buildings.barracks)<required_barracks:
 		toast_requested.emit("Barracks level %d required." % required_barracks)
 		return false
 	if unit=="mage" and buildings.arcane_lab<1:
@@ -291,11 +335,14 @@ func recruit(unit:String) -> bool:
 	if not spend(recruitment_cost(unit)):
 		toast_requested.emit("Not enough resources to recruit.")
 		return false
-	army[unit]+=1
+	army[unit]=int(army.get(unit,0))+1
+	toast_requested.emit("%s joined the Warband." % pretty(unit))
 	changed.emit()
 	return true
 
 func upgrade_unit(unit:String) -> bool:
+	if not unit_levels.has(unit):
+		return false
 	var level=int(unit_levels[unit])
 	var cost={"gold":100*level,"food":50*level,"iron":12*level}
 	if not spend(cost):
@@ -339,9 +386,12 @@ func expedition_completed(result:Dictionary) -> void:
 			claim_loot["stone"] = float(claim_loot.get("stone",0.0)) + 3.0*richness
 			result["loot"] = claim_loot
 			toast_requested.emit("Frontier claimed! New adjacent territories are now reachable.")
+		var wild_bond:String = String(result.get("wild_bond",""))
+		result["wild_bond_unlocked"] = unlock_monster(wild_bond) if wild_bond != "" else false
 	else:
 		stats.defeats += 1
 		result["territory_claimed"] = false
+		result["wild_bond_unlocked"] = false
 	add_resources(result.get("loot",{}))
 	add_xp(int(result.get("xp",0)))
 	if result.has("item") and not result.item.is_empty():
@@ -371,6 +421,8 @@ func advance_season() -> void:
 	changed.emit()
 
 func pretty(value:String) -> String:
+	if MonsterRoster.has(value):
+		return MonsterRoster.display_name(value)
 	return value.replace("_"," ").capitalize()
 
 func to_dict() -> Dictionary:
