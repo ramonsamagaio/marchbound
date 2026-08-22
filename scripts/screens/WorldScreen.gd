@@ -19,7 +19,7 @@ func _build()->void:
 	var root=HBoxContainer.new(); root.add_theme_constant_override("separation",16); margin.add_child(root)
 	var left=VBoxContainer.new(); left.size_flags_horizontal=Control.SIZE_EXPAND_FILL; root.add_child(left)
 	var top=HBoxContainer.new(); left.add_child(top); top.add_child(UIFactory.title("The March",28)); top.add_child(UIFactory.spacer()); map_status=UIFactory.label("",14,Color("#9ca9c9")); top.add_child(map_status)
-	left.add_child(UIFactory.label("Push outward one territory at a time. ✦ marks a Frontier Mutation: same biome, different rules and rewards.",13,Color("#9ca9c9")))
+	left.add_child(UIFactory.label("Push outward one territory at a time. ✦ marks a Frontier Mutation; ♢ marks an undiscovered regional Wild Bond.",13,Color("#9ca9c9")))
 	var pan=HBoxContainer.new(); pan.alignment=BoxContainer.ALIGNMENT_CENTER; pan.add_theme_constant_override("separation",6); left.add_child(pan)
 	pan.add_child(UIFactory.button("← WEST",func():_pan(-PAN_STEP,0),Color("#252e43")))
 	pan.add_child(UIFactory.button("↑ NORTH",func():_pan(0,-PAN_STEP),Color("#252e43")))
@@ -41,7 +41,7 @@ func _set_focus(x:int,y:int)->void:
 
 func _generate_map()->void:
 	UIFactory.clear_children(grid)
-	var focus=_focus(); map_status.text="Season %d · Claimed %d · View [%d,%d]"%[GameState.world.season,GameState.claimed_count(),focus.x,focus.y]
+	var focus=_focus(); map_status.text="Season %d · Claimed %d · Bonds %d/%d · View [%d,%d]"%[GameState.world.season,GameState.claimed_count(),GameState.unlocked_monsters().size(),MonsterRoster.ORDER.size(),focus.x,focus.y]
 	for gy in GRID_H:
 		for gx in GRID_W:
 			var wx=focus.x+gx-int(GRID_W/2); var wy=focus.y+gy-int(GRID_H/2); var tile=make_tile(wx,wy); var b=Button.new(); b.custom_minimum_size=Vector2(74,64)
@@ -51,6 +51,7 @@ func _generate_map()->void:
 				b.text="%s\nT%d"%[biome_short(tile.biome),tile.threat]
 				if tile.boss:b.text+=" ★"
 				if tile.mutations.size()>0:b.text+=" ✦"
+				if not bool(tile.wild_bond_unlocked):b.text+=" ♢"
 				if tile.conquered:b.text+=" ✓"
 			var c=biome_colors[tile.biome_index]
 			if tile.conquered:c=c.lightened(0.16)
@@ -59,7 +60,8 @@ func _generate_map()->void:
 			var border=Color("#d8bd78") if tile.accessible and not tile.conquered else c.lightened(0.16)
 			if tile.home:border=Color("#eadc9d")
 			var mutation_tip=" · "+FrontierMutations.names(tile.mutations) if tile.mutations.size()>0 else ""
-			b.add_theme_stylebox_override("normal",UIFactory.panel(c.darkened(0.16),7,border)); b.add_theme_stylebox_override("hover",UIFactory.panel(c,7,border.lightened(0.18))); b.tooltip_text="%s [%d,%d] · Threat %d · %s%s%s"%["Dawnkeep" if tile.home else tile.biome,tile.x,tile.y,tile.threat,tile.objective,(" · "+String(tile.boss_name)) if tile.boss else "",mutation_tip]; b.pressed.connect(func(t=tile):select_tile(t)); grid.add_child(b)
+			var bond_tip=" · Wild Bond: "+MonsterRoster.display_name(String(tile.wild_bond)) if not tile.home and not bool(tile.wild_bond_unlocked) else ""
+			b.add_theme_stylebox_override("normal",UIFactory.panel(c.darkened(0.16),7,border)); b.add_theme_stylebox_override("hover",UIFactory.panel(c,7,border.lightened(0.18))); b.tooltip_text="%s [%d,%d] · Threat %d · %s%s%s%s"%["Dawnkeep" if tile.home else tile.biome,tile.x,tile.y,tile.threat,tile.objective,(" · "+String(tile.boss_name)) if tile.boss else "",mutation_tip,bond_tip]; b.pressed.connect(func(t=tile):select_tile(t)); grid.add_child(b)
 	var remembered=GameState.world.get("selected_tile",{})
 	if not remembered.is_empty() and abs(int(remembered.get("x",0))-focus.x)<=int(GRID_W/2) and abs(int(remembered.get("y",0))-focus.y)<=int(GRID_H/2): select_tile(make_tile(int(remembered.x),int(remembered.y)))
 	else: select_tile(make_tile(focus.x,focus.y))
@@ -76,8 +78,8 @@ func _boss_identity(biome:String)->Dictionary:
 
 func make_tile(x:int,y:int)->Dictionary:
 	var hashv=abs(hash("%s:%s:%s:%s"%[GameState.world.seed,GameState.world.season,x,y])); var biome_index=hashv%biome_names.size(); var dist=Vector2(float(x),float(y)).length(); var home=x==0 and y==0
-	var threat=0 if home else max(1,int(dist*0.72)+int(GameState.world.frontier_depth)+int((hashv/13)%3)); var boss=not home and threat>=3 and hashv%9==0; var pvp=not home and threat>=7 and hashv%5==0; var richness=1+(hashv%4); var biome="Greenlands" if home else biome_names[biome_index]; var objective="Home" if home else ("Ruin Siege" if boss else objective_names[int((hashv/29)%objective_names.size())]); var identity=_boss_identity(biome); var mutations=[] if home else FrontierMutations.roll(hashv,threat,boss)
-	return {"x":x,"y":y,"biome":biome,"biome_index":0 if home else biome_index,"threat":threat,"boss":boss,"pvp":pvp,"richness":richness,"seed":hashv,"home":home,"conquered":GameState.is_conquered(x,y),"accessible":GameState.is_accessible(x,y),"objective":objective,"boss_name":String(identity.name) if boss else "Frontier Guardian","boss_archetype":String(identity.archetype) if boss else "guardian","boss_tell":String(identity.tell) if boss else "A standard territorial guardian.","mutations":mutations}
+	var threat=0 if home else max(1,int(dist*0.72)+int(GameState.world.frontier_depth)+int((hashv/13)%3)); var boss=not home and threat>=3 and hashv%9==0; var pvp=not home and threat>=7 and hashv%5==0; var richness=1+(hashv%4); var biome="Greenlands" if home else biome_names[biome_index]; var objective="Home" if home else ("Ruin Siege" if boss else objective_names[int((hashv/29)%objective_names.size())]); var identity=_boss_identity(biome); var mutations=[] if home else FrontierMutations.roll(hashv,threat,boss); var wild_bond="" if home else MonsterRoster.id_for_biome(biome); var wild_bond_unlocked=true if home or wild_bond=="" else GameState.monster_unlocked(wild_bond)
+	return {"x":x,"y":y,"biome":biome,"biome_index":0 if home else biome_index,"threat":threat,"boss":boss,"pvp":pvp,"richness":richness,"seed":hashv,"home":home,"conquered":GameState.is_conquered(x,y),"accessible":GameState.is_accessible(x,y),"objective":objective,"boss_name":String(identity.name) if boss else "Frontier Guardian","boss_archetype":String(identity.archetype) if boss else "guardian","boss_tell":String(identity.tell) if boss else "A standard territorial guardian.","mutations":mutations,"wild_bond":wild_bond,"wild_bond_unlocked":wild_bond_unlocked}
 
 func biome_short(name:String)->String:return {"Greenlands":"GRN","Ancient Forest":"FOR","Iron Hills":"IRON","Mistfen":"FEN","Ash Wastes":"ASH","Frostwild":"FROST"}.get(name,"???")
 
@@ -99,7 +101,7 @@ func _launch_with_stance(tile:Dictionary,stance:String,threat_bonus:int,richness
 func select_tile(tile:Dictionary)->void:
 	selected=tile; GameState.world.selected_tile=tile; UIFactory.clear_children(info)
 	if tile.home:
-		info.add_child(UIFactory.title("Dawnkeep",23)); info.add_child(UIFactory.label("Your capital · Territory [0,0]",12,Color("#8f9cbc"))); info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("THE HEART OF THE MARCH",18,Color("#f0dfae"))); info.add_child(UIFactory.label("Every frontier begins here. Expand through adjacent territories and build a supply line into danger.",13,Color("#aeb9d4"))); info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("Claimed territories: %d"%GameState.claimed_count(),14)); info.add_child(UIFactory.label("Highest threat conquered: %d"%GameState.world.highest_threat,13)); info.add_child(UIFactory.spacer()); var home=UIFactory.button("RETURN TO SETTLEMENT",func():GameState.screen_requested.emit("city"),Color("#4d563d")); home.custom_minimum_size.y=48; info.add_child(home); return
+		info.add_child(UIFactory.title("Dawnkeep",23)); info.add_child(UIFactory.label("Your capital · Territory [0,0]",12,Color("#8f9cbc"))); info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("THE HEART OF THE MARCH",18,Color("#f0dfae"))); info.add_child(UIFactory.label("Every frontier begins here. Expand through adjacent territories and build a supply line into danger.",13,Color("#aeb9d4"))); info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("Claimed territories: %d"%GameState.claimed_count(),14)); info.add_child(UIFactory.label("Highest threat conquered: %d"%GameState.world.highest_threat,13)); info.add_child(UIFactory.label("Wild Bonds: %d / %d"%[GameState.unlocked_monsters().size(),MonsterRoster.ORDER.size()],13,Color("#a9d8b9"))); info.add_child(UIFactory.spacer()); var home=UIFactory.button("RETURN TO SETTLEMENT",func():GameState.screen_requested.emit("city"),Color("#4d563d")); home.custom_minimum_size.y=48; info.add_child(home); return
 	info.add_child(UIFactory.title(tile.biome,23)); info.add_child(UIFactory.label("Territory [%d,%d] · Distance %.1f"%[tile.x,tile.y,Vector2(float(tile.x),float(tile.y)).length()],12,Color("#8f9cbc"))); info.add_child(UIFactory.hsep())
 	var threat_color=Color("#e3c58f") if tile.threat<5 else Color("#ef8e7f"); info.add_child(UIFactory.label("BASE THREAT %d"%tile.threat,22,threat_color)); info.add_child(UIFactory.label("Objective: %s"%tile.objective,14,Color("#e4cf98"))); info.add_child(UIFactory.label(objective_description(tile.objective),12,Color("#aeb9d4"))); info.add_child(UIFactory.label("Expected power: ~%d · Yours: %d"%[tile.threat*130,GameState.total_power()],12,Color("#9fd3a7"))); info.add_child(UIFactory.label("Resource richness: %s"%["Poor","Fair","Rich","Abundant"][tile.richness-1],12))
 	if tile.conquered: info.add_child(UIFactory.label("✓ CLAIMED · safe supply route established",12,Color("#9fd3a7")))
@@ -112,6 +114,16 @@ func select_tile(tile:Dictionary)->void:
 		for id in tile.mutations:
 			info.add_child(UIFactory.label("%s · %s"%[FrontierMutations.name(String(id)),FrontierMutations.reward_text(String(id))],11,Color("#d1c2ed")))
 			var tell=UIFactory.label(FrontierMutations.description(String(id)),10,Color("#8f9bb8")); tell.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; info.add_child(tell)
+	var bond_id:String=String(tile.get("wild_bond",""))
+	if bond_id!="":
+		info.add_child(UIFactory.hsep())
+		if bool(tile.get("wild_bond_unlocked",false)):
+			info.add_child(UIFactory.label("✓ WILD BOND · %s already discovered"%MonsterRoster.display_name(bond_id),12,Color("#83b796")))
+		else:
+			info.add_child(UIFactory.label("♢ WILD BOND · %s"%MonsterRoster.display_name(bond_id),14,Color("#a9d8b9")))
+			info.add_child(UIFactory.label("%s · %s"%[MonsterRoster.role(bond_id),MonsterRoster.description(bond_id)],10,Color("#9fb3a6")))
+			var bond_hint:String="Named regional boss victory guarantees this bond." if bool(tile.boss) else ("Monster Hunt improves the chance to form this bond." if String(tile.objective)=="Monster Hunt" else "Victory can form this bond; Elite-heavy hunts improve your odds.")
+			info.add_child(UIFactory.label(bond_hint,10,Color("#b2cdb9")))
 	if tile.pvp:info.add_child(UIFactory.label("⚔ Frontier PvP territory (future online rules)",11,Color("#d9a2a2")))
 	if tile.accessible and not tile.conquered: info.add_child(UIFactory.label("First-claim bounty: +%d Gold + frontier materials"%(tile.threat*35),11,Color("#cfb77e")))
 	info.add_child(UIFactory.hsep()); info.add_child(UIFactory.label("Expedition party",14,Color("#f0dfae"))); info.add_child(UIFactory.label("%d / %d Command · Army %d"%[GameState.command_used(),GameState.command_capacity(),GameState.army_power()],12))
