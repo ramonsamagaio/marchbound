@@ -1,16 +1,62 @@
 class_name EvolvedCombatArena
 extends CombatArena
 
+var family_damage_reduction := 0.0
+
 func begin(data:Dictionary) -> void:
 	UnitProgression.ensure_schema()
 	super.begin(data)
 	if UnitProgression.evolution("wolf") == "pack_alpha" and int(GameState.army.get("wolf",0)) > 0:
 		army_damage_mult *= 1.12
+	_apply_family_sets()
+
+func _apply_family_sets() -> void:
+	var counts = LootFamilies.equipped_counts()
+	var dawnward = int(counts.get("dawnward",0))
+	if dawnward >= 2:
+		army_damage_mult *= 1.08
+	if dawnward >= 4:
+		army_haste_mult *= 0.90
+
+	var briarbound = int(counts.get("briarbound",0))
+	if briarbound >= 2:
+		for node in resource_nodes:
+			node.value = int(round(float(node.value)*1.10))
+	if briarbound >= 4:
+		player_speed *= 1.08
+
+	var deepforge = int(counts.get("deepforge",0))
+	if deepforge >= 2:
+		var old_hp = player_hp_max
+		player_hp_max *= 1.12
+		player_hp += player_hp_max-old_hp
+	if deepforge >= 4:
+		family_damage_reduction = 0.10
+
+	var mireglass = int(counts.get("mireglass",0))
+	if mireglass >= 2:
+		lifesteal += 0.02
+	if mireglass >= 4:
+		lifesteal += 0.03
+
+	var cinderborn = int(counts.get("cinderborn",0))
+	if cinderborn >= 2:
+		crit_chance += 0.05
+	if cinderborn >= 4:
+		damage *= 1.12
+
+	var rimebound = int(counts.get("rimebound",0))
+	if rimebound >= 2:
+		dash_cooldown_max *= 0.88
+	if rimebound >= 4:
+		player_speed *= 1.08
 
 func _damage_player(amount:float) -> void:
 	var final_amount = amount
 	if UnitProgression.evolution("militia") == "shieldwall" and int(GameState.army.get("militia",0)) > 0:
 		final_amount *= 0.85
+	if family_damage_reduction > 0.0:
+		final_amount *= 1.0-family_damage_reduction
 	super._damage_player(final_amount)
 
 func unit_damage(type:String) -> float:
@@ -97,3 +143,13 @@ func _storm_chain(origin:Dictionary,primary_hit:float) -> void:
 			chained += 1
 			if chained >= 2:
 				break
+
+func generate_loot_item(threat:int) -> Dictionary:
+	var item = super.generate_loot_item(threat)
+	item = LootFamilies.decorate_item(item,String(tile.get("biome","Greenlands")))
+	item["origin_biome"] = String(tile.get("biome","Greenlands"))
+	if bool(tile.get("boss",false)):
+		item["origin_boss"] = boss_name
+		if String(item.get("rarity","common")) in ["epic","legendary"]:
+			item["name"] = "%s's %s"%[boss_name,String(item.name)]
+	return item
