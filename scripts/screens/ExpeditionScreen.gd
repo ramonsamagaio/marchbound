@@ -46,7 +46,7 @@ func _build() -> void:
 	var bg=ColorRect.new(); bg.color=Color("#0d111c"); bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); add_child(bg)
 	var layout=HBoxContainer.new(); layout.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); layout.add_theme_constant_override("separation",12); layout.offset_left=14; layout.offset_top=14; layout.offset_right=-14; layout.offset_bottom=-14; add_child(layout)
 	var arena_panel=PanelContainer.new(); arena_panel.size_flags_horizontal=Control.SIZE_EXPAND_FILL; arena_panel.size_flags_vertical=Control.SIZE_EXPAND_FILL; arena_panel.add_theme_stylebox_override("panel",UIFactory.panel(Color("#111724"),12,Color("#33405c"))); layout.add_child(arena_panel)
-	var holder=Control.new(); holder.custom_minimum_size=Vector2(900,560); arena_panel.add_child(holder); arena=EvolvedCombatArena.new(); holder.add_child(arena); arena.hud_changed.connect(_hud); arena.upgrade_requested.connect(_show_upgrade); arena.finished.connect(_finished)
+	var holder=Control.new(); holder.custom_minimum_size=Vector2(900,560); arena_panel.add_child(holder); arena=MutatedCombatArena.new(); holder.add_child(arena); arena.hud_changed.connect(_hud); arena.upgrade_requested.connect(_show_upgrade); arena.finished.connect(_finished)
 	var side=PanelContainer.new(); side.custom_minimum_size.x=310; side.add_theme_stylebox_override("panel",UIFactory.panel(Color("#151b2a"),12,Color("#35415d"))); layout.add_child(side)
 	var hud=VBoxContainer.new(); side.add_child(hud)
 	hud.add_child(UIFactory.title(tile.biome,22))
@@ -54,6 +54,9 @@ func _build() -> void:
 	if bool(tile.get("boss",false)):
 		hud.add_child(UIFactory.label("★ %s"%String(tile.get("boss_name","Regional Boss")),17,Color("#f0b7c0")))
 		hud.add_child(UIFactory.label(String(tile.get("boss_tell","Expect an unusual boss pattern.")),11,Color("#c5a8bb")))
+	var mutations:Array=tile.get("mutations",[])
+	if mutations.size()>0:
+		hud.add_child(UIFactory.label("✦ %s"%FrontierMutations.names(mutations),11,Color("#c9b5ef")))
 	hud.add_child(UIFactory.hsep())
 	hud.add_child(UIFactory.label("OBJECTIVE · %s"%String(tile.get("objective","Frontier Claim")).to_upper(),14,Color("#f0dfae")))
 	hud.add_child(UIFactory.label(_objective_description(String(tile.get("objective","Frontier Claim"))),12,Color("#a5b1cb")))
@@ -67,7 +70,7 @@ func _build() -> void:
 	cooldowns=UIFactory.label("",12,Color("#98a7c6")); hud.add_child(cooldowns)
 	hud.add_child(UIFactory.hsep())
 	hud.add_child(UIFactory.label("FRONTIER RULES",14,Color("#f0dfae")))
-	hud.add_child(UIFactory.label("Purple-ring enemies are Elites. Ranged threats and bosses fire projectiles. Dash is briefly invulnerable, so read tells instead of treating movement as decoration.",12,Color("#a5b1cb")))
+	hud.add_child(UIFactory.label("Purple-ring enemies are Elites. Ranged threats and bosses fire projectiles. Dash is briefly invulnerable. Frontier Mutations change this territory's live combat rules.",12,Color("#a5b1cb")))
 	hud.add_child(UIFactory.hsep())
 	hud.add_child(UIFactory.label("CONTROLS",14,Color("#f0dfae")))
 	hud.add_child(UIFactory.label("WASD  move\nSpace  dash / evade\nQ  rally army\nE  shockwave\n\nWarden auto-attacks. Your army fights around you.",12,Color("#a5b1cb")))
@@ -137,6 +140,9 @@ func _finished(result: Dictionary) -> void:
 	tl.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(tl)
 	v.add_child(UIFactory.label("%s · Threat %d"%[String(result.get("objective","Expedition")),result.threat],14,Color("#e0c684")))
+	var mutations:Array=result.get("mutations",tile.get("mutations",[]))
+	if mutations.size()>0:
+		v.add_child(UIFactory.label("Frontier Mutations: %s"%FrontierMutations.names(mutations),12,Color("#c9b5ef")))
 	if bool(tile.get("boss",false)):
 		v.add_child(UIFactory.label("Regional Boss: %s"%String(result.get("boss_name",tile.get("boss_name","Unknown"))),14,Color("#f0b7c0")))
 	v.add_child(UIFactory.label("%d kills · %d elites · %d XP · Harvested %d/%d"%[result.kills,result.get("elite_kills",0),result.xp,result.get("nodes_collected",0),result.get("nodes_total",0)],13,Color("#aebad2")))
