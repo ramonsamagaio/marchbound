@@ -6,7 +6,7 @@ var nav:HBoxContainer
 var toast_label:Label
 var current_screen:Control
 var current_name := ""
-var screen_scripts={"city":preload("res://scripts/screens/CityScreen.gd"),"world":preload("res://scripts/screens/WorldScreen.gd"),"army":preload("res://scripts/screens/ArmyScreen.gd"),"inventory":preload("res://scripts/screens/InventoryScreen.gd"),"market":preload("res://scripts/screens/MarketScreen.gd"),"expedition":preload("res://scripts/screens/ExpeditionScreen.gd")}
+var screen_scripts={"city":preload("res://scripts/screens/CityScreen.gd"),"world":preload("res://scripts/screens/WorldScreen.gd"),"army":preload("res://scripts/screens/ArmyScreen.gd"),"inventory":preload("res://scripts/screens/InventoryScreen.gd"),"market":preload("res://scripts/screens/MarketScreen.gd"),"contracts":preload("res://scripts/screens/ContractsScreen.gd"),"expedition":preload("res://scripts/screens/ExpeditionScreen.gd")}
 var toast_tween:Tween
 
 func _ready() -> void:
@@ -21,8 +21,8 @@ func _build_shell() -> void:
 	top_resources=HBoxContainer.new(); top_resources.add_theme_constant_override("separation",12); top_h.add_child(top_resources)
 	content=Control.new(); content.size_flags_vertical=Control.SIZE_EXPAND_FILL; content.size_flags_horizontal=Control.SIZE_EXPAND_FILL; root.add_child(content)
 	nav=HBoxContainer.new(); nav.alignment=BoxContainer.ALIGNMENT_CENTER; nav.custom_minimum_size.y=64; nav.add_theme_constant_override("separation",8); root.add_child(nav)
-	for item in [["city","Settlement"],["world","World Map"],["army","Army"],["inventory","Inventory"],["market","Marketplace"]]:
-		var b=UIFactory.button(item[1],func():show_screen(item[0]),Color("#222b42")); b.custom_minimum_size.x=150; nav.add_child(b)
+	for item in [["city","Settlement"],["world","World Map"],["army","Army"],["inventory","Inventory"],["contracts","Contracts"],["market","Marketplace"]]:
+		var b=UIFactory.button(item[1],func():show_screen(item[0]),Color("#222b42")); b.custom_minimum_size.x=132; nav.add_child(b)
 	toast_label=UIFactory.label("",15,Color("#fff1c8")); toast_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER; toast_label.vertical_alignment=VERTICAL_ALIGNMENT_CENTER; toast_label.mouse_filter=Control.MOUSE_FILTER_IGNORE; toast_label.set_anchors_preset(Control.PRESET_CENTER_TOP); toast_label.position=Vector2(390,78); toast_label.size=Vector2(500,46); toast_label.modulate.a=0.0; add_child(toast_label)
 
 func _refresh_resources() -> void:
