@@ -18,6 +18,7 @@ var talent_defs={
 }
 
 func _ready()->void:
+	GameState.ensure_schema()
 	UnitProgression.ensure_schema()
 	_build()
 	GameState.changed.connect(refresh)
@@ -42,7 +43,7 @@ func _build()->void:
 	left.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	root.add_child(left)
 	left.add_child(UIFactory.title("Warband & Warden",28))
-	left.add_child(UIFactory.label("Train a unit family to Rank 3, then lock in one permanent evolution path. The branch changes how that unit actually fights in expeditions.",13,Color("#9ca8c5")))
+	left.add_child(UIFactory.label("Train the founding unit families, choose permanent Rank 3 evolutions, and discover Wild Bonds by surviving the frontier.",13,Color("#9ca8c5")))
 	left.add_child(UIFactory.hsep())
 	var army_scroll=ScrollContainer.new()
 	army_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
@@ -65,10 +66,19 @@ func _build()->void:
 func refresh()->void:
 	if not is_inside_tree():
 		return
+	GameState.ensure_schema()
 	UnitProgression.ensure_schema()
 	UIFactory.clear_children(list)
+	list.add_child(UIFactory.label("FOUNDING COMPANIES",13,Color("#f0dfae")))
 	for unit in defs:
 		list.add_child(_unit_card(unit))
+	var monsters:Array[String] = GameState.unlocked_monsters()
+	if not monsters.is_empty():
+		list.add_child(UIFactory.hsep())
+		list.add_child(UIFactory.label("WILD BONDS · DISCOVERED ON THE FRONTIER",13,Color("#a9d8b9")))
+		for id in MonsterRoster.ORDER:
+			if String(id) in monsters:
+				list.add_child(_monster_card(String(id)))
 
 	UIFactory.clear_children(summary)
 	summary.add_child(UIFactory.title("Warden Growth",23))
@@ -80,13 +90,20 @@ func refresh()->void:
 	summary.add_child(UIFactory.label("%d / %d used · Army Power %d"%[GameState.command_used(),GameState.command_capacity(),GameState.army_power()],15))
 	summary.add_child(UIFactory.label("Level, Leadership, Town Hall and Commander talents widen the army you can bring into each expedition.",11,Color("#8f9bb8")))
 	summary.add_child(UIFactory.hsep())
+	summary.add_child(UIFactory.label("WILD BONDS",16,Color("#a9d8b9")))
+	summary.add_child(UIFactory.label("Discovered %d / %d regional creatures"%[monsters.size(),MonsterRoster.ORDER.size()],13))
+	if monsters.is_empty():
+		summary.add_child(UIFactory.label("Win expeditions to earn a chance to bond with the local creature. Named regional bosses guarantee the local bond if it is still undiscovered.",11,Color("#9ca8c5")))
+	else:
+		summary.add_child(UIFactory.label("Monster Hunt and Marked by Elites territories improve discovery odds. Once bonded, creatures can be recruited and trained like the rest of the Warband.",11,Color("#9ca8c5")))
+	summary.add_child(UIFactory.hsep())
 	summary.add_child(UIFactory.label("EVOLUTION DOCTRINE",16,Color("#f0dfae")))
 	var evolved_names := []
 	for unit in UnitProgression.UNIT_ORDER:
 		if UnitProgression.is_evolved(unit):
 			evolved_names.append(UnitProgression.display_name(unit))
 	if evolved_names.is_empty():
-		summary.add_child(UIFactory.label("No unit family has evolved yet. Reach Rank 3 and choose carefully: paths are permanent in the current pre-alpha.",11,Color("#9ca8c5")))
+		summary.add_child(UIFactory.label("No founding unit family has evolved yet. Reach Rank 3 and choose carefully: paths are permanent in the current pre-alpha.",11,Color("#9ca8c5")))
 	else:
 		summary.add_child(UIFactory.label("Active: %s"%" · ".join(evolved_names),11,Color("#a7d9c5")))
 	summary.add_child(UIFactory.hsep())
@@ -130,6 +147,30 @@ func _unit_card(unit:String)->PanelContainer:
 			var branches = UnitProgression.branches_for(unit)
 			for branch in branches:
 				v.add_child(_evolution_choice(unit,String(branch),branches[branch]))
+	return p
+
+func _monster_card(id:String)->PanelContainer:
+	var p=PanelContainer.new()
+	p.add_theme_stylebox_override("panel",UIFactory.panel(Color("#17251f"),10,Color("#3f6955")))
+	var v=VBoxContainer.new()
+	p.add_child(v)
+	var top=HBoxContainer.new()
+	v.add_child(top)
+	top.add_child(UIFactory.label("%s · Rank %d"%[MonsterRoster.display_name(id),int(GameState.unit_levels.get(id,1))],18,Color("#cce6cf")))
+	top.add_child(UIFactory.spacer())
+	top.add_child(UIFactory.label("×%d   Command %d ea."%[int(GameState.army.get(id,0)),GameState.unit_command_cost(id)],13))
+	v.add_child(UIFactory.label("%s · %s"%[MonsterRoster.biome(id),MonsterRoster.role(id)],12,Color("#a8c8b1")))
+	v.add_child(UIFactory.label(MonsterRoster.description(id),11,Color("#9fb3a6")))
+	var actions=HBoxContainer.new()
+	v.add_child(actions)
+	var recruit=UIFactory.button("Recruit",func(u=id):GameState.recruit(u),Color("#365a48"))
+	recruit.disabled=GameState.command_used()+GameState.unit_command_cost(id)>GameState.command_capacity() or not GameState.can_afford(GameState.recruitment_cost(id))
+	actions.add_child(recruit)
+	actions.add_child(UIFactory.label(UIFactory.cost_text(GameState.recruitment_cost(id)),11,Color("#b7cdbb")))
+	actions.add_child(UIFactory.spacer())
+	var train=UIFactory.button("Train Rank",func(u=id):GameState.upgrade_unit(u),Color("#46544d"))
+	train.custom_minimum_size.x=105
+	actions.add_child(train)
 	return p
 
 func _evolution_choice(unit:String,branch:String,data:Dictionary)->PanelContainer:
