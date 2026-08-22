@@ -34,7 +34,7 @@ func _build()->void:
 	var left_v=VBoxContainer.new()
 	left.add_child(left_v)
 	left_v.add_child(UIFactory.title("Inventory",22))
-	left_v.add_child(UIFactory.label("A good drop should tempt a build change, not just show a bigger number.",12,Color("#92a0bf")))
+	left_v.add_child(UIFactory.label("Regional equipment families make where an item came from matter. Mix affixes, sets and raw power instead of chasing one number.",12,Color("#92a0bf")))
 	left_v.add_child(UIFactory.hsep())
 	var item_scroll=ScrollContainer.new()
 	item_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
@@ -88,7 +88,8 @@ func refresh()->void:
 		var mark=" ◆" if GameState.equipped.get(item.slot,"")==item.uid else ""
 		var affix_count = item.get("affixes",[]).size()
 		var affix_text = " · %d affix%s"%[affix_count,"es" if affix_count!=1 else ""] if affix_count>0 else ""
-		var txt="%s%s\n%s · Power %d%s%s"%[item.name,mark,item.slot.capitalize(),item.power,(" +%d"%item.upgrade) if item.upgrade>0 else "",affix_text]
+		var family_text = " · %s"%String(item.get("family_name","")) if String(item.get("family_name","")) != "" else ""
+		var txt="%s%s\n%s · Power %d%s%s%s"%[item.name,mark,item.slot.capitalize(),item.power,(" +%d"%item.upgrade) if item.upgrade>0 else "",family_text,affix_text]
 		var b=UIFactory.button(txt,func(uid=item.uid):select(uid),rarity_color(item.rarity).darkened(0.45))
 		b.custom_minimum_size=Vector2(300,58)
 		item_list.add_child(b)
@@ -111,6 +112,9 @@ func _refresh_build_summary()->void:
 	if float(b.get("lifesteal",0.0))>0: parts.append("+%.1f%% Lifesteal"%(float(b.lifesteal)*100.0))
 	if float(b.get("dash_cdr",0.0))>0: parts.append("-%d%% Dash CD"%int(round(float(b.dash_cdr)*100.0)))
 	build_summary.text="Equipped build · "+(" · ".join(parts) if parts.size()>0 else "no special affixes yet")
+	var sets = LootFamilies.active_set_summary()
+	if sets.size()>0:
+		build_summary.text += "\nActive sets · "+" · ".join(sets)
 
 func select(uid:String)->void:
 	selected_uid=uid
@@ -124,6 +128,20 @@ func _refresh_detail()->void:
 		return
 	detail.add_child(UIFactory.title(item.name,21))
 	detail.add_child(UIFactory.label("%s · %s"%[item.rarity.to_upper(),item.slot.capitalize()],12,rarity_color(item.rarity)))
+	var family_id = String(item.get("family",""))
+	if family_id != "":
+		var family = LootFamilies.family_by_id(family_id)
+		var count = LootFamilies.equipped_count(family_id)
+		detail.add_child(UIFactory.label("SET · %s · %d equipped"%[String(family.get("name",item.get("family_name","Regional"))).to_upper(),count],13,Color("#a7d9c5")))
+		var lore=UIFactory.label(String(family.get("lore",item.get("family_lore",""))),11,Color("#8fa1bd"))
+		lore.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		detail.add_child(lore)
+		detail.add_child(UIFactory.label(String(family.get("two_piece","")),11,Color("#c9b783") if count>=2 else Color("#78859f")))
+		detail.add_child(UIFactory.label(String(family.get("four_piece","")),11,Color("#c9b783") if count>=4 else Color("#78859f")))
+		if String(item.get("origin_boss","")) != "":
+			detail.add_child(UIFactory.label("Boss trophy · %s"%String(item.origin_boss),11,Color("#e0a9b8")))
+	elif String(item.get("origin_biome","")) != "":
+		detail.add_child(UIFactory.label("Recovered in %s"%String(item.origin_biome),11,Color("#8fa1bd")))
 	detail.add_child(UIFactory.hsep())
 	detail.add_child(UIFactory.label("Item Power  %d"%item.power,22,Color("#f0dfae")))
 	detail.add_child(UIFactory.label("Forge Upgrade  +%d"%item.upgrade,13,Color("#aab5cf")))
@@ -152,7 +170,7 @@ func _refresh_detail()->void:
 		detail.add_child(UIFactory.label("Build the Forge to upgrade item power.",11,Color("#b38f8f")))
 	detail.add_child(UIFactory.hsep())
 	detail.add_child(UIFactory.label("Inspect Profile Preview",15,Color("#f0dfae")))
-	detail.add_child(UIFactory.label("Other players will eventually see the complete paper-doll plus affixes, level, Renown, Army Power, guild and achievements.",12,Color("#91a0bf")))
+	detail.add_child(UIFactory.label("Other players will eventually see the complete paper-doll plus affixes, regional set identity, level, Renown, Army Power, guild and achievements.",12,Color("#91a0bf")))
 
 func _add_comparison(item:Dictionary)->void:
 	var equipped_uid=String(GameState.equipped.get(item.slot,""))
