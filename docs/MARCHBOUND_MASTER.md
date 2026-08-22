@@ -26,25 +26,33 @@ MARCHBOUND is not five games glued together. Each reference owns a layer:
 1. Settlement: collect passive production, build, research, forge, recruit.
 2. Army preparation: spend Command capacity on a chosen composition.
 3. World map: evaluate biome, threat, richness, boss/PvP properties and strategic value.
-4. Expedition: enter the tile personally.
-5. Action: WASD movement, dash, active abilities, Warden auto-attacks, army AI, enemy hordes, run upgrades.
-6. Extraction: survive/kill boss, return with resources, XP, renown and equipment.
-7. Power conversion: upgrade settlement, research, units and gear.
-8. Push farther: higher-threat territory yields better rewards.
-9. Season/frontier advancement: reset/expand portions of world pressure while preserving meaningful meta-progression.
-10. Repeat with more possibilities, not merely larger numbers.
+4. Frontier choice: patrol owned land or claim an adjacent unowned territory connected to the supply line.
+5. Expedition: enter the tile personally.
+6. Action: WASD movement, dash, active abilities, Warden auto-attacks, army AI, enemy hordes, run upgrades, resource-site harvesting and Momentum kill chains.
+7. Extraction: survive/kill boss, return with resources, XP, renown and equipment.
+8. Claim: first victory permanently claims that territory for the current Frontier Season and opens adjacent territory.
+9. Power conversion: upgrade settlement, research, units and gear.
+10. Push farther: higher-threat territory yields better rewards.
+11. Season/frontier advancement: reset/expand portions of world pressure while preserving meaningful meta-progression.
+12. Repeat with more possibilities, not merely larger numbers.
 
 The player should repeatedly think: **“one more expedition, then I can afford/unlock/try that.”**
 
 ## 4. World layer
 
 - Large strategic world divided into tiles/territories.
+- Dawnkeep, the player capital, is anchored at world coordinate `[0,0]`.
+- The world-map UI is a pannable window over effectively unbounded deterministic coordinates rather than a single finite board.
+- Territories persist as claimed/unclaimed state in the save game.
+- New unclaimed tiles are reachable only when orthogonally adjacent to an already claimed territory. This creates a visible supply-line/frontier shape.
+- First victory in a reachable unclaimed tile claims it and pays an extra frontier bounty.
+- Threat increases primarily with distance from Dawnkeep plus Frontier Season pressure and deterministic local variance.
 - Huge biomes and difficulty bands.
 - Each tile may expose threat, resource richness, rare resources, faction influence, PvP state, event/boss state.
 - Safe/core lands, optional PvP frontier, and later high-risk Wildlands.
 - Resource geography creates organic trade and diplomacy.
 - World events and bosses create social convergence.
-- Long-term direction is a shared persistent world, but MVP may use deterministic local simulation while network layer is built.
+- Long-term direction is a shared persistent world, but MVP uses deterministic local simulation while network layer is built.
 
 ### Initial biomes
 - Greenlands
@@ -65,6 +73,7 @@ Player:
 - Active abilities.
 - Equipment stats and build identity.
 - Temporary run upgrades.
+- Movement incentives from resource harvesting and future objectives, so optimal play is not just orbiting the arena edge.
 
 Army:
 - Follows hero with lightweight AI.
@@ -78,6 +87,12 @@ MVP controls:
 - Q Rally
 - E Shockwave
 - Auto attack nearest enemy
+
+### Momentum
+Fast consecutive kills build a short-lived Momentum chain. Momentum temporarily increases Warden and army damage. Each 10-kill threshold also awards a small Gold bonus. The intended feel is controlled aggression: the player has a reason to keep moving toward the next pack rather than merely survive passively.
+
+### Resource sites
+Each expedition spawns several biome-weighted resource sites. Standing beside one for a short channel harvests it, adding resources/XP and a small heal. Richer territories spawn more sites and larger payouts. This turns resource geography into something the player physically experiences in the action layer.
 
 ## 6. Command capacity
 
@@ -125,6 +140,8 @@ Initial building families:
 Long-term: walls/towers, workshops, housing, temples, stable, warehouses, specialized production and workers/jobs without full RimWorld psychological simulation.
 
 The town continues producing while the user is offline, with sensible caps.
+
+Settlement UI should surface strategic frontier progress, including claimed-territory count, highest conquered threat and Renown, so economic upgrading always points back toward the next expedition.
 
 ## 9. Resources
 
@@ -231,9 +248,10 @@ MVP expedition spawns a boss after a short survival phase.
 “Infinite” does not mean infinite handcrafted content. It means systems create a horizon.
 
 Pillars:
-- escalating frontier threat
-- procedural/deterministic world seeds
-- seasonal frontier advancement
+- effectively unbounded deterministic world coordinates
+- adjacency-based frontier conquest and visible supply lines
+- escalating threat with distance from Dawnkeep
+- seasonal frontier advancement that redraws territorial pressure
 - player levels with widening Command
 - unit ranks/evolutions
 - gear rarities/upgrades/affixes later
@@ -244,7 +262,7 @@ Pillars:
 - market economy
 - future guild/territory layer
 
-A later prestige-like **Frontier Season** system can reshape/expand world pressure while preserving key accomplishments.
+A prestige-like **Frontier Season** system reshapes the frontier while preserving meaningful meta-progression. In the current MVP, advancing a season returns territorial claims to Dawnkeep and raises frontier pressure while preserving the broader progression loop.
 
 ## 16. Technical architecture
 
@@ -287,4 +305,30 @@ Do not block MVP on full guild wars, 100-player realtime PvP, elaborate siege si
 
 ## 19. MVP mandate
 
-The first playable slice should already demonstrate settlement, passive/offline economy, buildings, tech, army recruitment/ranks/Command, world map, biomes/threat, real action expedition, player movement/combat, army followers, hordes, boss, run upgrades, loot/resources/XP, equipment drops, inventory/paper-doll concept, gear upgrades, marketplace concept, Renown/Frontier Seasons and save persistence.
+The first playable slice should already demonstrate settlement, passive/offline economy, buildings, tech, army recruitment/ranks/Command, world map, biomes/threat, adjacency-based territory conquest, real action expedition, player movement/combat, army followers, hordes, boss, run upgrades, active resource harvesting, Momentum kill chains, loot/resources/XP, equipment drops, inventory/paper-doll concept, gear upgrades, marketplace concept, Renown/Frontier Seasons and save persistence.
+
+## 20. Current implementation snapshot — 2026-08-22
+
+The repository currently contains the broad MVP foundation plus the first major loop-strengthening pass:
+
+- Dawnkeep at `[0,0]`
+- pannable deterministic frontier coordinates
+- persistent territory claims
+- adjacent-tile supply-line expansion
+- first-claim bounties
+- distance-scaled threat
+- biome/resource richness metadata
+- action expeditions
+- resource-site harvesting
+- Momentum kill chains
+- horde scaling and boss phase
+- temporary field doctrines/run upgrades
+- Command-limited army followers
+- settlement/passive economy/research/recruitment
+- equipment/forge/inventory/paper-doll functional preview
+- NPC marketplace proof
+- local save/offline progress
+- Frontier Season prestige scaffold
+- automated Godot parse/smoke/Web-export workflow
+
+The next design priority is **feel**: validate the frontier loop in an actual user playtest, then improve combat feedback, biome-specific enemies/objectives and the visual foundation without sacrificing browser performance.
