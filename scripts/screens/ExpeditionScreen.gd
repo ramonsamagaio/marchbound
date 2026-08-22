@@ -8,7 +8,20 @@ var objective_label: Label
 var upgrade_overlay: PanelContainer
 var result_overlay: PanelContainer
 var tile := {}
-var upgrade_defs = {"damage":["Edge of War","+25% Warden damage"],"speed":["Windstep","+15% movement speed"],"haste":["Quickened Sigil","+18% attack speed"],"projectile":["Twin Oath","+1 projectile"],"army":["Battle Doctrine","+30% army damage"],"vitality":["Ironblood","+25% max health & heal"]}
+var upgrade_defs = {
+	"damage":["Edge of War","+25% Warden damage"],
+	"speed":["Windstep","+15% movement speed"],
+	"haste":["Quickened Sigil","+18% attack speed"],
+	"projectile":["Twin Oath","+1 projectile per attack"],
+	"army":["Battle Doctrine","+30% army damage"],
+	"vitality":["Ironblood","+25% max health and heal the increase"],
+	"crit":["Executioner's Eye","+13% crit chance and stronger crits"],
+	"vampire":["Blood Oath","Damage heals a small amount of HP"],
+	"arc":["Stormbound","Hits can arc into two nearby enemies"],
+	"shockwave":["Siegebreaker","Larger, harder Shockwave with faster recovery"],
+	"war_drum":["War Drums","Army attacks much faster and gains damage"],
+	"blink":["Marchstep","Shorter dash cooldown and bonus movement speed"]
+}
 
 func _ready() -> void:
 	tile = GameState.world.selected_tile
@@ -40,10 +53,10 @@ func _build() -> void:
 	cooldowns=UIFactory.label("",12,Color("#98a7c6")); hud.add_child(cooldowns)
 	hud.add_child(UIFactory.hsep())
 	hud.add_child(UIFactory.label("FRONTIER RULES",14,Color("#f0dfae")))
-	hud.add_child(UIFactory.label("Harvest glowing resource sites by standing beside them. Chain kills to build Momentum: it boosts Warden and army damage and pays Gold every 10 kills.",12,Color("#a5b1cb")))
+	hud.add_child(UIFactory.label("Purple-ring enemies are Elites: tougher, richer and worth extra XP. Ranged enemies and guardians fire projectiles. Your dash is briefly invulnerable, so timing matters now.",12,Color("#a5b1cb")))
 	hud.add_child(UIFactory.hsep())
 	hud.add_child(UIFactory.label("CONTROLS",14,Color("#f0dfae")))
-	hud.add_child(UIFactory.label("WASD  move\nSpace  dash\nQ  rally army\nE  shockwave\n\nWarden auto-attacks. Your army fights around you.",12,Color("#a5b1cb")))
+	hud.add_child(UIFactory.label("WASD  move\nSpace  dash / evade\nQ  rally army\nE  shockwave\n\nWarden auto-attacks. Your army fights around you.",12,Color("#a5b1cb")))
 	hud.add_child(UIFactory.spacer())
 	hud.add_child(UIFactory.button("Retreat to World",func():GameState.screen_requested.emit("world"),Color("#4e3337")))
 
@@ -63,13 +76,29 @@ func _hud(data: Dictionary) -> void:
 	hp_bar.max_value=data.hp_max; hp_bar.value=data.hp
 	objective_label.text=_objective_progress_text(data)
 	var combo_text=" · Momentum ×%d"%data.combo if int(data.combo)>1 else ""
-	status.text="HP %d / %d\nRun Lv.%d · Kills %d%s\nHarvest %d / %d · %ds%s"%[data.hp,data.hp_max,data.level,data.kills,combo_text,data.nodes,data.nodes_total,int(data.time),"\n★ GUARDIAN ARRIVED" if data.boss else ""]
+	status.text="HP %d / %d\nRun Lv.%d · Kills %d · Elites %d%s\nHarvest %d / %d · %ds%s"%[data.hp,data.hp_max,data.level,data.kills,data.elite_kills,combo_text,data.nodes,data.nodes_total,int(data.time),"\n★ GUARDIAN ARRIVED" if data.boss else ""]
 	cooldowns.text="Dash %.1fs · Rally %.1fs · Burst %.1fs"%[data.dash_cd,data.rally_cd,data.burst_cd]
 
 func _show_upgrade() -> void:
-	upgrade_overlay=PanelContainer.new(); upgrade_overlay.set_anchors_preset(Control.PRESET_CENTER); upgrade_overlay.position=Vector2(300,170); upgrade_overlay.size=Vector2(680,330); upgrade_overlay.add_theme_stylebox_override("panel",UIFactory.panel(Color("#111827"),14,Color("#8b7449"))); add_child(upgrade_overlay); var v=VBoxContainer.new(); upgrade_overlay.add_child(v); var t=UIFactory.title("Choose a Field Doctrine",25); t.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER; v.add_child(t); v.add_child(UIFactory.label("The run bends around your choices. Build power now, then carry loot home.",12,Color("#a6b2cc"))); var choices=upgrade_defs.keys(); choices.shuffle()
+	upgrade_overlay=PanelContainer.new()
+	upgrade_overlay.set_anchors_preset(Control.PRESET_CENTER)
+	upgrade_overlay.position=Vector2(300,150)
+	upgrade_overlay.size=Vector2(680,385)
+	upgrade_overlay.add_theme_stylebox_override("panel",UIFactory.panel(Color("#111827"),14,Color("#8b7449")))
+	add_child(upgrade_overlay)
+	var v=VBoxContainer.new()
+	upgrade_overlay.add_child(v)
+	var t=UIFactory.title("Choose a Field Doctrine",25)
+	t.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(t)
+	v.add_child(UIFactory.label("Stack synergies during the run. Build the Warden, the army, mobility, sustain or a hybrid that gets gloriously unreasonable.",12,Color("#a6b2cc")))
+	var choices=upgrade_defs.keys()
+	choices.shuffle()
 	for i in 3:
-		var id=choices[i]; var b=UIFactory.button("%s\n%s"%[upgrade_defs[id][0],upgrade_defs[id][1]],func(x=id):_choose_upgrade(x),Color("#303b59")); b.custom_minimum_size.y=62; v.add_child(b)
+		var id=choices[i]
+		var b=UIFactory.button("%s\n%s"%[upgrade_defs[id][0],upgrade_defs[id][1]],func(x=id):_choose_upgrade(x),Color("#303b59"))
+		b.custom_minimum_size.y=72
+		v.add_child(b)
 
 func _choose_upgrade(id: String) -> void:
 	arena.apply_upgrade(id)
@@ -82,8 +111,8 @@ func _finished(result: Dictionary) -> void:
 	SaveManager.save_game()
 	result_overlay=PanelContainer.new()
 	result_overlay.set_anchors_preset(Control.PRESET_CENTER)
-	result_overlay.position=Vector2(330,95)
-	result_overlay.size=Vector2(620,505)
+	result_overlay.position=Vector2(330,85)
+	result_overlay.size=Vector2(620,525)
 	result_overlay.add_theme_stylebox_override("panel",UIFactory.panel(Color("#111827"),15,Color("#856f48")))
 	add_child(result_overlay)
 	var v=VBoxContainer.new()
@@ -93,7 +122,7 @@ func _finished(result: Dictionary) -> void:
 	tl.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(tl)
 	v.add_child(UIFactory.label("%s · Threat %d"%[String(result.get("objective","Expedition")),result.threat],14,Color("#e0c684")))
-	v.add_child(UIFactory.label("%d kills · %d XP · Harvested %d/%d"%[result.kills,result.xp,result.get("nodes_collected",0),result.get("nodes_total",0)],13,Color("#aebad2")))
+	v.add_child(UIFactory.label("%d kills · %d elites · %d XP · Harvested %d/%d"%[result.kills,result.get("elite_kills",0),result.xp,result.get("nodes_collected",0),result.get("nodes_total",0)],13,Color("#aebad2")))
 	v.add_child(UIFactory.label("Best Momentum ×%d"%result.get("best_combo",0),13,Color("#d1bd85")))
 	if result.get("territory_claimed",false):
 		v.add_child(UIFactory.label("New adjacent territories are now reachable from this claim.",12,Color("#9fd3a7")))
