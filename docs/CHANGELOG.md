@@ -82,3 +82,54 @@
 - Named regional bosses grant a premium Gold/Mana bounty on top of Ruin Siege rewards.
 - Ordinary non-boss expedition guardians preserve the baseline radial-volley behavior, so regional bosses remain special rather than replacing every guardian.
 - Regional Boss Pass passed Godot 4.7.2 project parsing, headless main-scene smoke test and Web export before documentation-only follow-up commits.
+
+## 2026-08-22 — M1 Interactive Dawnkeep Pass
+- Replaced the settlement's card-grid-first presentation with a visual top-down **Dawnkeep settlement canvas**.
+- Added eight procedural building silhouettes with distinct visual identities for Town Hall, Lumberyard, Quarry, Farmstead, Barracks, Forge, Arcane Lab and Trade Hall.
+- Roads connect the settlement back toward Town Hall so the city reads as a place rather than a menu.
+- Buildings can be selected and upgraded directly from the settlement scene while the Research Council remains accessible alongside it.
+- Buildings can be dragged to reshape Dawnkeep; cosmetic layout persists locally in `user://dawnkeep_layout.cfg`.
+- Zero-level structures appear as construction states, preserving readability before authored environment assets exist.
+- The procedural settlement kit is explicitly temporary scaffolding for future authored visual assets, not the final art target.
+- Dawnkeep Scene Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
+
+## 2026-08-22 — M1 Frontier Contracts Pass
+- Added a persistent **Frontier Contract Board** as a parallel retention loop.
+- Players can carry up to three optional contracts at once.
+- Initial contract families track kills, new territory claims, expedition victories, guardian/boss kills, gear recovery, expedition Gold and reaching higher Threat.
+- Completed contracts pay resources plus Renown, giving the player another reason to choose a specific next expedition.
+- The available board can be refreshed for Gold, creating a small repeatable economy sink.
+- Contract state persists locally while the online backend is not yet authoritative.
+- Frontier Contracts Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
+
+## 2026-08-22 — M1 Expedition Risk Stances Pass
+- Added a player-selected risk layer before entering reachable territories.
+- **Standard March** keeps the territory at its normal profile.
+- **Prospector's Route** raises effective Threat by 1 and resource richness by one tier, creating a deliberate farming-risk choice.
+- **Blood Oath** raises effective Threat by 3 so the same territory can become a much harsher test without requiring the player to travel farther first.
+- Existing Threat-scaled XP, Renown, loot and enemy/boss systems see the increased risk instead of the stance being only UI flavor.
+- Risk Stance Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
+
+## 2026-08-22 — M1 Unit Evolution Pass
+- Added the first permanent unit-evolution tier, unlocked when a base unit family reaches **Rank 3**.
+- Added eight branches with two meaningful choices for each initial unit family.
+- Militia can become **Vanguard** (boss breaker) or **Shieldwall** (Warden protection).
+- Archer can become **Ranger** (fast mobile pressure) or **Longbow** (slow heavy ranged damage).
+- War Wolf can become **Dire Wolf** (wounded-target executioner) or **Pack Alpha** (army amplifier).
+- Mage can become **Stormcaller** (chain damage) or **Lifebinder** (Warden sustain support).
+- Branches change live combat behavior, range, cadence, damage and support effects rather than only renaming units.
+- Evolution state is stored inside the existing player save dictionary and old saves receive the schema lazily.
+- Warband UI exposes evolution requirements, costs, branch descriptions and the permanent choice.
+- The current pre-alpha deliberately has no evolution respec yet so the first balance pass can expose whether choices feel distinct enough.
+- Unit Evolution Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
+
+## 2026-08-22 — M1 Regional Loot Families Pass
+- Added six biome-bound equipment families so loot identity reflects **where the player fought**, not only rarity and affix rolls.
+- Families are **Dawnward** (Greenlands), **Briarbound** (Ancient Forest), **Deepforge** (Iron Hills), **Mireglass** (Mistfen), **Cinderborn** (Ash Wastes) and **Rimebound** (Frostwild).
+- Each family has authored names across all nine current equipment slots, producing **54 named regional item identities** before procedural affix combinations.
+- Generated regional gear preserves the existing Power/rarity/affix system while receiving family name, lore and biome provenance.
+- Epic/Legendary equipment dropped from named regional bosses can carry boss provenance directly in the displayed item name.
+- Added functional 2-piece and 4-piece set bonuses: army damage/cadence, harvest/movement, durability, lifesteal, crit/damage and dash/movement depending on family.
+- Inventory now exposes family lore, equipped piece count, active/inactive set bonuses, active set summary and boss provenance.
+- Biome selection therefore begins to participate in build planning and targeted loot pursuit, strengthening the reason to revisit regions.
+- Regional Loot Families Pass passed Godot 4.7.2 parsing, headless main-scene smoke and Web export.
