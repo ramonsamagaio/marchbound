@@ -9,7 +9,7 @@
 
 ## 1. Pitch
 
-MARCHBOUND is a persistent fantasy strategy/action RPG where the player develops a settlement and technology, commands a limited-capacity army across a persistent strategic frontier, personally resolves expeditions in fast top-down action maps, collects modular gear, trades resources and keeps pushing into increasingly dangerous territory.
+MARCHBOUND is a persistent fantasy strategy/action RPG where the player develops a settlement and technology, commands a limited-capacity army across a persistent strategic frontier, personally resolves expeditions in fast top-down action maps, collects modular build-defining gear, trades resources and keeps pushing into increasingly dangerous territory.
 
 The player should repeatedly think: **“one more expedition, then I can afford/unlock/try that.”**
 
@@ -27,18 +27,19 @@ MARCHBOUND is not five games glued together. Each reference owns a layer:
 ## 3. Core loop
 
 1. **Dawnkeep:** collect passive/offline production, upgrade buildings, research, forge and recruit.
-2. **Warden / Army:** spend permanent Talent Points and choose a Command-limited army composition.
+2. **Warden / Army:** spend permanent Talent Points, equip a persistent gear build and choose a Command-limited army composition.
 3. **World frontier:** inspect biome, threat, richness, objective, boss/PvP metadata and strategic position.
 4. **Supply line:** patrol owned land or enter an unclaimed orthogonally adjacent tile.
 5. **Expedition:** personally enter the territory.
 6. **Action:** move, evade, auto-attack, use abilities, direct the army indirectly, harvest resources and build Momentum.
 7. **Objective pressure:** the tile objective determines what forces the guardian into the open.
 8. **Guardian:** defeat the guardian while handling biome enemies, elites and projectiles.
-9. **Extraction:** receive resources, XP, Renown and possible equipment.
-10. **Claim:** first victory permanently claims that tile for the current Frontier Season and opens new adjacent territory.
-11. **Power conversion:** spend the haul on buildings, research, units, talents and gear.
-12. **Push farther:** higher threat and different biomes/objectives create the next temptation.
-13. **Frontier Season:** prestige-like resets reshape pressure while preserving meaningful meta progression.
+9. **Extraction:** receive resources, XP, Renown and possible affixed equipment.
+10. **Loot decision:** compare the drop against the currently equipped piece. A lower-Power item may still be desirable because its affixes support a different build.
+11. **Claim:** first victory permanently claims that tile for the current Frontier Season and opens new adjacent territory.
+12. **Power conversion:** spend the haul on buildings, research, units, talents and gear.
+13. **Push farther:** higher threat and different biomes/objectives create the next temptation.
+14. **Frontier Season:** prestige-like resets reshape pressure while preserving meaningful meta progression.
 
 ## 4. World layer
 
@@ -84,8 +85,8 @@ Target feel: **Necesse + Vampire Survivors**, faster and more active than tradit
 - Space dash with short invulnerability window.
 - Q Rally army.
 - E Shockwave.
-- Equipment and permanent talents influence combat identity.
-- Temporary Field Doctrines create a build inside each run.
+- Equipment affixes and permanent talents influence combat identity before the run begins.
+- Temporary Field Doctrines create a second build layer inside each run.
 - Harvesting and objectives force movement instead of passive edge-circling.
 
 ### Momentum
@@ -94,7 +95,7 @@ Fast consecutive kills build a short-lived Momentum chain. Momentum boosts Warde
 
 ### Resource sites
 
-Each expedition spawns several biome-weighted resource sites. Standing beside a site channels a short harvest, granting resources, XP and a small heal. Richer territories spawn more/larger payouts. **Scavenger** talent increases these yields.
+Each expedition spawns several biome-weighted resource sites. Standing beside a site channels a short harvest, granting resources, XP and a small heal. Richer territories spawn more/larger payouts. **Scavenger** talents and **Prospector's** gear affixes increase these yields.
 
 ### Combat feel pass 1
 
@@ -161,7 +162,7 @@ Intended archetypes already include at least:
 - Mobility / Marchstep / Windstep build
 - Arc/Shockwave area-control hybrid
 
-The run layer should eventually become pleasantly overpowered without making permanent progression irrelevant.
+The persistent gear layer should seed an archetype before an expedition, while doctrines let that archetype mutate or hybridize during the run.
 
 ## 9. Permanent Warden talents
 
@@ -189,7 +190,7 @@ Initial costs:
 - War Wolf: 3
 - Mage: 4
 
-Capacity grows through Warden level, Leadership research, Town Hall and Commander talents, with artifacts/doctrines possible later.
+Capacity grows through Warden level, Leadership research, Town Hall, Commander talents and **Bannered** gear affixes, with artifacts/doctrines possible later.
 
 Current units:
 
@@ -251,11 +252,11 @@ Initial research branches:
 
 Technology should increasingly unlock mechanics/buildings/item tiers/unit branches, not only percentages.
 
-## 13. Equipment / visual identity
+## 13. Equipment / loot identity / visual identity
 
-This remains a major perceived-value pillar.
+This is a major perceived-value and retention pillar. Equipment needs to be visually aspirational **and** mechanically build-defining.
 
-Target:
+### Visual target
 
 - modular paper-doll character in Inventory and Inspect Player
 - base body prepared for Spine animation
@@ -284,17 +285,38 @@ Art direction from supplied references:
 - layered armor with clear material separation
 - modular body/equipment structure
 
-Rarities:
+### Rarity and affix counts
 
-- common
-- uncommon
-- rare
-- epic
-- legendary
+- Common — 0 affixes
+- Uncommon — 1 affix
+- Rare — 2 affixes
+- Epic — 3 affixes
+- Legendary — 4 affixes
 
-Other-player Inspect should create aspirational “where did they get that?” moments.
+Higher Threat improves raw item Power and rarity opportunity. Ruin Siege and Elite kills also improve rarity odds. Epic/Legendary items may incorporate their leading affix into the display name.
 
-Current MVP has procedural gear drops, inventory/equip, forge upgrades and a functional procedural paper-doll preview. **Gear affixes are the next loot-system priority.**
+### Current affix families
+
+- **Sharpened:** flat Warden damage
+- **Vigorous:** max HP
+- **Fleet:** movement speed
+- **Keen:** critical chance
+- **Vampiric:** lifesteal
+- **Warlord's:** army damage
+- **Prospector's:** harvest yield
+- **Fortunate:** gear-drop chance
+- **Bannered:** Command capacity
+- **Blinking:** dash cooldown reduction
+
+Affix pools are slot-specific. Weapons bias offense; boots bias movement/dash; shoulders/chest can reinforce Command/army/durability; belts/capes/gloves can support economic or hybrid builds.
+
+### Loot decision principle
+
+**Item Power is not the only answer.** The Inventory compares a candidate against the currently equipped item in the same slot and exposes both Power delta and special-stat gains/losses. A lower-Power item can be the better strategic choice if its affixes complete a build.
+
+Current implementation includes procedural gear drops, slot-specific affixes, live equipped-bonus aggregation, inventory comparison, equip, forge upgrades and the functional procedural paper-doll preview.
+
+Other-player Inspect should eventually create aspirational “where did they get that?” moments by exposing both visual equipment and mechanically interesting rolls.
 
 ## 14. Marketplace / PvP / social direction
 
@@ -309,6 +331,8 @@ Long-term:
 - price history
 - anti-dupe ledger
 - server-side escrow and authoritative purchases
+
+Affixes make player-to-player gear trading materially more interesting because two items of the same slot/rarity can support very different builds.
 
 MVP has deterministic NPC listings only to prove the economy/UI loop.
 
@@ -348,13 +372,15 @@ Current/future pillars:
 - Warden levels and talents
 - widening Command
 - unit ranks/evolutions
-- gear rarities, upgrades and future affixes
+- gear rarity + multi-affix combinations + upgrades
 - settlement levels and specialization
 - technology branches
 - Renown
 - world bosses/events
 - market economy
 - guild/territory layer later
+
+The combinatorics of slots, rarity, affixes, talents, doctrines and army composition are intended to provide a long progression horizon without requiring infinite handcrafted content.
 
 Frontier Seasons currently reset claims back to Dawnkeep, raise frontier pressure and preserve broader progression.
 
@@ -389,7 +415,7 @@ GitHub Actions currently validates:
 3. Web export
 4. Web build artifact upload
 
-M1 Fun Pass 1 passed all three executable validation stages before merge.
+The Gear Affix Pass passed all executable stages before its documentation-only follow-up commits.
 
 ## 17. Art production pipeline
 
@@ -446,18 +472,21 @@ Implemented and validated foundations now include:
 - settlement/passive/offline economy
 - eight building families
 - six technology branches
+- rarity-scaled slot-specific gear affixes
+- live equipped-build bonuses
+- inventory same-slot comparison
 - equipment/inventory/forge/paper-doll preview
 - NPC marketplace proof
 - Renown and Frontier Season scaffold
 - local save schema migration
 - automated Godot parse/smoke/Web export
 
-## 20. Immediate priorities after Fun Pass 1
+## 20. Immediate priorities after Gear Affix Pass
 
-1. **Gear affixes and equipment identity** so loot changes playstyle, not only Power.
-2. **Regional bosses** with mechanics distinct from the generic guardian volley.
-3. **Contracts/quests** that deliberately pull the player toward different biomes/objectives and create short-session goals.
-4. **Unit evolution choices** so army progression gains collection/build identity.
+1. **Regional bosses** with mechanics distinct from the generic guardian volley.
+2. **Contracts/quests** that deliberately pull the player toward different biomes/objectives and create short-session goals.
+3. **Unit evolution choices** so army progression gains collection/build identity.
+4. **Named equipment families / 20+ authored item identities** layered over the procedural affix system.
 5. **First browser URL** and interactive Chrome validation.
 6. **Visual foundation**: approved body, Spine paper-doll, first armor set, resource icons, settlement/world/combat visual language.
 7. User playtest and balance pass focused on the core question: **does the next expedition feel irresistible?**

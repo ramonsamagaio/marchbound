@@ -72,8 +72,10 @@
 - [x] Elite enemy variants with extra risk/reward
 - [x] Dash invulnerability timing / active evasion
 - [ ] 3 distinct regional bosses
-- [ ] 20+ equipment pieces
-- [ ] Gear affixes
+- [ ] 20+ equipment pieces / named loot families
+- [x] First gear-affix system with rarity-scaled slot-specific rolls
+- [x] Equipped affixes modify combat, Command, harvest and drop economy
+- [x] Inventory affix display and same-slot comparison
 - [x] First explicit expedition objective variants besides survival
 - [x] First resource nodes / extraction interactions
 - [x] 3+ meaningful run-build directions through 12 stackable Field Doctrines
@@ -85,6 +87,9 @@
 - [x] M1 Fun Pass 1 Godot 4.7.2 parse validation
 - [x] M1 Fun Pass 1 headless main-scene smoke validation
 - [x] M1 Fun Pass 1 Web export validation
+- [x] Gear Affix Pass Godot 4.7.2 parse validation
+- [x] Gear Affix Pass headless main-scene smoke validation
+- [x] Gear Affix Pass Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth

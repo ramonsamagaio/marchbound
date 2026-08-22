@@ -26,6 +26,7 @@ var arc_chance := 0.0
 var shockwave_radius := 125.0
 var shockwave_damage_mult := 1.6
 var dash_cooldown_max := 2.3
+var gear_bonuses := {}
 
 var attack_timer := 0.0
 var spawn_timer := 0.0
@@ -68,13 +69,18 @@ func begin(data: Dictionary) -> void:
 	tile = data.duplicate(true)
 	objective = String(tile.get("objective", "Frontier Claim"))
 	rng.seed = int(tile.get("seed", Time.get_ticks_msec()))
+	gear_bonuses = GameState.equipped_bonuses()
 	var ironheart = GameState.talent_rank("ironheart")
 	var bladecraft = GameState.talent_rank("bladecraft")
 	var pathfinder = GameState.talent_rank("pathfinder")
-	player_hp_max = (100.0 + GameState.player.hp_bonus + GameState.gear_power() * 0.8) * (1.0 + ironheart * 0.07)
+	player_hp_max = (100.0 + GameState.player.hp_bonus + GameState.gear_power() * 0.8 + float(gear_bonuses.get("health",0.0))) * (1.0 + ironheart * 0.07)
 	player_hp = player_hp_max
-	damage = (14.0 + GameState.player.level * 1.8 + GameState.gear_power() * 0.8) * (1.0 + bladecraft * 0.08)
-	player_speed = 210.0 * (1.0 + pathfinder * 0.04)
+	damage = (14.0 + GameState.player.level * 1.8 + GameState.gear_power() * 0.8 + float(gear_bonuses.get("damage",0.0))) * (1.0 + bladecraft * 0.08)
+	player_speed = 210.0 * (1.0 + pathfinder * 0.04 + float(gear_bonuses.get("speed",0.0)))
+	crit_chance += float(gear_bonuses.get("crit",0.0))
+	lifesteal += float(gear_bonuses.get("lifesteal",0.0))
+	army_damage_mult *= 1.0 + float(gear_bonuses.get("army_damage",0.0))
+	dash_cooldown_max *= max(0.55,1.0-float(gear_bonuses.get("dash_cdr",0.0)))
 	_spawn_allies()
 	_spawn_resource_nodes()
 	_configure_objective()
@@ -117,7 +123,7 @@ func _spawn_resource_nodes() -> void:
 	resource_nodes.clear()
 	var choices = _resource_choices_for_biome(String(tile.get("biome","Greenlands")))
 	var count = 3 + int(tile.get("richness",1))
-	var scavenger_mult = 1.0 + GameState.talent_rank("scavenger") * 0.12
+	var scavenger_mult = 1.0 + GameState.talent_rank("scavenger") * 0.12 + float(gear_bonuses.get("harvest",0.0))
 	for i in count:
 		var p = Vector2(rng.randf_range(80.0,bounds.size.x-80.0),rng.randf_range(70.0,bounds.size.y-70.0))
 		if p.distance_to(player_pos) < 120.0:
@@ -510,6 +516,7 @@ func _update_feedback(delta:float) -> void:
 		draw_offset = Vector2(rng.randf_range(-shake_strength,shake_strength),rng.randf_range(-shake_strength,shake_strength))
 	else:
 		draw_offset = Vector2.ZERO
+		shake_strength = 0.0
 
 func _spawn_ring(pos: Vector2, color: Color) -> void:
 	particles.append({"pos":pos,"life":0.35,"max":0.35,"color":color})
@@ -591,12 +598,66 @@ func _finish(victory: bool) -> void:
 	var threat = int(tile.get("threat",1))
 	var objective_xp = _apply_objective_reward(victory)
 	var item = {}
-	var chance = 0.18 + threat*0.025 + (0.35 if boss_killed else 0.0) + GameState.talent_rank("fortune")*0.03
+	var chance = 0.18 + threat*0.025 + (0.35 if boss_killed else 0.0) + GameState.talent_rank("fortune")*0.03 + float(gear_bonuses.get("fortune",0.0))
 	if objective == "Ruin Siege" and victory:
 		chance += 0.20
 	if rng.randf() < chance:
 		item = generate_loot_item(threat)
 	finished.emit({"victory":victory,"kills":kills,"elite_kills":elite_kills,"xp":xp+objective_xp+(80*threat if victory else 0),"loot":loot.duplicate(true),"threat":threat,"boss_killed":boss_killed,"item":item,"nodes_collected":nodes_collected,"nodes_total":resource_nodes.size(),"best_combo":best_combo,"objective":objective,"objective_progress":_objective_progress(),"objective_target":objective_target})
+
+func _affix_count(rarity:String) -> int:
+	return {"common":0,"uncommon":1,"rare":2,"epic":3,"legendary":4}.get(rarity,0)
+
+func _affix_pool(slot:String) -> Array:
+	return {
+		"weapon":["damage","crit","lifesteal"],
+		"helm":["crit","fortune","health"],
+		"shoulders":["army_damage","command","health"],
+		"chest":["health","army_damage","command"],
+		"gloves":["damage","crit","harvest"],
+		"belt":["command","harvest","fortune"],
+		"legs":["health","speed","army_damage"],
+		"boots":["speed","dash_cdr","fortune"],
+		"cape":["fortune","army_damage","lifesteal","speed"]
+	}.get(slot,["damage","health","fortune"])
+
+func _affix_tier_mult(rarity:String) -> float:
+	return {"common":1.0,"uncommon":1.0,"rare":1.2,"epic":1.45,"legendary":1.8}.get(rarity,1.0)
+
+func _roll_affix(key:String,threat:int,rarity:String) -> Dictionary:
+	var tier = _affix_tier_mult(rarity)
+	match key:
+		"damage":
+			var value = round((1.5+threat*0.42)*tier*10.0)/10.0
+			return {"key":key,"name":"Sharpened","value":value,"text":"+%.1f Warden damage"%value}
+		"health":
+			var value = round((8.0+threat*1.8)*tier)
+			return {"key":key,"name":"Vigorous","value":value,"text":"+%d max HP"%int(value)}
+		"speed":
+			var value = min(0.14,(0.025+threat*0.0015)*tier)
+			return {"key":key,"name":"Fleet","value":value,"text":"+%d%% movement speed"%int(round(value*100.0))}
+		"crit":
+			var value = min(0.13,(0.025+threat*0.0012)*tier)
+			return {"key":key,"name":"Keen","value":value,"text":"+%d%% critical chance"%int(round(value*100.0))}
+		"lifesteal":
+			var value = min(0.045,(0.008+threat*0.00055)*tier)
+			return {"key":key,"name":"Vampiric","value":value,"text":"+%.1f%% lifesteal"%(value*100.0)}
+		"army_damage":
+			var value = min(0.24,(0.055+threat*0.0025)*tier)
+			return {"key":key,"name":"Warlord's","value":value,"text":"+%d%% army damage"%int(round(value*100.0))}
+		"harvest":
+			var value = min(0.30,(0.08+threat*0.003)*tier)
+			return {"key":key,"name":"Prospector's","value":value,"text":"+%d%% harvest yield"%int(round(value*100.0))}
+		"fortune":
+			var value = min(0.13,(0.025+threat*0.0012)*tier)
+			return {"key":key,"name":"Fortunate","value":value,"text":"+%d%% gear-drop chance"%int(round(value*100.0))}
+		"command":
+			var value = max(1,int(round(tier + float(threat)/14.0)))
+			return {"key":key,"name":"Bannered","value":value,"text":"+%d Command"%value}
+		"dash_cdr":
+			var value = min(0.20,(0.045+threat*0.0015)*tier)
+			return {"key":key,"name":"Blinking","value":value,"text":"-%d%% dash cooldown"%int(round(value*100.0))}
+	return {"key":"damage","name":"Sharpened","value":1.0,"text":"+1 Warden damage"}
 
 func generate_loot_item(threat: int) -> Dictionary:
 	var slots = ["weapon","helm","shoulders","chest","gloves","belt","legs","boots","cape"]
@@ -609,10 +670,26 @@ func generate_loot_item(threat: int) -> Dictionary:
 	elif roll > 0.98: rarity="epic"
 	elif roll > 0.72: rarity="rare"
 	elif roll > 0.42: rarity="uncommon"
-	var prefix = {"common":"Frontier","uncommon":"Tempered","rare":"Runebound","epic":"Sovereign","legendary":"Mythic"}[rarity]
+	var rarity_prefix = {"common":"Frontier","uncommon":"Tempered","rare":"Runebound","epic":"Sovereign","legendary":"Mythic"}[rarity]
 	var noun = {"weapon":"Blade","helm":"Helm","shoulders":"Pauldrons","chest":"Cuirass","gloves":"Gauntlets","belt":"Warbelt","legs":"Greaves","boots":"Sabatons","cape":"Mantle"}[slot]
 	var power = 5+threat*3+{"common":0,"uncommon":3,"rare":7,"epic":13,"legendary":22}[rarity]
-	return GameState.make_item("%s %s"%[prefix,noun],slot,rarity,power,{})
+	var bonuses := {}
+	var affixes := []
+	var pool = _affix_pool(slot).duplicate()
+	var count = min(_affix_count(rarity),pool.size())
+	for i in count:
+		var pick_index = rng.randi_range(0,pool.size()-1)
+		var key = String(pool[pick_index])
+		pool.remove_at(pick_index)
+		var affix = _roll_affix(key,threat,rarity)
+		affixes.append(affix)
+		bonuses[key] = float(bonuses.get(key,0.0))+float(affix.value)
+	var display_name = "%s %s"%[rarity_prefix,noun]
+	if affixes.size()>0 and rarity in ["epic","legendary"]:
+		display_name = "%s %s"%[String(affixes[0].name),display_name]
+	var item = GameState.make_item(display_name,slot,rarity,power,bonuses)
+	item["affixes"] = affixes
+	return item
 
 func _draw() -> void:
 	draw_set_transform(draw_offset)

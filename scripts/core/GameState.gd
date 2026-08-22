@@ -32,7 +32,7 @@ func reset_new_game(emit_signal := true) -> void:
 	buildings = {"town_hall":1,"lumberyard":1,"quarry":1,"farm":1,"barracks":1,"forge":0,"arcane_lab":0,"market":0}
 	tech = {"leadership":0,"metallurgy":0,"agriculture":0,"arcana":0,"exploration":0,"commerce":0}
 	talents = {"bladecraft":0,"ironheart":0,"pathfinder":0,"commander":0,"scavenger":0,"fortune":0}
-	inventory = [make_item("Warden Blade","weapon","common",7,{"damage":5}),make_item("Frontier Cuirass","chest","common",6,{"armor":4}),make_item("Scout Boots","boots","uncommon",8,{"speed":0.05})]
+	inventory = [make_item("Warden Blade","weapon","common",7,{"damage":5.0}),make_item("Frontier Cuirass","chest","common",6,{"health":12.0}),make_item("Scout Boots","boots","uncommon",8,{"speed":0.05})]
 	equipped = {"weapon":"","helm":"","shoulders":"","chest":"","gloves":"","belt":"","legs":"","boots":"","cape":""}
 	for item in inventory:
 		if item.slot in ["weapon","chest","boots"]:
@@ -54,6 +54,13 @@ func ensure_schema() -> void:
 		talents = {}
 	for id in TALENT_ORDER:
 		if not talents.has(id): talents[id] = 0
+	for i in inventory.size():
+		var item = inventory[i]
+		if not item.has("bonuses") or typeof(item["bonuses"]) != TYPE_DICTIONARY:
+			item["bonuses"] = {}
+		if not item.has("affixes") or typeof(item["affixes"]) != TYPE_ARRAY:
+			item["affixes"] = []
+		inventory[i] = item
 
 func talent_rank(id:String) -> int:
 	ensure_schema()
@@ -61,7 +68,7 @@ func talent_rank(id:String) -> int:
 
 func spend_talent(id:String) -> bool:
 	ensure_schema()
-	if not id in TALENT_ORDER:
+	if id not in TALENT_ORDER:
 		return false
 	if int(player.skill_points) <= 0:
 		toast_requested.emit("Earn Warden levels to gain Talent Points.")
@@ -111,7 +118,26 @@ func claimed_count() -> int:
 
 func make_item(name:String, slot:String, rarity:String, power:int, bonuses:={}) -> Dictionary:
 	var uid = "%s_%s_%s" % [slot, Time.get_ticks_msec(), randi_range(100,999)]
-	return {"uid":uid,"name":name,"slot":slot,"rarity":rarity,"power":power,"bonuses":bonuses.duplicate(true),"level":1,"upgrade":0}
+	return {"uid":uid,"name":name,"slot":slot,"rarity":rarity,"power":power,"bonuses":bonuses.duplicate(true),"affixes":[],"level":1,"upgrade":0}
+
+func equipped_bonuses() -> Dictionary:
+	ensure_schema()
+	var total := {}
+	for slot in equipped:
+		var item = get_item(String(equipped.get(slot,"")))
+		if item.is_empty():
+			continue
+		var bonuses = item.get("bonuses",{})
+		if typeof(bonuses) != TYPE_DICTIONARY:
+			continue
+		for key in bonuses:
+			var value = bonuses[key]
+			if typeof(value) in [TYPE_INT,TYPE_FLOAT]:
+				total[key] = float(total.get(key,0.0)) + float(value)
+	return total
+
+func equipped_bonus(key:String) -> float:
+	return float(equipped_bonuses().get(key,0.0))
 
 func resource_income_per_minute() -> Dictionary:
 	var town = buildings.town_hall
@@ -124,7 +150,7 @@ func tick_economy(seconds:float) -> void:
 	changed.emit()
 
 func command_capacity() -> int:
-	return int(player.command_base)+int(player.level)*2+int(tech.leadership)*4+int(buildings.town_hall)*2+talent_rank("commander")*2
+	return int(player.command_base)+int(player.level)*2+int(tech.leadership)*4+int(buildings.town_hall)*2+talent_rank("commander")*2+int(round(equipped_bonus("command")))
 
 func unit_command_cost(unit:String) -> int:
 	return {"militia":1,"archer":2,"wolf":3,"mage":4}.get(unit,1)
@@ -145,12 +171,14 @@ func army_power() -> int:
 func gear_power() -> int:
 	var total := 0
 	for slot in equipped:
-		var item = get_item(equipped[slot])
-		if not item.is_empty(): total += int(item.power)+int(item.upgrade)*3
+		var item = get_item(String(equipped.get(slot,"")))
+		if not item.is_empty():
+			total += int(item.power)+int(item.upgrade)*3
 	return total
 
 func total_power() -> int:
-	return army_power()+gear_power()*5+int(player.level)*25+int(player.renown)*3+talent_total_ranks()*18
+	var affix_weight = int(equipped_bonus("damage")*3.0 + equipped_bonus("health") + equipped_bonus("command")*15.0 + equipped_bonus("crit")*180.0 + equipped_bonus("army_damage")*120.0)
+	return army_power()+gear_power()*5+int(player.level)*25+int(player.renown)*3+talent_total_ranks()*18+affix_weight
 
 func get_item(uid:String) -> Dictionary:
 	if uid == "": return {}
@@ -159,6 +187,8 @@ func get_item(uid:String) -> Dictionary:
 	return {}
 
 func add_item(item:Dictionary) -> void:
+	if not item.has("bonuses"): item["bonuses"] = {}
+	if not item.has("affixes"): item["affixes"] = []
 	inventory.append(item)
 	stats.items_found += 1
 	toast_requested.emit("New loot: %s" % item.name)
@@ -168,6 +198,7 @@ func equip_item(uid:String) -> void:
 	var item = get_item(uid)
 	if item.is_empty(): return
 	equipped[item.slot] = uid
+	toast_requested.emit("Equipped %s." % item.name)
 	changed.emit()
 
 func upgrade_item(uid:String) -> bool:

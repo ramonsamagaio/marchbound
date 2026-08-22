@@ -111,8 +111,8 @@ func _finished(result: Dictionary) -> void:
 	SaveManager.save_game()
 	result_overlay=PanelContainer.new()
 	result_overlay.set_anchors_preset(Control.PRESET_CENTER)
-	result_overlay.position=Vector2(330,85)
-	result_overlay.size=Vector2(620,525)
+	result_overlay.position=Vector2(330,75)
+	result_overlay.size=Vector2(620,545)
 	result_overlay.add_theme_stylebox_override("panel",UIFactory.panel(Color("#111827"),15,Color("#856f48")))
 	add_child(result_overlay)
 	var v=VBoxContainer.new()
@@ -133,7 +133,11 @@ func _finished(result: Dictionary) -> void:
 		if amount>0:
 			v.add_child(UIFactory.label("%s +%d"%[key.capitalize(),int(amount)],13))
 	if not result.item.is_empty():
-		v.add_child(UIFactory.label("GEAR DROP: %s · %s"%[result.item.name,result.item.rarity.capitalize()],15,Color("#9fc6f1")))
+		var affixes=result.item.get("affixes",[])
+		var affix_suffix=" · %d AFFIX%s"%[affixes.size(),"ES" if affixes.size()!=1 else ""] if affixes.size()>0 else ""
+		v.add_child(UIFactory.label("GEAR DROP: %s · %s%s"%[result.item.name,result.item.rarity.to_upper(),affix_suffix],15,Color("#9fc6f1")))
+		for affix in affixes:
+			v.add_child(UIFactory.label("◆ %s"%String(affix.get("text","")),11,Color("#b9c9ed")))
 	v.add_child(UIFactory.spacer())
 	var return_screen="world" if result.victory else "city"
 	var return_label="Return to World Map" if result.victory else "Return to Settlement"
