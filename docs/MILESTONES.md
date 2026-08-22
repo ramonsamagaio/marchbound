@@ -46,6 +46,7 @@
 ### M0.2 Browser build
 - [x] Web export generated successfully in CI
 - [x] Automatic GitHub Actions build workflow
+- [x] CI rejects hidden Godot script/autoload errors even when Godot returns exit code 0
 - [ ] Web build validated interactively in Chrome
 - [ ] Public preview URL
 - [ ] Browser save persistence verified
@@ -90,10 +91,15 @@
 - [x] Persistent Warden talent progression with six branches and Talent Points on level-up
 - [x] Player-selected expedition risk stances: Standard / Prospector / Blood Oath
 - [x] Risk stance integrates with effective Threat, resource richness and existing reward scaling
+- [x] Six deterministic Frontier Mutations alter live combat and reward rules
+- [x] Frontier Mutations are visible/targetable on the World Map and stack with risk stances
 - [x] First unit evolution choices at Rank 3
 - [x] Eight first-tier branches across Militia / Archer / War Wolf / Mage
 - [x] Unit evolution branches change live expedition combat roles
 - [x] Evolution choices persist in existing player save data and migrate old saves lazily
+- [x] First Wild Bonds recruitment pass with six biome-specific creatures
+- [x] Wild Bond discovery integrates Monster Hunt, Elite kills, mutations and regional-boss guarantees
+- [x] Wild Bonds persist/migrate, consume Command, can be recruited/trained and deploy in expeditions
 - [x] City placement/building scene instead of management cards only
 - [x] Buildings selectable/upgradable directly from settlement scene
 - [x] Draggable Dawnkeep building layout with local persistence
@@ -130,6 +136,12 @@
 - [x] First March Pass Godot 4.7.2 parse validation
 - [x] First March Pass headless main-scene smoke validation
 - [x] First March Pass Web export validation
+- [x] Frontier Mutations Pass strict Godot 4.7.2 parse validation
+- [x] Frontier Mutations Pass strict headless smoke validation
+- [x] Frontier Mutations Pass strict Web export validation
+- [x] Wild Bonds Pass strict Godot 4.7.2 parse validation
+- [x] Wild Bonds Pass strict headless smoke validation
+- [x] Wild Bonds Pass strict Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth
@@ -158,6 +170,6 @@
 - specialization trees
 - rare regions
 - faction content
-- high-tier monster recruitment
+- rare/high-tier Wild Bonds and creature evolution paths
 - world economy sinks
 - long-term live content architecture
