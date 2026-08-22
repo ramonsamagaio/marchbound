@@ -41,7 +41,7 @@ func _stat_value(key:String) -> float:
 	return 0.0
 
 func progress(contract:Dictionary) -> float:
-	var current := _stat_value(String(contract.get("stat","kills")))
+	var current:float = _stat_value(String(contract.get("stat","kills")))
 	if bool(contract.get("absolute",false)):
 		return current
 	return max(0.0,current-float(contract.get("baseline",0.0)))
@@ -70,7 +70,7 @@ func accept_contract(uid:String) -> bool:
 func abandon_contract(uid:String) -> bool:
 	for i in active.size():
 		if String(active[i].get("uid","")) == uid:
-			var title := String(active[i].get("title","Contract"))
+			var title:String = String(active[i].get("title","Contract"))
 			active.remove_at(i)
 			_save()
 			GameState.toast_requested.emit("Abandoned: %s" % title)
@@ -88,7 +88,7 @@ func claim_contract(uid:String) -> bool:
 			return false
 		suppress_check = true
 		var rewards:Dictionary = contract.get("reward",{}).duplicate(true)
-		var renown := int(contract.get("renown",0))
+		var renown:int = int(contract.get("renown",0))
 		GameState.add_resources(rewards)
 		GameState.player.renown = int(GameState.player.renown)+renown
 		GameState.changed.emit()
@@ -103,9 +103,9 @@ func claim_contract(uid:String) -> bool:
 	return false
 
 func reroll_board() -> bool:
-	var cost := 75 + int(GameState.world.get("season",1))*25
+	var cost:int = 75 + int(GameState.world.get("season",1))*25
 	suppress_check = true
-	var paid := GameState.spend({"gold":cost})
+	var paid:bool = GameState.spend({"gold":cost})
 	suppress_check = false
 	if not paid:
 		GameState.toast_requested.emit("Need %d Gold to refresh contracts." % cost)
@@ -135,15 +135,15 @@ func _ensure_board_size() -> void:
 		available.append(_generate_contract(available.size()+completed_count))
 
 func _generate_contract(index:int) -> Dictionary:
-	var season := int(GameState.world.get("season",1))
-	var level := int(GameState.player.get("level",1))
-	var threat := int(GameState.world.get("highest_threat",1))
-	var types := ["kills","territories","victories","bosses","items","gold","threat"]
-	var stat:String = types[rng.randi_range(0,types.size()-1)]
-	var target := 1
-	var title := "Frontier Work"
-	var desc := ""
-	var absolute := false
+	var season:int = int(GameState.world.get("season",1))
+	var level:int = int(GameState.player.get("level",1))
+	var threat:int = int(GameState.world.get("highest_threat",1))
+	var types:Array = ["kills","territories","victories","bosses","items","gold","threat"]
+	var stat:String = String(types[rng.randi_range(0,types.size()-1)])
+	var target:int = 1
+	var title:String = "Frontier Work"
+	var desc:String = ""
+	var absolute:bool = false
 	match stat:
 		"kills":
 			target = 35 + level*5 + rng.randi_range(0,25)
@@ -174,18 +174,18 @@ func _generate_contract(index:int) -> Dictionary:
 			target = max(threat+2,3+season*2)
 			title = ["Into the Red","Beyond the Lanterns","Deeper March"][rng.randi_range(0,2)]
 			desc = "Conquer a territory of Threat %d or higher." % target
-	var difficulty := max(1,int(ceil(float(target)/10.0))) if stat in ["kills","gold"] else max(1,target)
-	var reward_gold := 70 + season*35 + level*12 + difficulty*10
-	var reward := {"gold":reward_gold}
-	var resource_options := ["wood","stone","iron","food","mana"]
-	var resource:String = resource_options[rng.randi_range(0,resource_options.size()-1)]
+	var difficulty:int = max(1,int(ceil(float(target)/10.0))) if stat in ["kills","gold"] else max(1,target)
+	var reward_gold:int = 70 + season*35 + level*12 + difficulty*10
+	var reward:Dictionary = {"gold":reward_gold}
+	var resource_options:Array = ["wood","stone","iron","food","mana"]
+	var resource:String = String(resource_options[rng.randi_range(0,resource_options.size()-1)])
 	reward[resource] = 8 + season*3 + difficulty*2
-	var renown := 4 + min(15,difficulty*2+season)
+	var renown:int = 4 + min(15,difficulty*2+season)
 	return {"uid":"contract_%d_%d_%d"%[board_cycle,index,rng.randi_range(1000,9999)],"stat":stat,"title":title,"description":desc,"target":target,"baseline":0.0,"absolute":absolute,"reward":reward,"renown":renown}
 
 func _save() -> void:
-	var payload={"board_seed":board_seed,"board_cycle":board_cycle,"available":available,"active":active,"completed_count":completed_count}
-	var file=FileAccess.open(SAVE_PATH,FileAccess.WRITE)
+	var payload:Dictionary={"board_seed":board_seed,"board_cycle":board_cycle,"available":available,"active":active,"completed_count":completed_count}
+	var file:FileAccess=FileAccess.open(SAVE_PATH,FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(payload))
 		file.close()
@@ -193,10 +193,10 @@ func _save() -> void:
 func _load() -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
 		return
-	var file=FileAccess.open(SAVE_PATH,FileAccess.READ)
+	var file:FileAccess=FileAccess.open(SAVE_PATH,FileAccess.READ)
 	if not file:
 		return
-	var data=JSON.parse_string(file.get_as_text())
+	var data:Variant=JSON.parse_string(file.get_as_text())
 	file.close()
 	if typeof(data) != TYPE_DICTIONARY:
 		return
