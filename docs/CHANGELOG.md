@@ -56,3 +56,16 @@
 - Biomes now also have lightweight procedural ground markings to improve battlefield identity before final art assets arrive.
 - Scavenger and Fortune talents are already connected to expedition calculations; Commander directly modifies Command capacity; Bladecraft, Ironheart and Pathfinder modify live combat stats.
 - M1 Fun Pass 1 passed Godot 4.7.2 project parsing, the headless main-scene smoke test and Web export in CI before merge.
+
+## 2026-08-22 — M1 Loot Identity / Gear Affix Pass
+- Equipment drops now roll **rarity-scaled affixes** instead of functioning mainly as larger Item Power numbers.
+- Affix count scales by rarity: Common 0, Uncommon 1, Rare 2, Epic 3, Legendary 4.
+- Slots use different weighted affix pools so boots naturally favor mobility, weapons favor offense, shoulders/chest favor army/Command durability, and utility pieces can support harvest or Fortune builds.
+- Added the first affix families: **Sharpened**, **Vigorous**, **Fleet**, **Keen**, **Vampiric**, **Warlord's**, **Prospector's**, **Fortunate**, **Bannered** and **Blinking**.
+- Equipped affixes now alter actual systems: Warden damage/HP/speed/crit/lifesteal, army damage, Command capacity, harvest yield, gear-drop chance and dash cooldown.
+- Epic and Legendary drops can incorporate a rolled affix into their display name, making high-value loot feel less interchangeable.
+- Inventory now exposes affixes, combined equipped-build bonuses, same-slot Power comparison and the statistical gains/losses caused by a swap.
+- Expedition result screens now expose affix count and individual rolled effects immediately when gear drops.
+- Old saves are migrated so existing inventory entries receive safe empty affix arrays without invalidating the save.
+- Starter gear bonus keys were normalized to the same live-stat system used by generated affixes.
+- Gear Affix Pass passed Godot 4.7.2 project parsing, headless main-scene smoke test and Web export before documentation-only follow-up commits.
