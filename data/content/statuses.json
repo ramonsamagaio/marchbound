@@ -1,0 +1,8 @@
+{
+  "burn": {"name":"Burning","kind":"dot","duration":3.5,"tick_rate":0.5,"damage_per_tick_mult":0.18,"max_stacks":3,"color":"#ff8a55"},
+  "poison": {"name":"Poisoned","kind":"dot","duration":5.0,"tick_rate":0.75,"damage_per_tick_mult":0.12,"max_stacks":5,"color":"#87c866"},
+  "slow": {"name":"Chilled","kind":"slow","duration":2.8,"speed_mult":0.62,"max_stacks":1,"color":"#9de9ff"},
+  "stun": {"name":"Stunned","kind":"stun","duration":0.8,"max_stacks":1,"color":"#ffe28a"},
+  "armor_break": {"name":"Sundered","kind":"vulnerability","duration":4.0,"damage_taken_mult":1.22,"max_stacks":1,"color":"#e3b084"},
+  "hex": {"name":"Hexed","kind":"vulnerability","duration":4.5,"damage_taken_mult":1.16,"speed_mult":0.86,"max_stacks":1,"color":"#c48bea"}
+}
