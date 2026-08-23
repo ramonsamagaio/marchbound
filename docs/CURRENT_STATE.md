@@ -6,7 +6,7 @@
 **Stage:** Pre-Alpha / M1 loop, scale and visual-production expansion  
 **Engine:** Godot 4.7.2, GDScript, Compatibility renderer, browser-first  
 **Repository:** `ramonsamagaio/marchbound`  
-**Active visual pass:** `nyra/visual-atlas-pass-v2` pending strict CI/merge
+**Visual pass:** `nyra/visual-atlas-pass-v2` passed strict CI and is ready for merge
 
 ## Playable loop
 
@@ -243,7 +243,7 @@ A valid green pass requires:
 - generated Web artifact;
 - no hidden SCRIPT ERROR/autoload failure in captured logs.
 
-The **Visual Atlas / Giant Local Map / Unit Quality pass is not yet declared validated**. It is currently on `nyra/visual-atlas-pass-v2` and must pass the strict CI before merge.
+The **Visual Atlas / Giant Local Map / Unit Quality pass passed all strict gates** after the first CI run correctly caught and forced fixes for one invalid Control preset and strict Variant inference issues in the new local-arena code.
 
 ## Architecture direction
 
@@ -263,14 +263,14 @@ The 3-player-per-macro-territory target is a **local-map scale/architecture targ
 
 ## Immediate priorities after this pass
 
-1. Strict CI validation and fix every parse/runtime/Web error.
-2. Interactive 1920×1080 and 1280×720 playtest.
-3. Verify/correct atlas crop coordinates visually inside Godot.
-4. Continue replacing programmer primitives with atlas/SVG assets.
-5. Upload isolated Warden body + modular armor layers for the true paper doll.
-6. Expand local construction beyond the first watchtower.
-7. Add local-map chunk/content generation so the 192×192 territory becomes worth exploring, not merely large empty coordinates.
-8. Public browser preview and Chrome persistence/performance testing.
+1. Interactive 1920×1080 and 1280×720 playtest.
+2. Verify/correct atlas crop coordinates visually inside Godot.
+3. Continue replacing programmer primitives with atlas/SVG assets.
+4. Upload isolated Warden body + modular armor layers for the true paper doll.
+5. Expand local construction beyond the first watchtower.
+6. Add local-map chunk/content generation so the 192×192 territory becomes worth exploring, not merely large empty coordinates.
+7. Public browser preview and Chrome persistence/performance testing.
+8. Start authoritative online/account slice only after the revised local loop is fun.
 
 ## Documentation rule
 
