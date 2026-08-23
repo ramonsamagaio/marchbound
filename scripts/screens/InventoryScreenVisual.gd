@@ -29,7 +29,7 @@ func _build()->void:
 	var left_v=VBoxContainer.new()
 	left_margin.add_child(left_v)
 	left_v.add_child(UIFactory.title("Inventory",24))
-	var intro=UIFactory.label("Regional equipment families make where an item came from matter. Mix affixes, sets and raw power instead of chasing one number.",12,Color("#92a0bf"))
+	var intro=UIFactory.label("Regional equipment families make where an item came from matter. Weapons now also define their attack motion, projectile and knockback.",12,Color("#92a0bf"))
 	intro.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	left_v.add_child(intro)
 	left_v.add_child(UIFactory.hsep())
@@ -71,7 +71,7 @@ func _build()->void:
 	doll.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	doll.size_flags_vertical=Control.SIZE_EXPAND_FILL
 	mid.add_child(doll)
-	var hint=UIFactory.label("Paper-doll composition lives in scenes/ui/PaperDoll.tscn. Body, slots and future armor layers can be repositioned visually in Godot.",10,Color("#7f8ca9"))
+	var hint=UIFactory.label("Paper-doll composition lives in scenes/ui/PaperDoll.tscn. World combat sprites remain deliberately simpler than this prestige/inspect surface.",10,Color("#7f8ca9"))
 	hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	mid.add_child(hint)
@@ -99,6 +99,24 @@ func _build()->void:
 
 func _refresh_detail()->void:
 	super._refresh_detail()
+	var item:=GameState.get_item(selected_uid)
+	if not item.is_empty() and String(item.get("slot",""))=="weapon":
+		detail.add_child(UIFactory.hsep())
+		detail.add_child(UIFactory.label("WEAPON BEHAVIOR",15,Color("#f0dfae")))
+		var content_id:=String(item.get("content_id","training_sword"))
+		var definition:=ContentDB.weapon(content_id)
+		if definition.is_empty(): definition=ContentDB.weapon("training_sword")
+		var attack:=ContentDB.attack(String(definition.get("attack_id","slash_quick")))
+		var projectile_id:=String(definition.get("projectile_id",attack.get("default_projectile","")))
+		var projectile:=ContentDB.projectile(projectile_id) if projectile_id!="" else {}
+		var behavior=UIFactory.label("%s · %s\nAttack speed ×%.2f · Damage ×%.2f · Knockback %.2f"%[String(definition.get("weapon_class","sword")).capitalize(),String(attack.get("name","Attack")),float(definition.get("attack_speed",1.0)),float(definition.get("damage_mult",1.0)),float(definition.get("knockback",0.0))],12,Color("#adc4e7"))
+		behavior.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		detail.add_child(behavior)
+		if not projectile.is_empty():
+			detail.add_child(UIFactory.label("Projectile · %s · speed %d · pierce %d"%[String(projectile.get("name",projectile_id)),int(projectile.get("speed",0)),int(projectile.get("pierce",0))],11,Color("#9ccab8")))
+		var links=UIFactory.label("Inventory sprite: %s\nEquipped sheet: %s\nAttack sprite: %s"%[String(definition.get("inventory_sprite","unset")),String(definition.get("equipped_sheet","unset")),String(definition.get("attack_sprite","unset"))],10,Color("#7f8ca9"))
+		links.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		detail.add_child(links)
 	_make_column_wrap(detail)
 
 func _make_column_wrap(container:Node)->void:
