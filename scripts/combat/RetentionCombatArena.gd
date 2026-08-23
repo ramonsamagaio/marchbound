@@ -178,8 +178,8 @@ func _spawn_nemesis() -> void:
 	enemy["max_hp"] = float(enemy["hp"])
 	enemy["damage_mult"] = float(enemy.get("damage_mult",1.0))*(1.35+float(rank)*0.14)
 	enemy["radius"] = float(enemy.get("radius",14.0))*1.35
-	var trait:String = String(n.get("trait","relentless"))
-	match trait:
+	var nemesis_trait:String = String(n.get("trait","relentless"))
+	match nemesis_trait:
 		"swift": enemy["speed"] = float(enemy.get("speed",60.0))*1.55
 		"ironhide": enemy["hp"] = float(enemy["hp"])*1.45; enemy["max_hp"] = float(enemy["hp"])
 		"vicious": enemy["damage_mult"] = float(enemy["damage_mult"])*1.42
