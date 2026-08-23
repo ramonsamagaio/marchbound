@@ -1,6 +1,6 @@
 extends Control
 
-const CATEGORIES:Array[String] = ["items","monsters","attacks","projectiles","statuses","buildings","tiles"]
+const CATEGORIES:Array[String] = ["items","monsters","attacks","projectiles","statuses","reactions","gambits","buildings","tiles"]
 
 @onready var category:OptionButton = $Margin/Root/Header/Category
 @onready var list:ItemList = $Margin/Root/Body/Left/List
@@ -101,6 +101,15 @@ func _update_summary(definition:Dictionary) -> void:
 				lines.append("Speed ×%.2f"%float(definition.get("speed_mult",1.0)))
 			if definition.has("damage_taken_mult"):
 				lines.append("Damage taken ×%.2f"%float(definition.get("damage_taken_mult",1.0)))
+		"reactions":
+			lines.append("Requires: "+_join_values(Array(definition.get("requires",[]))))
+			lines.append("Reaction damage ×%.2f · Radius %d"%[float(definition.get("damage_mult",0.0)),int(definition.get("radius",0))])
+			lines.append(String(definition.get("description","")))
+		"gambits":
+			lines.append("BOON · %s"%String(definition.get("boon","")))
+			lines.append("PRICE · %s"%String(definition.get("curse","")))
+			lines.append("Victory bounty: %d Gold"%int(definition.get("victory_bounty",0)))
+			lines.append("Effects: "+_dictionary_summary(Dictionary(definition.get("effects",{}))))
 		"buildings":
 			lines.append("Role: %s"%String(definition.get("role","?")))
 			lines.append("Cost: "+_dictionary_summary(Dictionary(definition.get("cost",{}))))
@@ -119,7 +128,7 @@ func _join_values(values:Array) -> String:
 func _dictionary_summary(values:Dictionary) -> String:
 	var parts:Array[String] = []
 	for key:Variant in values.keys():
-		parts.append("%s %s"%[String(values[key]),String(key).capitalize()])
+		parts.append("%s %s"%[String(values[key]),String(key).replace("_"," ").capitalize()])
 	return ", ".join(parts)
 
 func _save() -> void:
