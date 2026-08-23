@@ -3,13 +3,14 @@ extends "res://scripts/screens/WorldScreen.gd"
 func _build()->void:
 	var margin=MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	margin.add_theme_constant_override("margin_left",24)
-	margin.add_theme_constant_override("margin_right",24)
-	margin.add_theme_constant_override("margin_top",18)
-	margin.add_theme_constant_override("margin_bottom",18)
+	margin.add_theme_constant_override("margin_left",22)
+	margin.add_theme_constant_override("margin_right",22)
+	margin.add_theme_constant_override("margin_top",16)
+	margin.add_theme_constant_override("margin_bottom",16)
 	add_child(margin)
 	var root=HBoxContainer.new()
-	root.add_theme_constant_override("separation",18)
+	root.size_flags_vertical=Control.SIZE_EXPAND_FILL
+	root.add_theme_constant_override("separation",16)
 	margin.add_child(root)
 
 	var left=VBoxContainer.new()
@@ -20,9 +21,11 @@ func _build()->void:
 	left.add_child(top)
 	top.add_child(UIFactory.title("The March",30))
 	top.add_child(UIFactory.spacer())
-	map_status=UIFactory.label("",14,Color("#9ca9c9"))
+	map_status=UIFactory.label("",13,Color("#9ca9c9"))
 	top.add_child(map_status)
-	left.add_child(UIFactory.label("Each macro territory opens into a 192 × 192 local tile map. Atlas hexes mark biome, danger and strategic reasons to march.",13,Color("#9ca9c9")))
+	var intro=UIFactory.label("Each macro territory opens into a 192 × 192 local tile map. Atlas hexes mark biome, danger and strategic reasons to march.",12,Color("#9ca9c9"))
+	intro.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	left.add_child(intro)
 	var pan=HBoxContainer.new()
 	pan.alignment=BoxContainer.ALIGNMENT_CENTER
 	pan.add_theme_constant_override("separation",7)
@@ -43,8 +46,8 @@ func _build()->void:
 	grid.columns=GRID_W
 	grid.size_flags_horizontal=Control.SIZE_SHRINK_CENTER
 	grid.size_flags_vertical=Control.SIZE_SHRINK_CENTER
-	grid.add_theme_constant_override("h_separation",7)
-	grid.add_theme_constant_override("v_separation",7)
+	grid.add_theme_constant_override("h_separation",6)
+	grid.add_theme_constant_override("v_separation",6)
 	grid_scroll.add_child(grid)
 
 	var side=PanelContainer.new()
@@ -60,6 +63,8 @@ func _build()->void:
 	side.add_child(side_margin)
 	var side_scroll=ScrollContainer.new()
 	side_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	side_scroll.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	side_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
 	side_margin.add_child(side_scroll)
 	info=VBoxContainer.new()
 	info.size_flags_horizontal=Control.SIZE_EXPAND_FILL
@@ -82,7 +87,7 @@ func _generate_map()->void:
 			var wy=focus.y+gy-int(GRID_H/2)
 			var tile=make_tile(wx,wy)
 			var cell=Control.new()
-			cell.custom_minimum_size=Vector2(108,92)
+			cell.custom_minimum_size=Vector2(104,90)
 			cell.mouse_filter=Control.MOUSE_FILTER_PASS
 			var art=TextureRect.new()
 			art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -121,7 +126,7 @@ func _generate_map()->void:
 			badges.position=Vector2(-58,4)
 			badges.size=Vector2(52,22)
 			badges.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-			badges.add_theme_font_size_override("font_size",13)
+			badges.add_theme_font_size_override("font_size",12)
 			badges.add_theme_color_override("font_color",Color("#ffe1a0"))
 			badges.text=("★" if tile.boss else "")+("✦" if tile.mutations.size()>0 else "")+("♢" if not bool(tile.wild_bond_unlocked) else "")+("✓" if tile.conquered else "")
 			cell.add_child(badges)
@@ -134,6 +139,7 @@ func _generate_map()->void:
 
 func select_tile(tile:Dictionary)->void:
 	super.select_tile(tile)
+	_wrap_info(info)
 	if bool(tile.get("home",false)):
 		return
 	info.add_child(UIFactory.hsep())
@@ -141,3 +147,12 @@ func select_tile(tile:Dictionary)->void:
 	var scale_text=UIFactory.label("%d × %d buildable local tiles · capacity target: %d players in this macro territory."%[int(tile.get("local_map_tiles",192)),int(tile.get("local_map_tiles",192)),int(tile.get("local_player_capacity",3))],11,Color("#9eb2c5"))
 	scale_text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	info.add_child(scale_text)
+	_wrap_info(info)
+
+func _wrap_info(node:Node)->void:
+	for child in node.get_children():
+		if child is Label:
+			child.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+			child.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+		elif child is Container:
+			_wrap_info(child)
