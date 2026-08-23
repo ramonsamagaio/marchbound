@@ -17,13 +17,17 @@ var building_defs={
 }
 
 func _ready()->void:
+	RetentionManager.bank_chain()
 	_build()
 	GameState.changed.connect(refresh)
+	RetentionManager.changed.connect(refresh)
 	refresh()
 
 func _exit_tree()->void:
 	if GameState.changed.is_connected(refresh):
 		GameState.changed.disconnect(refresh)
+	if RetentionManager.changed.is_connected(refresh):
+		RetentionManager.changed.disconnect(refresh)
 
 func _build()->void:
 	var margin=MarginContainer.new()
@@ -83,6 +87,7 @@ func refresh()->void:
 	if not is_inside_tree():
 		return
 	GameState.ensure_schema()
+	RetentionManager.ensure_schema()
 	UIFactory.clear_children(settlement_summary)
 	var income=GameState.resource_income_per_minute()
 	var row=HBoxContainer.new()
@@ -91,6 +96,9 @@ func refresh()->void:
 	row.add_child(UIFactory.spacer())
 	row.add_child(UIFactory.label("Power %d · %d territories · Threat %d · Renown %d"%[GameState.total_power(),GameState.claimed_count(),GameState.world.highest_threat,GameState.player.renown],13,Color("#d5bf83")))
 	settlement_summary.add_child(UIFactory.label("Income/min  Gold +%d · Wood +%d · Stone +%d · Iron +%d · Food +%d · Mana +%.1f"%[income.gold,income.wood,income.stone,income.iron,income.food,income.mana],12,Color("#9fd3a7")))
+	var n:Dictionary=RetentionManager.nemesis_data()
+	if bool(n.get("active",false)):
+		settlement_summary.add_child(UIFactory.label("NEMESIS · %s · Rank %d · %s · last seen in %s"%[String(n.get("name","Unknown")),int(n.get("rank",1)),String(n.get("trait","relentless")).capitalize(),String(n.get("biome","the frontier"))],12,Color("#e5a0a8")))
 	_refresh_selected()
 	_refresh_research()
 	if canvas:
