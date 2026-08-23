@@ -14,6 +14,7 @@ SaveManager="*res://scripts/core/SaveManager.gd"
 ContractManager="*res://scripts/core/ContractManager.gd"
 ContentDB="*res://scripts/core/ContentDB.gd"
 RetentionManager="*res://scripts/core/RetentionManager.gd"
+FrontierManager="*res://scripts/core/FrontierManager.gd"
 
 [display]
 window/size/viewport_width=1920
