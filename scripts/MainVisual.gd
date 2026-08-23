@@ -2,6 +2,7 @@ extends "res://scripts/Main.gd"
 
 func _ready() -> void:
 	screen_scripts["world"] = preload("res://scripts/screens/WorldScreenVisual.gd")
+	screen_scripts["army"] = preload("res://scripts/screens/ArmyScreenVisual.gd")
 	screen_scripts["expedition"] = preload("res://scripts/screens/ExpeditionScreenVisual.gd")
 	super._ready()
 
