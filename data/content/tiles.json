@@ -1,0 +1,31 @@
+{
+  "green_grass": {"name":"Meadow Grass","biome":"Greenlands","kind":"ground","weight":7,"color":"#456c3b","accent":"#4f7c43","walk_cost":1.0,"tags":["grass"]},
+  "green_flowers": {"name":"Flower Grass","biome":"Greenlands","kind":"ground","weight":3,"color":"#4d7440","accent":"#d7c56a","walk_cost":1.0,"tags":["grass","flowers"]},
+  "green_dirt": {"name":"Frontier Dirt","biome":"Greenlands","kind":"ground","weight":3,"color":"#9b8754","accent":"#aa9763","walk_cost":1.0,"tags":["dirt"]},
+  "green_ruin": {"name":"Old Foundation","biome":"Greenlands","kind":"ground","weight":1,"color":"#77766e","accent":"#929189","walk_cost":1.0,"tags":["stone","ruin"]},
+
+  "forest_moss": {"name":"Ancient Moss","biome":"Ancient Forest","kind":"ground","weight":7,"color":"#294d37","accent":"#345c40","walk_cost":1.0,"tags":["moss"]},
+  "forest_roots": {"name":"Rootbound Soil","biome":"Ancient Forest","kind":"ground","weight":4,"color":"#3b5034","accent":"#66543b","walk_cost":1.0,"tags":["roots"]},
+  "forest_glade": {"name":"Glade","biome":"Ancient Forest","kind":"ground","weight":2,"color":"#466a43","accent":"#82905c","walk_cost":1.0,"tags":["grass","flowers"]},
+  "forest_ruin": {"name":"Moss Ruin","biome":"Ancient Forest","kind":"ground","weight":1,"color":"#626b5d","accent":"#7e8873","walk_cost":1.0,"tags":["ruin","moss"]},
+
+  "iron_gravel": {"name":"Iron Gravel","biome":"Iron Hills","kind":"ground","weight":7,"color":"#55595b","accent":"#676b6e","walk_cost":1.0,"tags":["rock"]},
+  "iron_slate": {"name":"Slate Shelf","biome":"Iron Hills","kind":"ground","weight":4,"color":"#454a4f","accent":"#747a80","walk_cost":1.05,"tags":["rock","slate"]},
+  "iron_vein": {"name":"Exposed Vein","biome":"Iron Hills","kind":"ground","weight":2,"color":"#4c5258","accent":"#708d9d","walk_cost":1.0,"tags":["ore"]},
+  "iron_quarry": {"name":"Quarry Floor","biome":"Iron Hills","kind":"ground","weight":1,"color":"#696662","accent":"#8a8378","walk_cost":1.0,"tags":["worked","stone"]},
+
+  "mire_mud": {"name":"Fen Mud","biome":"Mistfen","kind":"ground","weight":6,"color":"#43554a","accent":"#58685a","walk_cost":1.08,"tags":["mud"]},
+  "mire_moss": {"name":"Wet Moss","biome":"Mistfen","kind":"ground","weight":5,"color":"#354f47","accent":"#47645a","walk_cost":1.0,"tags":["moss"]},
+  "mire_water": {"name":"Shallow Mire","biome":"Mistfen","kind":"ground","weight":2,"color":"#3e6161","accent":"#547878","walk_cost":1.22,"tags":["water","shallow"]},
+  "mire_bog": {"name":"Black Bog","biome":"Mistfen","kind":"ground","weight":1,"color":"#303f3c","accent":"#6b7251","walk_cost":1.15,"tags":["bog"]},
+
+  "ash_dust": {"name":"Ash Dust","biome":"Ash Wastes","kind":"ground","weight":6,"color":"#5b443e","accent":"#6d5046","walk_cost":1.0,"tags":["ash"]},
+  "ash_crack": {"name":"Ember Cracks","biome":"Ash Wastes","kind":"ground","weight":4,"color":"#49332f","accent":"#a75d3f","walk_cost":1.0,"tags":["ash","ember"]},
+  "ash_obsidian": {"name":"Obsidian Shelf","biome":"Ash Wastes","kind":"ground","weight":2,"color":"#373138","accent":"#5c4856","walk_cost":1.05,"tags":["obsidian"]},
+  "ash_ruin": {"name":"Charred Ruin","biome":"Ash Wastes","kind":"ground","weight":1,"color":"#57443e","accent":"#88604e","walk_cost":1.0,"tags":["ruin","ash"]},
+
+  "frost_snow": {"name":"Packed Snow","biome":"Frostwild","kind":"ground","weight":7,"color":"#7f9eb2","accent":"#9eb9c8","walk_cost":1.0,"tags":["snow"]},
+  "frost_ice": {"name":"Blue Ice","biome":"Frostwild","kind":"ground","weight":4,"color":"#6d91ad","accent":"#a4d3e6","walk_cost":1.04,"tags":["ice"]},
+  "frost_rock": {"name":"Rime Rock","biome":"Frostwild","kind":"ground","weight":2,"color":"#657584","accent":"#8ca1af","walk_cost":1.0,"tags":["rock","snow"]},
+  "frost_crystal": {"name":"Crystal Shelf","biome":"Frostwild","kind":"ground","weight":1,"color":"#708da6","accent":"#a8e7f2","walk_cost":1.0,"tags":["crystal"]}
+}
