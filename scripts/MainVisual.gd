@@ -5,11 +5,11 @@ const MAIN_SHELL_SCENE:=preload("res://scenes/ui/MainShell.tscn")
 var visual_shell:Control
 
 func _ready() -> void:
-	screen_scripts["city"] = preload("res://scripts/screens/CityScreenVisual.gd")
-	screen_scripts["world"] = preload("res://scripts/screens/WorldScreenVisual.gd")
+	screen_scripts["city"] = preload("res://scripts/screens/CityScreenDiscovery.gd")
+	screen_scripts["world"] = preload("res://scripts/screens/WorldScreenDiscovery.gd")
 	screen_scripts["army"] = preload("res://scripts/screens/ArmyScreenVisual.gd")
-	screen_scripts["inventory"] = preload("res://scripts/screens/InventoryScreenVisual.gd")
-	screen_scripts["expedition"] = preload("res://scripts/screens/ExpeditionScreenVisual.gd")
+	screen_scripts["inventory"] = preload("res://scripts/screens/InventoryScreenDiscovery.gd")
+	screen_scripts["expedition"] = preload("res://scripts/screens/ExpeditionScreenDiscovery.gd")
 	screen_scripts["content"] = preload("res://scripts/screens/ContentLabScreen.gd")
 	super._ready()
 
