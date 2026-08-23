@@ -57,32 +57,32 @@ grow_vertical = 2
 theme_override_constants/separation = 0
 
 [node name="Top" type="PanelContainer" parent="Root"]
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(0, 66)
 layout_mode = 2
 theme_override_styles/panel = SubResource("TopStyle")
 
 [node name="Margin" type="MarginContainer" parent="Root/Top"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_bottom = 7
 
 [node name="Row" type="HBoxContainer" parent="Root/Top/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Root/Top/Margin/Row"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.97, 0.88, 0.68, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 28
 text = "MARCHBOUND"
 vertical_alignment = 1
 
 [node name="Season" type="Label" parent="Root/Top/Margin/Row"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.67, 0.8, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "PRE-ALPHA · FRONTIER SEASON"
 vertical_alignment = 1
 
@@ -92,23 +92,23 @@ size_flags_horizontal = 3
 
 [node name="TopResources" type="HBoxContainer" parent="Root/Top/Margin/Row"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 
 [node name="FirstMarch" type="PanelContainer" parent="Root"]
-custom_minimum_size = Vector2(0, 76)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 theme_override_styles/panel = SubResource("MarchStyle")
 
 [node name="Margin" type="MarginContainer" parent="Root/FirstMarch"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_bottom = 7
 
 [node name="Row" type="HBoxContainer" parent="Root/FirstMarch/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="Text" type="VBoxContainer" parent="Root/FirstMarch/Margin/Row"]
 layout_mode = 2
@@ -120,7 +120,7 @@ layout_mode = 2
 [node name="Title" type="Label" parent="Root/FirstMarch/Margin/Row/Text/Heading"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.85, 0.58, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 text = "FIRST MARCH"
 
 [node name="Spacer" type="Control" parent="Root/FirstMarch/Margin/Row/Text/Heading"]
@@ -130,23 +130,23 @@ size_flags_horizontal = 3
 [node name="Progress" type="Label" parent="Root/FirstMarch/Margin/Row/Text/Heading"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.67, 0.72, 0.82, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = ""
 
 [node name="Description" type="Label" parent="Root/FirstMarch/Margin/Row/Text"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.76, 0.8, 0.88, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = ""
 autowrap_mode = 2
 
 [node name="Go" type="Button" parent="Root/FirstMarch/Margin/Row"]
-custom_minimum_size = Vector2(128, 48)
+custom_minimum_size = Vector2(122, 44)
 layout_mode = 2
 text = "GO"
 
 [node name="Claim" type="Button" parent="Root/FirstMarch/Margin/Row"]
-custom_minimum_size = Vector2(144, 48)
+custom_minimum_size = Vector2(136, 44)
 layout_mode = 2
 text = "CLAIM"
 
@@ -154,54 +154,55 @@ text = "CLAIM"
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+clip_contents = true
 
 [node name="NavPanel" type="PanelContainer" parent="Root"]
-custom_minimum_size = Vector2(0, 70)
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_styles/panel = SubResource("NavStyle")
 
 [node name="Nav" type="HBoxContainer" parent="Root/NavPanel"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="City" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(150, 50)
+custom_minimum_size = Vector2(140, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
 text = "SETTLEMENT"
 
 [node name="World" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(150, 50)
+custom_minimum_size = Vector2(140, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
 text = "WORLD MAP"
 
 [node name="Army" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(150, 50)
+custom_minimum_size = Vector2(140, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
 text = "WAR-BAND"
 
 [node name="Inventory" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(150, 50)
+custom_minimum_size = Vector2(140, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
 text = "INVENTORY"
 
 [node name="Contracts" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(150, 50)
+custom_minimum_size = Vector2(140, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
 text = "CONTRACTS"
 
 [node name="Market" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(150, 50)
+custom_minimum_size = Vector2(140, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
@@ -211,16 +212,16 @@ text = "MARKETPLACE"
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 530.0
-offset_top = 82.0
-offset_right = -530.0
-offset_bottom = 130.0
+offset_left = 520.0
+offset_top = 74.0
+offset_right = -520.0
+offset_bottom = 120.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
