@@ -1,237 +1,277 @@
 # MARCHBOUND - Current State
 
-> Short canonical status ledger. Update this file whenever a development pass materially changes what is playable. The full design canon remains in `MARCHBOUND_MASTER.md`; historical changes remain in `CHANGELOG.md` and focused pass notes.
+> Canonical short status ledger. The full design canon remains in `MARCHBOUND_MASTER.md`; focused implementation notes and audits live beside this file.
 
 **Last updated:** 2026-08-22  
-**Stage:** Pre-Alpha / M1 loop-and-fun expansion  
+**Stage:** Pre-Alpha / M1 loop, scale and visual-production expansion  
 **Engine:** Godot 4.7.2, GDScript, Compatibility renderer, browser-first  
-**Repository:** `ramonsamagaio/marchbound`
+**Repository:** `ramonsamagaio/marchbound`  
+**Active visual pass:** `nyra/visual-atlas-pass-v2` pending strict CI/merge
 
-## Playable loop now
+## Playable loop
 
-`First March guidance -> Dawnkeep -> choose/upgrade Warden + founding troops + Wild Bonds -> inspect Contracts -> target biome/mutation/bond on World Map -> choose risk stance -> objective expedition -> harvest + Momentum + Elites + boss -> regional loot / territory claim / possible creature bond -> equip/set-build/forge/build/research/train -> collect Contracts -> push farther`
+`First March -> Dawnkeep -> Warden / equipment / Warband -> Contracts -> visual World Map -> choose reachable territory + risk -> enter giant local territory -> explore / harvest / fight / build temporary defenses -> guardian / regional boss -> loot / claim / Wild Bond chance -> equip / forge / research / recruit / train -> push farther`
 
-The design target remains: **the player should keep inventing a reason to play one more expedition.**
+The long-term rule is unchanged: **the player should keep inventing a reason to play one more expedition.**
 
-## First March onboarding
+## Current visual production pipeline
 
-New/unfinished saves see a compact non-blocking ribbon in the main shell. It disappears during expeditions and permanently hides once completed. It never prevents free navigation.
+The approved provisional atlas uploaded by the user is now a real project asset:
 
-The four rewarded goals teach the real loop:
-1. **Choose Your Oath** - spend the first Warden Talent Point. Reward: 100 Gold + 80 Food.
-2. **Raise the Warband** - recruit one more unit or train any unit family to Rank 2. Reward: 120 Gold + 60 Iron.
-3. **Take the First Step** - claim one territory beyond Dawnkeep. Reward: 160 Gold + 100 Wood + 80 Stone.
-4. **Turn Blood Into Growth** - upgrade a building or complete one research tier. Reward: 15 Renown + a Rare Dawnward **Sunwatch Helm** with Bannered (+1 Command) and Vigorous (+14 HP).
+`res://assets/marchbound_assetsprov.png`
 
-The final reward deliberately introduces regional set gear through play rather than a text tutorial. Progress lives inside `player.first_march` in the normal save and old saves receive the schema lazily.
+All atlas coordinates/semantic IDs are centralized in:
 
-## Current strategic/world systems
+`res://scripts/core/VisualAtlas.gd`
 
-- effectively unbounded deterministic world coordinates;
+The atlas currently supplies provisional:
+- resource and system icons;
+- human troops;
+- enemies;
+- Wild Bond creatures;
+- buildings;
+- battle effects / pickups;
+- World Map territory art.
+
+The atlas is a production bridge, not final art. Final character/equipment work should follow the approved mannequin + modular armor + assembled Warden references.
+
+## Resolution / layout safety
+
+Native design resolution is now **1920×1080**, increased from 1280×720 after the first playtest exposed crowded HUD/result panels.
+
+Minimum practical window remains **1280×720** and canvas stretch uses `expand`.
+
+The expedition result is now a centered, scroll-safe scene whose Continue button remains outside the variable-length loot body, fixing the case where a completed mission could become impossible to exit because the button fell outside the viewport.
+
+## Scene-driven UI status
+
+Important art-direction surfaces are being moved out of procedural GDScript.
+
+### Converted to `.tscn`
+- `scenes/ui/ExpeditionLayout.tscn`
+- `scenes/ui/ExpeditionResult.tscn`
+- `scenes/ui/PaperDoll.tscn`
+
+The Paper Doll no longer depends on its old procedural `_draw()` body composition. Its visible stage, character art, aura, equipment slots and labels are editor-positionable nodes.
+
+### Partially converted / still code-driven
+- Main shell/navigation: resource icons are visual, shell still code-built.
+- Inventory: Paper Doll is scene-driven, outer 3-column layout still code-built.
+- World Map: territory art is atlas-driven and information panel is scroll-safe, shell still code-built.
+- Dawnkeep: building art is atlas-driven, draggable world canvas remains custom/code-driven.
+- Warband: atlas unit cards + qualities are visible, outer card/layout system still code-built.
+- Contracts / Marketplace: still code-built and lower visual priority.
+
+Full audit: `docs/VISUAL_UI_AUDIT.md`.
+
+## Strategic World Map
+
+- effectively unbounded deterministic macro coordinates;
 - Dawnkeep anchored at `[0,0]`;
-- pannable world-map window;
-- persistent adjacency-based territory conquest / supply lines;
+- adjacency/supply-line conquest;
+- pannable map window;
 - six MVP biomes;
-- Threat scaling with distance and Frontier Season pressure;
-- resource richness, boss identity and future-PvP metadata;
-- four expedition objectives: Frontier Claim, Monster Hunt, Resource Sweep, Ruin Siege;
-- named regional bosses with Beast, Oracle and Colossus mechanical archetypes;
-- three player-selected risk stances:
-  - Standard March;
-  - Prospector's Route (+1 Threat, +1 richness tier);
-  - Blood Oath (+3 effective Threat and corresponding Threat-scaled reward potential);
-- deterministic Frontier Mutations that change territory rules/rewards;
-- undiscovered regional Wild Bonds are exposed as explicit map targets.
+- Threat increases with distance / Frontier Season;
+- resource richness;
+- boss territories;
+- future optional-PvP metadata;
+- four objectives: Frontier Claim, Monster Hunt, Resource Sweep, Ruin Siege;
+- three risk stances: Standard, Prospector, Blood Oath;
+- deterministic Frontier Mutations;
+- regional equipment targeting;
+- regional Wild Bond targeting;
+- macro tiles now use clear atlas territory art rather than primarily text/color buttons.
+
+Every macro World Map territory now advertises a **192×192 local-map target** and a future target capacity of **3 players/Wardens** in that territory.
+
+## Giant local territories
+
+The local expedition prototype is no longer a 900×560 one-screen arena.
+
+Current local map target:
+- **192 × 192 local tiles**;
+- **64 px tile scale**;
+- **36,864 tiles**;
+- **12,288 × 12,288 px world-space**.
+
+The current prototype renders only the visible grid/content around the Warden and uses a lightweight camera model, rather than creating 36,864 scene nodes.
+
+The local territory already contains a physical atlas-driven frontier outpost with buildings, roads, resource nodes and environmental props.
+
+This is the base for the intended Necesse + Vampire Survivors local layer.
+
+## Local building during expeditions
+
+Building is now gameplay, not only scenery.
+
+First field-building prototype:
+- harvest Wood during the expedition;
+- press **B** on a free local grid position;
+- spend **6 Wood harvested in that run**;
+- build a Field Watchtower;
+- watchtowers automatically attack enemies in range;
+- placement snaps to the 64 px local grid;
+- blocked/overlapping placement is rejected;
+- current per-expedition limit is 12 towers.
+
+This is the first step toward local walls, traps, camps, turrets, repair/logistics and resource structures.
+
+## Action combat
+
+- WASD movement;
+- auto attack;
+- dash with invulnerability;
+- Rally and Shockwave;
+- Field Watchtower building on B;
+- Command-limited army followers;
+- biome-specific enemy rosters;
+- melee / rush / tank / ranged enemy behaviors;
+- hostile projectiles;
+- enemy Elites;
+- Momentum kill chains;
+- harvest nodes;
+- 12 stackable Field Doctrines;
+- Warden talent hooks;
+- unit evolution behavior;
+- Wild Bond behavior;
+- regional equipment set bonuses;
+- Frontier Mutation rules;
+- impact feedback / floating text / shake;
+- browser-minded entity caps;
+- player/allies/enemies/resources/buildings now begin using real atlas sprites instead of only programmer primitives.
+
+## Warband progression
+
+### Founding families
+- Militia
+- Archer
+- War Wolf
+- Mage
+
+Each has Rank progression and Rank-3 permanent evolution choices:
+- Vanguard / Shieldwall
+- Ranger / Longbow
+- Dire Wolf / Pack Alpha
+- Stormcaller / Lifebinder
+
+### Wild Bonds
+- Ridgeback
+- Thornkin
+- Stone Golem
+- Mire Leech
+- Ember Imp
+- Frost Wisp
+
+Wild Bonds are regional discoveries. Named regional bosses guarantee an undiscovered local bond. Monster Hunt / Elite-heavy territory improves ordinary discovery odds.
+
+## Individual unit quality
+
+Army families now have a persistent individual-unit layer in `player.unit_roster`.
+
+Old saves migrate existing troops into Standard individual records. New recruits can roll a prefix and/or rare Elite classification.
+
+Current prefix chance: **42%**.
+
+Prefixes:
+- **Swift** - faster cadence / slightly more reach;
+- **Ironhide** - stronger frontline damage;
+- **Blessed** - attacks restore some Warden HP;
+- **Vicious** - stronger execution against wounded enemies;
+- **Ancient** - stronger attacks + extended reach;
+- **Stormtouched** - attacks can chain damage.
+
+### Elite
+Elite is independent of prefix and fills the emotional/collection role of a shiny-quality unit.
+
+Current provisional roll: approximately **1 / 96** for a newly generated individual.
+
+Elite units currently gain combat multipliers and a distinct visual aura/card treatment. A unit may be both prefixed and Elite.
+
+The Warband screen surfaces individual quality cards using atlas art.
+
+## Warden / equipment progression
+
+- Warden XP and levels;
+- six permanent Talent branches;
+- Command progression;
+- procedural equipment power/rarity;
+- slot-specific affixes;
+- six biome-bound equipment families;
+- 54 authored regional item identities;
+- 2pc / 4pc set bonuses;
+- named boss provenance on qualifying drops;
+- equipment comparison;
+- Forge upgrades;
+- scene-driven Paper Doll foundation.
+
+The Paper Doll scene is structurally ready for true modular body/armor layers, but final production quality still requires the isolated approved body and modular armor pieces as RGBA/Spine-ready assets rather than relying forever on a cropped combined atlas unit.
+
+## Dawnkeep / economy
+
+- draggable visual settlement;
+- atlas-driven building art in the current visual pass;
+- Town Hall, Lumberyard, Quarry, Farm, Barracks, Forge, Arcane Lab, Market;
+- building upgrades;
+- six research branches;
+- passive production;
+- offline production;
+- local layout persistence;
+- Renown / Frontier Season scaffold;
+- NPC Marketplace proof;
+- Frontier Contracts;
+- First March onboarding.
 
 ## Frontier Mutations
 
-Territories from Threat 2 onward can carry a deterministic modifier. Deeper territory can stack two mutations, and mutations stack with the selected risk stance.
+- Swarming Brood
+- Frenzied Hunt
+- Ironhide Territory
+- Marked by Elites
+- Rich Veins
+- Arcane Storm
 
-- **Swarming Brood** - extra enemies per wave, slightly softer bodies, +15% combat Gold.
-- **Frenzied Hunt** - faster/harder enemies, +20% expedition XP.
-- **Ironhide Territory** - +30% enemy HP, +10% gear-drop chance.
-- **Marked by Elites** - substantially more Elites, +15% combat Gold and +6% gear-drop chance.
-- **Rich Veins** - +2 harvest sites and +25% harvested yield.
-- **Arcane Storm** - faster hostile projectiles and harder hits, with bonus victory Mana and +4% gear-drop chance.
-
-The World Map marks mutated territory with `✦` and exposes the modifier before commitment. This allows intentional routing for farming, challenge or build testing instead of making procedural tiles interchangeable.
-
-## Current action-combat systems
-
-- direct WASD movement;
-- auto attack;
-- dash with invulnerability timing;
-- Rally and Shockwave active abilities;
-- Command-limited army followers;
-- biome-specific enemy rosters;
-- melee/rush/tank/ranged enemy behaviors;
-- hostile projectiles;
-- elite enemies;
-- Momentum kill chains;
-- biome-weighted harvest nodes inside combat;
-- 12 stackable Field Doctrines creating multiple run-build directions;
-- crit/lifesteal/arc/army/dash/etc build hooks;
-- first unit-evolution combat layer with branch-specific range, cadence, damage, sustain and army-support behavior;
-- first six Wild Bonds with species-specific combat identities;
-- regional equipment set bonuses feed back into combat, harvesting, movement and army performance;
-- Frontier Mutations alter density, HP, speed, damage, Elite rates, projectiles, resources and rewards;
-- impact feedback, floating text and screen shake;
-- browser-minded active-entity caps.
-
-## Current persistent progression
-
-- Warden XP and levels;
-- six Warden Talent branches;
-- Command capacity progression;
-- four founding unit families and unit ranks;
-- permanent first-tier founding-unit evolutions unlocked at Rank 3;
-- eight evolution branches with two choices per founding unit family;
-- six regional Wild Bonds that can be discovered, recruited and trained;
-- settlement buildings and upgrades;
-- six research branches;
-- passive and offline economy;
-- local save persistence;
-- procedural gear power/rarity and slot-specific affixes;
-- six biome-bound equipment families with 54 authored item identities;
-- 2pc / 4pc set bonuses;
-- boss provenance on qualifying high-rarity drops;
-- equipment comparison and Forge upgrades;
-- Renown and Frontier Season prestige scaffold;
-- NPC Marketplace proof;
-- persistent optional Frontier Contract Board;
-- persistent First March onboarding state.
-
-## Wild Bonds - first regional roster
-
-Each MVP biome has one recruitable creature identity. The World Map marks an undiscovered local bond with `♢` so collection becomes a route-planning goal.
-
-- **Greenlands - Ridgeback:** wounded-target hunter. Deals extra damage below 45% enemy HP.
-- **Ancient Forest - Thornkin:** living bulwark. Having Thornkin deployed slightly reduces Warden damage taken.
-- **Iron Hills - Stone Golem:** heavy breaker. High Command cost, slow cadence, strong hits and bonus boss damage.
-- **Mistfen - Mire Leech:** sustain predator. Successful attacks restore a small amount of Warden HP.
-- **Ash Wastes - Ember Imp:** ranged splash pressure. Attacks splash part of their damage into a nearby target.
-- **Frostwild - Frost Wisp:** fast ranged pressure with long reach and high cadence.
-
-Discovery is not pure RNG. A normal victory can form the local bond; higher Threat and Elite kills improve the chance; Monster Hunt and Marked by Elites give additional bonuses; defeating a **named regional boss guarantees** the local bond if it is still undiscovered.
-
-Unlocked creature IDs persist under `player.monster_unlocks`. Old saves receive the schema lazily. Once unlocked, the creature is integrated into the existing `army` and `unit_levels` dictionaries and therefore uses the established Command, recruitment, training, Power, autosave and expedition deployment systems.
-
-Creature evolution is deliberately not part of this first pass. The initial six roles should be playtested before adding rare/evolved creature tiers.
-
-## Regional equipment families
-
-Every MVP biome owns a recognizable equipment family. A generated drop keeps procedural Power/rarity/affixes, but receives an authored regional identity and can contribute to set bonuses.
-
-- **Greenlands - Dawnward:** command/army identity. 2pc gives army damage; 4pc improves army attack cadence.
-- **Ancient Forest - Briarbound:** gathering/mobility identity. 2pc improves harvest yield; 4pc improves movement.
-- **Iron Hills - Deepforge:** durability identity. 2pc increases max HP; 4pc reduces incoming damage.
-- **Mistfen - Mireglass:** sustain identity. 2pc grants lifesteal; 4pc adds more lifesteal.
-- **Ash Wastes - Cinderborn:** aggression identity. 2pc adds critical chance; 4pc increases Warden damage.
-- **Frostwild - Rimebound:** evasive mobility identity. 2pc shortens dash cooldown; 4pc improves movement.
-
-Each family currently has authored names for weapon, helm, shoulders, chest, gloves, belt, legs, boots and cape, producing **54 named regional item identities** before procedural affix combinations. Epic/Legendary equipment from named regional bosses may also carry boss provenance in the displayed name.
-
-Inventory exposes family lore, current equipped-piece count, 2pc/4pc bonus state and active set summary. This makes biome choice part of build planning instead of only resource geography.
-
-## Unit evolution - current first tier
-
-The first permanent branch unlocks when a founding unit family reaches **Rank 3**. Current pre-alpha choices do not have respec yet.
-
-### Militia
-- **Vanguard** - boss breaker. Stronger attacks with a large bonus against guardians/regional bosses.
-- **Shieldwall** - Warden guard. Deployed Militia reduce incoming Warden damage and gain a smaller damage increase.
-
-### Archer
-- **Ranger** - mobile pressure. Much faster attacks and longer range with a minor per-shot damage tradeoff.
-- **Longbow** - heavy ranged damage. Very long range and much stronger individual shots at a slower cadence.
-
-### War Wolf
-- **Dire Wolf** - executioner. Higher/faster damage with a large bonus against wounded targets.
-- **Pack Alpha** - army amplifier. Stronger wolves and a global army-damage buff while wolves are deployed.
-
-### Mage
-- **Stormcaller** - chain damage. Primary attacks arc into nearby targets.
-- **Lifebinder** - sustain support. Faster casts with reduced damage; successful attacks heal the Warden.
-
-Evolution choices are stored inside the existing player save dictionary under `unit_evolutions`, allowing old saves to receive the schema lazily instead of requiring a destructive reset.
-
-## Frontier Contracts
-
-Up to three active contracts can be carried simultaneously. Current families track:
-- kills;
-- new territory claims;
-- expedition victories;
-- guardian/boss kills;
-- equipment recovery;
-- expedition Gold earnings;
-- reaching higher Threat.
-
-Contracts reward resources + Renown. The available board can be refreshed for Gold, creating a small economy sink. Contract state currently persists in browser/local storage separately from the main save while the online backend is not yet authoritative.
-
-## Dawnkeep now
-
-Dawnkeep is no longer only management cards.
-
-- visual settlement canvas;
-- eight distinct procedural building silhouettes;
-- roads connect structures back to Town Hall;
-- buildings can be clicked and upgraded directly;
-- buildings can be dragged to reshape the city;
-- cosmetic layout saves locally to `user://dawnkeep_layout.cfg`;
-- zero-level structures appear as construction states;
-- Research Council / Frontier Season controls remain integrated;
-- procedural visuals are explicitly a bridge toward authored RGBA/Spine/scene assets, not final art.
-
-## Visual direction still locked
-
-High perceived-value art is concentrated in:
-- Inventory / Inspect Player;
-- modular paper-doll character;
-- equipment and weapon presentation;
-- portraits/icons/UI;
-- aspirational other-player inspection.
-
-World/combat art can stay graphically simpler and highly readable to preserve browser performance and scope.
+Mutations stack with risk stances and change live combat/reward rules.
 
 ## Validation status
 
-Current CI validation is intentionally stricter than the original pipeline. Godot 4.7.2 can emit script errors while still returning exit code 0, so the workflow now captures logs and explicitly fails if parse/smoke/export output contains script or autoload failures. Web export must also produce a non-empty `build/web/index.html`.
+The repository uses a hardened Godot 4.7.2 CI because Godot can sometimes print script errors while returning exit code 0.
 
-The active gates are:
+A valid green pass requires:
 - clean project parse;
-- clean headless main-scene smoke run;
+- clean headless main-scene smoke;
 - clean Web export;
-- Web artifact existence.
+- generated Web artifact;
+- no hidden SCRIPT ERROR/autoload failure in captured logs.
 
-During the CI-integrity pass, hidden pre-existing problems in `ContractManager`, `SettlementCanvas` and `PaperDoll` were fixed, including a collision between project helper functions and the Godot 4.7 `CanvasItem.draw_ellipse()` method.
-
-Validated under the hardened gates: **Frontier Mutations Pass** and **Wild Bonds Pass**. Earlier gameplay passes were validated by the previous CI and remain implemented, but future claims of a green build use the hardened standard.
+The **Visual Atlas / Giant Local Map / Unit Quality pass is not yet declared validated**. It is currently on `nyra/visual-atlas-pass-v2` and must pass the strict CI before merge.
 
 ## Architecture direction
 
-Current fast-iteration phase:
+Current phase:
 - Godot client;
-- GitHub source control + automated Web build;
+- GitHub source + strict CI / Web export;
 - local/browser persistence.
 
 Planned online phase:
-- Supabase Auth + Postgres/profile/cloud state;
-- authoritative server-side mutations for economy-sensitive actions;
-- online marketplace/escrow/ledger;
+- Supabase Auth/profile/Postgres/cloud state;
+- authoritative server-side economy mutations;
 - shared world/profile inspection;
-- realtime server only for features that genuinely require it.
+- marketplace ledger/escrow;
+- realtime authority only where genuinely needed.
 
-## Highest-priority next passes
+The 3-player-per-macro-territory target is a **local-map scale/architecture target**, not a claim that multiplayer networking is implemented today.
 
-1. **Public browser preview URL + interactive Chrome validation**, including save persistence, input/focus and a first performance budget.
-2. **Visual Bible v1 + approved body base + first modular armor set**, then replace procedural/placeholder visuals strategically.
-3. **Wild Bonds balance + rare/evolved creature tier design** after the first six roles have been playtested.
-4. First Supabase-backed account/profile/cloud-save slice after the local loop is judged fun.
-5. Deeper itemization later: unique boss relics, regional crafting and set-targeting systems.
+## Immediate priorities after this pass
 
-## Rule for future updates
+1. Strict CI validation and fix every parse/runtime/Web error.
+2. Interactive 1920×1080 and 1280×720 playtest.
+3. Verify/correct atlas crop coordinates visually inside Godot.
+4. Continue replacing programmer primitives with atlas/SVG assets.
+5. Upload isolated Warden body + modular armor layers for the true paper doll.
+6. Expand local construction beyond the first watchtower.
+7. Add local-map chunk/content generation so the 192×192 territory becomes worth exploring, not merely large empty coordinates.
+8. Public browser preview and Chrome persistence/performance testing.
 
-Every material gameplay/design/architecture change should update at least:
-- this file (`CURRENT_STATE.md`);
-- `MILESTONES.md` when milestone status changes;
-- a focused pass note or `CHANGELOG.md` when historical detail matters.
+## Documentation rule
+
+Every material gameplay/design/architecture change updates this ledger and, when relevant, `MILESTONES.md`, `CHANGELOG.md` or a focused implementation/audit note.
