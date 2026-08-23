@@ -4,6 +4,7 @@ func _ready() -> void:
 	screen_scripts["city"] = preload("res://scripts/screens/CityScreenVisual.gd")
 	screen_scripts["world"] = preload("res://scripts/screens/WorldScreenVisual.gd")
 	screen_scripts["army"] = preload("res://scripts/screens/ArmyScreenVisual.gd")
+	screen_scripts["inventory"] = preload("res://scripts/screens/InventoryScreenVisual.gd")
 	screen_scripts["expedition"] = preload("res://scripts/screens/ExpeditionScreenVisual.gd")
 	super._ready()
 
