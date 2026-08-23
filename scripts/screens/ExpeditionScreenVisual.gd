@@ -11,7 +11,7 @@ func _build() -> void:
 	add_child(layout_scene)
 
 	var holder:Control = layout_scene.get_node("Margin/MainRow/ArenaPanel/ArenaHolder")
-	arena = RetentionCombatArena.new()
+	arena = PursuitCombatArena.new()
 	holder.add_child(arena)
 	arena.set_view_size(Vector2(1400,840))
 	arena.hud_changed.connect(_hud)
