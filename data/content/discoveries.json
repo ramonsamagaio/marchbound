@@ -1,0 +1,414 @@
+{
+  "echo_forge": {
+    "name": "Echo Forge",
+    "rarity": "rare",
+    "symbol": "E",
+    "color": "#c999ff",
+    "biomes": [
+      "Greenlands",
+      "Ancient Forest",
+      "Iron Hills",
+      "Mistfen",
+      "Ash Wastes",
+      "Frostwild"
+    ],
+    "intro": "A dead forge still repeats the last blows struck upon it. The anvil seems to recognize the weapon in your hand.",
+    "choices": [
+      {
+        "id": "teach_the_blade",
+        "name": "Teach the blade to listen",
+        "description": "Bind a Storm Echo to the equipped weapon and feed it 80 remembered combat XP.",
+        "effects": {
+          "weapon_echo": "storm_echo",
+          "memory_xp": 80
+        }
+      },
+      {
+        "id": "quench_in_blood",
+        "name": "Quench it in your own blood",
+        "description": "+28% damage this expedition, -18% max HP, and gain the permanent Blood-Tempered campaign mark.",
+        "effects": {
+          "run_damage_mult": 1.28,
+          "run_hp_mult": 0.82,
+          "campaign_mark": "blood_tempered"
+        }
+      },
+      {
+        "id": "strip_the_runes",
+        "name": "Strip the runes for parts",
+        "description": "Gain Mana and Iron immediately, but the noise summons three Elites.",
+        "effects": {
+          "loot_mana": 10,
+          "loot_iron": 28,
+          "spawn_elites": 3
+        }
+      }
+    ]
+  },
+  "warden_grave": {
+    "name": "Warden Grave",
+    "rarity": "uncommon",
+    "symbol": "+",
+    "color": "#b7c4df",
+    "biomes": [
+      "Greenlands",
+      "Ancient Forest",
+      "Iron Hills",
+      "Mistfen",
+      "Ash Wastes",
+      "Frostwild"
+    ],
+    "intro": "A forgotten Warden was buried facing the frontier, weapon planted upright as if the dead still expect an attack.",
+    "choices": [
+      {
+        "id": "swear_the_oath",
+        "name": "Swear their unfinished oath",
+        "description": "Your largest Warband cohort inherits Oathkeeper and the army deals +16% damage this expedition.",
+        "effects": {
+          "warband_legacy": "oathkeeper",
+          "run_army_damage_mult": 1.16
+        }
+      },
+      {
+        "id": "rob_the_dead",
+        "name": "Take what the dead no longer need",
+        "description": "Gain 145 Gold and 20 Iron. Three grave-bound Elites object.",
+        "effects": {
+          "loot_gold": 145,
+          "loot_iron": 20,
+          "spawn_elites": 3
+        }
+      },
+      {
+        "id": "carry_the_name",
+        "name": "Carry the name back to Dawnkeep",
+        "description": "Gain 7 Renown, 2 Atlas Insight, and immediately uncover a new rumor.",
+        "effects": {
+          "renown": 7,
+          "insight": 2,
+          "rumor_refresh": true
+        }
+      }
+    ]
+  },
+  "greedy_idol": {
+    "name": "Greedy Idol",
+    "rarity": "rare",
+    "symbol": "$",
+    "color": "#e7bd62",
+    "biomes": [
+      "Greenlands",
+      "Ancient Forest",
+      "Iron Hills",
+      "Mistfen",
+      "Ash Wastes",
+      "Frostwild"
+    ],
+    "intro": "The idol has no mouth, yet you can hear it appraising the weight of your purse.",
+    "choices": [
+      {
+        "id": "small_offering",
+        "name": "Feed it 80 Gold",
+        "description": "Pay 80 Gold. Gain +10% Fortune this expedition and the idol coughs back 70 Gold in old coin.",
+        "cost_gold": 80,
+        "effects": {
+          "fortune_add": 0.1,
+          "loot_gold": 70
+        }
+      },
+      {
+        "id": "devour_the_purse",
+        "name": "Let it devour 220 Gold",
+        "description": "Pay 220 Gold for +25% damage and +16% Fortune this expedition. Gain the permanent Hunger Debt mark.",
+        "cost_gold": 220,
+        "effects": {
+          "run_damage_mult": 1.25,
+          "fortune_add": 0.16,
+          "campaign_mark": "hunger_debt"
+        }
+      },
+      {
+        "id": "break_the_idol",
+        "name": "Break the little parasite",
+        "description": "Steal 190 Gold from its belly. Four furious Elites arrive to collect.",
+        "effects": {
+          "loot_gold": 190,
+          "spawn_elites": 4
+        }
+      }
+    ]
+  },
+  "moon_shrine": {
+    "name": "Moon Shrine",
+    "rarity": "uncommon",
+    "symbol": "C",
+    "color": "#9fc8ff",
+    "biomes": [
+      "Greenlands",
+      "Ancient Forest",
+      "Iron Hills",
+      "Mistfen",
+      "Ash Wastes",
+      "Frostwild"
+    ],
+    "intro": "A crescent of pale stone reflects a moon that is not currently in the sky.",
+    "choices": [
+      {
+        "id": "offer_weapon",
+        "name": "Lay your weapon in the moonlight",
+        "description": "Awaken a Moonlit Echo and feed the weapon 55 Memory XP.",
+        "effects": {
+          "weapon_echo": "moonlit",
+          "memory_xp": 55
+        }
+      },
+      {
+        "id": "bathe_in_light",
+        "name": "Bathe in the false moonlight",
+        "description": "Heal 50% max HP and gain +10% crit and +18% arc chance for this expedition.",
+        "effects": {
+          "heal_fraction": 0.5,
+          "crit_add": 0.1,
+          "arc_chance_add": 0.18
+        }
+      },
+      {
+        "id": "take_the_mark",
+        "name": "Ask the moon to remember you",
+        "description": "Gain the permanent Moon Mark and +1 Atlas Insight.",
+        "effects": {
+          "campaign_mark": "moon_mark",
+          "insight": 1
+        }
+      }
+    ]
+  },
+  "beast_nest": {
+    "name": "Beast Nest",
+    "rarity": "common",
+    "symbol": "B",
+    "color": "#8fd19b",
+    "biomes": [
+      "Greenlands",
+      "Ancient Forest",
+      "Iron Hills",
+      "Mistfen",
+      "Ash Wastes",
+      "Frostwild"
+    ],
+    "intro": "Tracks circle the den in impossible layers. Something here has been watching armies march by for years.",
+    "choices": [
+      {
+        "id": "make_contact",
+        "name": "Approach without drawing steel",
+        "description": "Attempt to form the local Wild Bond immediately.",
+        "effects": {
+          "bond_local": true
+        }
+      },
+      {
+        "id": "raid_nest",
+        "name": "Raid the nest",
+        "description": "Gain 36 Food and 65 Gold. Two alpha defenders emerge as Elites.",
+        "effects": {
+          "loot_food": 36,
+          "loot_gold": 65,
+          "spawn_elites": 2
+        }
+      },
+      {
+        "id": "learn_the_pack",
+        "name": "Study how the pack moves",
+        "description": "Your largest Warband cohort gains Beastfriend and +10% army damage this expedition.",
+        "effects": {
+          "warband_legacy": "beastfriend",
+          "run_army_damage_mult": 1.1
+        }
+      }
+    ]
+  },
+  "shattered_caravan": {
+    "name": "Shattered Caravan",
+    "rarity": "common",
+    "symbol": "R",
+    "color": "#d5a86e",
+    "biomes": [
+      "Greenlands",
+      "Ancient Forest",
+      "Iron Hills",
+      "Mistfen",
+      "Ash Wastes",
+      "Frostwild"
+    ],
+    "intro": "The wagons are fresh enough to smoke. No bodies remain, but every wheel points in a different direction.",
+    "choices": [
+      {
+        "id": "follow_tracks",
+        "name": "Follow the impossible tracks",
+        "description": "Your largest cohort gains Roadborn and you heal 35% max HP.",
+        "effects": {
+          "warband_legacy": "roadborn",
+          "heal_fraction": 0.35
+        }
+      },
+      {
+        "id": "salvage_fast",
+        "name": "Salvage before whoever did this returns",
+        "description": "Gain Wood, Stone and Gold. Immediately attract a Pursuit Hunter Pack.",
+        "effects": {
+          "loot_wood": 36,
+          "loot_stone": 30,
+          "loot_gold": 90,
+          "hunter_pack": true
+        }
+      },
+      {
+        "id": "read_manifest",
+        "name": "Read the blood-stained manifest",
+        "description": "Gain 2 Atlas Insight and reveal a new rumor elsewhere in the frontier.",
+        "effects": {
+          "insight": 2,
+          "rumor_refresh": true
+        }
+      }
+    ]
+  },
+  "time_scar": {
+    "name": "Time Scar",
+    "rarity": "epic",
+    "symbol": "T",
+    "color": "#7fe1dd",
+    "biomes": [
+      "Greenlands",
+      "Ancient Forest",
+      "Iron Hills",
+      "Mistfen",
+      "Ash Wastes",
+      "Frostwild"
+    ],
+    "intro": "Rain falls upward inside the fracture. You see yourself arrive, leave, die and never come here at all.",
+    "choices": [
+      {
+        "id": "steal_seconds",
+        "name": "Steal seconds from your future",
+        "description": "+30% attack speed and +12% movement this run. Gain the permanent Time Debt mark.",
+        "effects": {
+          "attack_speed_mult": 1.3,
+          "move_speed_mult": 1.12,
+          "campaign_mark": "time_debt"
+        }
+      },
+      {
+        "id": "erase_regret",
+        "name": "Erase one old regret",
+        "description": "Remove your oldest campaign mark, heal 75% max HP and gain +1 Insight.",
+        "effects": {
+          "remove_oldest_mark": true,
+          "heal_fraction": 0.75,
+          "insight": 1
+        }
+      },
+      {
+        "id": "show_weapon_future",
+        "name": "Show your weapon a future battle",
+        "description": "Feed it 160 Memory XP, but enemies become 16% faster this expedition.",
+        "effects": {
+          "memory_xp": 160,
+          "enemy_speed_mult": 1.16
+        }
+      }
+    ]
+  },
+  "black_mirror": {
+    "name": "Black Mirror",
+    "rarity": "epic",
+    "symbol": "M",
+    "color": "#8d78c8",
+    "biomes": [
+      "Greenlands",
+      "Ancient Forest",
+      "Iron Hills",
+      "Mistfen",
+      "Ash Wastes",
+      "Frostwild"
+    ],
+    "intro": "Your reflection is armed differently. It smiles half a second before you do.",
+    "choices": [
+      {
+        "id": "take_reflections_weapon",
+        "name": "Reach in and take its weapon",
+        "description": "Awaken Voidglass on your equipped weapon. Your max HP falls 14% for this expedition.",
+        "effects": {
+          "weapon_echo": "voidglass",
+          "run_hp_mult": 0.86
+        }
+      },
+      {
+        "id": "copy_the_other_you",
+        "name": "Copy the other Warden's stance",
+        "description": "+1 projectile and +12% critical chance this expedition.",
+        "effects": {
+          "projectile_bonus": 1,
+          "crit_add": 0.12
+        }
+      },
+      {
+        "id": "shatter_reflection",
+        "name": "Shatter the reflection before it escapes",
+        "description": "+34% damage this expedition. Four mirror-born Elites emerge from the shards.",
+        "effects": {
+          "run_damage_mult": 1.34,
+          "spawn_elites": 4
+        }
+      }
+    ]
+  },
+  "sealed_vault": {
+    "name": "Sealed Vault",
+    "rarity": "rare",
+    "symbol": "V",
+    "color": "#e0cf8b",
+    "biomes": [
+      "Greenlands",
+      "Ancient Forest",
+      "Iron Hills",
+      "Mistfen",
+      "Ash Wastes",
+      "Frostwild"
+    ],
+    "intro": "The lock has nine keyholes and no door. Something behind the stone whispers the names of your dead enemies.",
+    "choices": [
+      {
+        "id": "answer_with_weapon",
+        "name": "Let your weapon answer",
+        "description": "Awaken Gravebound, gain 45 Memory XP, 130 Gold and 8 Mana.",
+        "effects": {
+          "weapon_echo": "gravebound",
+          "memory_xp": 45,
+          "loot_gold": 130,
+          "loot_mana": 8
+        }
+      },
+      {
+        "id": "force_vault",
+        "name": "Force every lock at once",
+        "description": "Gain 210 Gold, 24 Iron and 6 Mana. Five Vault Wardens attack.",
+        "effects": {
+          "loot_gold": 210,
+          "loot_iron": 24,
+          "loot_mana": 6,
+          "spawn_elites": 5
+        }
+      },
+      {
+        "id": "map_the_lock",
+        "name": "Copy the impossible lock into your Atlas",
+        "description": "Gain 4 Atlas Insight and immediately reveal another rumor.",
+        "effects": {
+          "insight": 4,
+          "rumor_refresh": true
+        }
+      }
+    ]
+  }
+}
