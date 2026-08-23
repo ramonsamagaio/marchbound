@@ -10,7 +10,7 @@ func _build() -> void:
 	add_child(layout_scene)
 
 	var holder:Control = layout_scene.get_node("Margin/MainRow/ArenaPanel/ArenaHolder")
-	arena = QualityCombatArena.new()
+	arena = DepthCombatArena.new()
 	holder.add_child(arena)
 	arena.set_view_size(Vector2(1400,840))
 	arena.hud_changed.connect(_hud)
@@ -121,6 +121,8 @@ func _finished(result:Dictionary) -> void:
 	var item:Dictionary=result.get("item",{})
 	if not item.is_empty():
 		loot_lines.append("\n[color=#9fc6f1][b]GEAR DROP · %s · %s[/b][/color]" % [String(item.get("name","Unknown")),String(item.get("rarity","common")).to_upper()])
+		if item.has("weapon_class"):
+			loot_lines.append("[color=#9ab2d4]%s · %s · Knockback %.1f[/color]"%[String(item.get("weapon_class","weapon")).capitalize(),String(item.get("attack_id","attack")).replace("_"," ").capitalize(),float(item.get("knockback",0.0))])
 		for affix in item.get("affixes",[]):
 			loot_lines.append("[color=#b9c9ed]◆ %s[/color]" % String(affix.get("text","")))
 	loot.text="\n".join(loot_lines)
