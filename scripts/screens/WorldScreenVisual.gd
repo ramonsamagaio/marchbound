@@ -1,5 +1,71 @@
 extends "res://scripts/screens/WorldScreen.gd"
 
+func _build()->void:
+	var margin=MarginContainer.new()
+	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	margin.add_theme_constant_override("margin_left",24)
+	margin.add_theme_constant_override("margin_right",24)
+	margin.add_theme_constant_override("margin_top",18)
+	margin.add_theme_constant_override("margin_bottom",18)
+	add_child(margin)
+	var root=HBoxContainer.new()
+	root.add_theme_constant_override("separation",18)
+	margin.add_child(root)
+
+	var left=VBoxContainer.new()
+	left.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	left.size_flags_vertical=Control.SIZE_EXPAND_FILL
+	root.add_child(left)
+	var top=HBoxContainer.new()
+	left.add_child(top)
+	top.add_child(UIFactory.title("The March",30))
+	top.add_child(UIFactory.spacer())
+	map_status=UIFactory.label("",14,Color("#9ca9c9"))
+	top.add_child(map_status)
+	left.add_child(UIFactory.label("Each macro territory opens into a 192 × 192 local tile map. Atlas hexes mark biome, danger and strategic reasons to march.",13,Color("#9ca9c9")))
+	var pan=HBoxContainer.new()
+	pan.alignment=BoxContainer.ALIGNMENT_CENTER
+	pan.add_theme_constant_override("separation",7)
+	left.add_child(pan)
+	pan.add_child(UIFactory.button("← WEST",func():_pan(-PAN_STEP,0),Color("#252e43")))
+	pan.add_child(UIFactory.button("↑ NORTH",func():_pan(0,-PAN_STEP),Color("#252e43")))
+	pan.add_child(UIFactory.button("DAWNKEEP",func():_set_focus(0,0),Color("#4b442d")))
+	pan.add_child(UIFactory.button("↓ SOUTH",func():_pan(0,PAN_STEP),Color("#252e43")))
+	pan.add_child(UIFactory.button("EAST →",func():_pan(PAN_STEP,0),Color("#252e43")))
+	left.add_child(UIFactory.hsep())
+	var grid_scroll=ScrollContainer.new()
+	grid_scroll.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	grid_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
+	grid_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
+	grid_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO
+	left.add_child(grid_scroll)
+	grid=GridContainer.new()
+	grid.columns=GRID_W
+	grid.size_flags_horizontal=Control.SIZE_SHRINK_CENTER
+	grid.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+	grid.add_theme_constant_override("h_separation",7)
+	grid.add_theme_constant_override("v_separation",7)
+	grid_scroll.add_child(grid)
+
+	var side=PanelContainer.new()
+	side.custom_minimum_size.x=440
+	side.size_flags_vertical=Control.SIZE_EXPAND_FILL
+	side.add_theme_stylebox_override("panel",UIFactory.panel(Color("#151b2a"),12,Color("#35415d")))
+	root.add_child(side)
+	var side_margin=MarginContainer.new()
+	side_margin.add_theme_constant_override("margin_left",16)
+	side_margin.add_theme_constant_override("margin_right",16)
+	side_margin.add_theme_constant_override("margin_top",16)
+	side_margin.add_theme_constant_override("margin_bottom",16)
+	side.add_child(side_margin)
+	var side_scroll=ScrollContainer.new()
+	side_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	side_margin.add_child(side_scroll)
+	info=VBoxContainer.new()
+	info.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	info.add_theme_constant_override("separation",8)
+	side_scroll.add_child(info)
+
 func make_tile(x:int,y:int)->Dictionary:
 	var tile:Dictionary=super.make_tile(x,y)
 	tile["local_map_tiles"]=VisualCombatArena.LOCAL_MAP_TILES
@@ -27,7 +93,7 @@ func _generate_map()->void:
 			if not bool(tile.accessible):
 				art.modulate=Color(0.38,0.40,0.45,0.72)
 			elif bool(tile.conquered):
-				art.modulate=Color(1.06,1.06,1.06,1.0)
+				art.modulate=Color(1.0,1.0,1.0,1.0)
 			cell.add_child(art)
 			var button=Button.new()
 			button.flat=true
@@ -72,4 +138,6 @@ func select_tile(tile:Dictionary)->void:
 		return
 	info.add_child(UIFactory.hsep())
 	info.add_child(UIFactory.label("LOCAL MAP SCALE",13,Color("#f0dfae")))
-	info.add_child(UIFactory.label("%d × %d buildable local tiles · capacity target: %d players in this macro territory."%[int(tile.get("local_map_tiles",192)),int(tile.get("local_map_tiles",192)),int(tile.get("local_player_capacity",3))],11,Color("#9eb2c5")))
+	var scale_text=UIFactory.label("%d × %d buildable local tiles · capacity target: %d players in this macro territory."%[int(tile.get("local_map_tiles",192)),int(tile.get("local_map_tiles",192)),int(tile.get("local_player_capacity",3))],11,Color("#9eb2c5"))
+	scale_text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	info.add_child(scale_text)
