@@ -117,7 +117,7 @@ func _generate_map()->void:
 			threat.text="HOME" if tile.home else "T%d"%int(tile.threat)
 			cell.add_child(threat)
 			var badges=Label.new()
-			badges.set_anchors_preset(Control.PRESET_RIGHT_TOP)
+			badges.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 			badges.position=Vector2(-58,4)
 			badges.size=Vector2(52,22)
 			badges.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
