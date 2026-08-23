@@ -206,7 +206,7 @@ autowrap_mode = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.64, 0.7, 0.8, 1)
 theme_override_font_sizes/font_size = 12
-text = "WASD move · Space dash · Q rally · E shockwave"
+text = "WASD move · Space dash · Q rally · E shockwave · B build Field Watchtower (6 harvested Wood)"
 autowrap_mode = 2
 
 [node name="Spacer" type="Control" parent="Margin/MainRow/SidePanel/SideMargin/Scroll/HUD"]
