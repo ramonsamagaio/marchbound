@@ -1,9 +1,66 @@
 class_name QualityCombatArena
 extends VisualCombatArena
 
+const FIELD_WATCHTOWER_WOOD_COST := 6.0
+const FIELD_WATCHTOWER_RANGE := 390.0
+const FIELD_WATCHTOWER_COOLDOWN := 0.72
+const FIELD_WATCHTOWER_LIMIT := 12
+
+var field_towers:Array = []
+
 func begin(data:Dictionary) -> void:
 	UnitRoster.ensure_schema()
+	field_towers.clear()
 	super.begin(data)
+
+func _process(delta:float) -> void:
+	super._process(delta)
+	if ended or paused_for_upgrade:
+		return
+	if Input.is_action_just_pressed("build_outpost"):
+		_try_build_field_watchtower()
+	_update_field_towers(delta)
+	queue_redraw()
+
+func _try_build_field_watchtower() -> void:
+	if field_towers.size() >= FIELD_WATCHTOWER_LIMIT:
+		_float_text(player_pos+Vector2(0,-52),"FIELD LIMIT REACHED",Color("#d4b28d"),0.9)
+		return
+	if float(loot.get("wood",0.0)) < FIELD_WATCHTOWER_WOOD_COST:
+		_float_text(player_pos+Vector2(0,-52),"NEED 6 HARVESTED WOOD",Color("#d7a48b"),0.9)
+		return
+	var snapped := Vector2(
+		round(player_pos.x/float(LOCAL_TILE_PX))*LOCAL_TILE_PX,
+		round(player_pos.y/float(LOCAL_TILE_PX))*LOCAL_TILE_PX
+	)
+	for tower in field_towers:
+		if Vector2(tower.get("pos",Vector2.ZERO)).distance_to(snapped) < 78.0:
+			_float_text(player_pos+Vector2(0,-52),"TOO CLOSE TO ANOTHER TOWER",Color("#d7a48b"),0.9)
+			return
+	for building in local_structures:
+		if Vector2(building.get("pos",Vector2.ZERO)).distance_to(snapped) < 110.0:
+			_float_text(player_pos+Vector2(0,-52),"BUILD SPACE BLOCKED",Color("#d7a48b"),0.9)
+			return
+	loot["wood"] = float(loot.get("wood",0.0)) - FIELD_WATCHTOWER_WOOD_COST
+	field_towers.append({"pos":snapped,"cooldown":0.18,"level":1})
+	_spawn_ring(snapped,Color("#e1c278"))
+	_float_text(snapped+Vector2(0,-56),"FIELD WATCHTOWER BUILT",Color("#f0d68d"),1.0)
+	_shake(0.08,2.2)
+
+func _update_field_towers(delta:float) -> void:
+	if field_towers.is_empty():
+		return
+	for i in field_towers.size():
+		var tower:Dictionary = field_towers[i]
+		tower["cooldown"] = max(0.0,float(tower.get("cooldown",0.0))-delta)
+		if float(tower.cooldown) <= 0.0 and not enemies.is_empty():
+			var target := nearest_enemy(Vector2(tower.pos))
+			if not target.is_empty() and Vector2(tower.pos).distance_to(Vector2(target.pos)) <= FIELD_WATCHTOWER_RANGE:
+				var tower_damage := 9.0 + float(GameState.player.level)*0.55 + float(tile.get("threat",1))*0.9
+				_damage_enemy(target,tower_damage,false)
+				particles.append({"pos":Vector2(target.pos),"life":0.20,"max":0.20,"color":Color("#e5c578")})
+				tower["cooldown"] = FIELD_WATCHTOWER_COOLDOWN
+		field_towers[i] = tower
 
 func _spawn_allies() -> void:
 	allies.clear()
@@ -66,3 +123,11 @@ func _quality_chain(origin:Dictionary,amount:float)->void:
 			_damage_enemy(enemy,amount,false)
 			_spawn_ring(enemy.pos,Color("#8ebdff"))
 			break
+
+func _draw_ground() -> void:
+	super._draw_ground()
+	for tower in field_towers:
+		var p:Vector2=Vector2(tower.get("pos",Vector2.ZERO))
+		if _visible_world_rect(140.0).has_point(p):
+			_draw_atlas("building_watchtower",p,Vector2(78,72),true)
+			draw_circle(p+Vector2(0,18),30,Color(0.85,0.73,0.38,0.10),false,2.0)
