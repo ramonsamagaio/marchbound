@@ -52,7 +52,7 @@ func _prepare_enemy_statuses(enemy:Dictionary,delta:float) -> void:
 	enemy["statuses"] = status_map
 	enemy["speed"] = 0.0 if stunned else float(enemy.get("base_speed",60.0))*speed_mult
 
-func _damage_enemy(enemy:Dictionary,amount:float,is_crit:bool) -> void:
+func _damage_enemy(enemy:Dictionary,amount:float,is_crit:bool=false) -> void:
 	var multiplier:float = 1.0
 	var status_map:Dictionary = Dictionary(enemy.get("statuses",{}))
 	for raw_id:Variant in status_map.keys():
