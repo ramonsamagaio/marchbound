@@ -1,7 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://marchbound_save.json"
-const SAVE_VERSION := 1
+const SAVE_VERSION := 2
 var last_save_unix := 0
 var autosave_accumulator := 0.0
 var economy_accumulator := 0.0
@@ -19,7 +19,12 @@ func _process(delta:float) -> void:
 		save_game(); autosave_accumulator=0.0
 
 func save_game() -> void:
-	var payload={"version":SAVE_VERSION,"saved_at":int(Time.get_unix_time_from_system()),"game":GameState.to_dict()}
+	var payload={
+		"version":SAVE_VERSION,
+		"saved_at":int(Time.get_unix_time_from_system()),
+		"game":GameState.to_dict(),
+		"retention":RetentionManager.to_dict()
+	}
 	var file=FileAccess.open(SAVE_PATH,FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(payload)); file.close(); last_save_unix=payload.saved_at
@@ -30,7 +35,12 @@ func load_game() -> void:
 	if not file: return
 	var text=file.get_as_text(); file.close(); var data=JSON.parse_string(text)
 	if typeof(data)!=TYPE_DICTIONARY or not data.has("game"): return
-	GameState.from_dict(data.game); var saved_at=int(data.get("saved_at",Time.get_unix_time_from_system())); apply_offline_progress(saved_at)
+	GameState.from_dict(data.game)
+	if data.has("retention") and data.retention is Dictionary:
+		RetentionManager.from_dict(Dictionary(data.retention))
+	else:
+		RetentionManager.reset(false)
+	var saved_at=int(data.get("saved_at",Time.get_unix_time_from_system())); apply_offline_progress(saved_at)
 
 func apply_offline_progress(saved_at:int) -> void:
 	var now=int(Time.get_unix_time_from_system()); var elapsed=clamp(now-saved_at,0,8*60*60)
@@ -46,4 +56,4 @@ func format_duration(seconds:int) -> String:
 
 func wipe_save() -> void:
 	if FileAccess.file_exists(SAVE_PATH): DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
-	GameState.reset_new_game(); save_game()
+	GameState.reset_new_game(); RetentionManager.reset(); save_game()
