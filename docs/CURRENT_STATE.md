@@ -1,277 +1,235 @@
-# MARCHBOUND - Current State
+# MARCHBOUND — Current State
 
-> Canonical short status ledger. The full design canon remains in `MARCHBOUND_MASTER.md`; focused implementation notes and audits live beside this file.
+> Canonical short status ledger. Full design canon lives in `MARCHBOUND_MASTER.md`; implementation-specific schemas live beside this file.
 
-**Last updated:** 2026-08-22  
-**Stage:** Pre-Alpha / M1 loop, scale and visual-production expansion  
-**Engine:** Godot 4.7.2, GDScript, Compatibility renderer, browser-first  
-**Repository:** `ramonsamagaio/marchbound`  
-**Visual pass:** `nyra/visual-atlas-pass-v2` passed strict CI and is ready for merge
+**Last updated:** 2026-08-23  
+**Stage:** Pre-Alpha / M1 depth + content expansion  
+**Engine:** Godot 4.7.2 · GDScript · Compatibility renderer · browser-first  
+**Repository:** `ramonsamagaio/marchbound`
 
-## Playable loop
+## Current playable loop
 
-`First March -> Dawnkeep -> Warden / equipment / Warband -> Contracts -> visual World Map -> choose reachable territory + risk -> enter giant local territory -> explore / harvest / fight / build temporary defenses -> guardian / regional boss -> loot / claim / Wild Bond chance -> equip / forge / research / recruit / train -> push farther`
+`First March → Dawnkeep → equipment / Warband / Contracts → World Map → choose reachable territory + risk → giant local territory → explore / harvest / fight / build field defenses → guardian / regional boss → loot / claim / Wild Bond → equip / forge / research / recruit / train → push farther`
 
-The long-term rule is unchanged: **the player should keep inventing a reason to play one more expedition.**
-
-## Current visual production pipeline
-
-The approved provisional atlas uploaded by the user is now a real project asset:
-
-`res://assets/marchbound_assetsprov.png`
-
-All atlas coordinates/semantic IDs are centralized in:
-
-`res://scripts/core/VisualAtlas.gd`
-
-The atlas currently supplies provisional:
-- resource and system icons;
-- human troops;
-- enemies;
-- Wild Bond creatures;
-- buildings;
-- battle effects / pickups;
-- World Map territory art.
-
-The atlas is a production bridge, not final art. Final character/equipment work should follow the approved mannequin + modular armor + assembled Warden references.
-
-## Resolution / layout safety
-
-Native design resolution is now **1920×1080**, increased from 1280×720 after the first playtest exposed crowded HUD/result panels.
-
-Minimum practical window remains **1280×720** and canvas stretch uses `expand`.
-
-The expedition result is now a centered, scroll-safe scene whose Continue button remains outside the variable-length loot body, fixing the case where a completed mission could become impossible to exit because the button fell outside the viewport.
-
-## Scene-driven UI status
-
-Important art-direction surfaces are being moved out of procedural GDScript.
-
-### Converted to `.tscn`
-- `scenes/ui/ExpeditionLayout.tscn`
-- `scenes/ui/ExpeditionResult.tscn`
-- `scenes/ui/PaperDoll.tscn`
-
-The Paper Doll no longer depends on its old procedural `_draw()` body composition. Its visible stage, character art, aura, equipment slots and labels are editor-positionable nodes.
-
-### Partially converted / still code-driven
-- Main shell/navigation: resource icons are visual, shell still code-built.
-- Inventory: Paper Doll is scene-driven, outer 3-column layout still code-built.
-- World Map: territory art is atlas-driven and information panel is scroll-safe, shell still code-built.
-- Dawnkeep: building art is atlas-driven, draggable world canvas remains custom/code-driven.
-- Warband: atlas unit cards + qualities are visible, outer card/layout system still code-built.
-- Contracts / Marketplace: still code-built and lower visual priority.
-
-Full audit: `docs/VISUAL_UI_AUDIT.md`.
+Core long-game rule: **the player should keep inventing a reason to play one more expedition.**
 
 ## Strategic World Map
 
 - effectively unbounded deterministic macro coordinates;
-- Dawnkeep anchored at `[0,0]`;
-- adjacency/supply-line conquest;
-- pannable map window;
+- Dawnkeep at `[0,0]`;
+- adjacency / supply-line conquest;
 - six MVP biomes;
-- Threat increases with distance / Frontier Season;
-- resource richness;
-- boss territories;
-- future optional-PvP metadata;
-- four objectives: Frontier Claim, Monster Hunt, Resource Sweep, Ruin Siege;
-- three risk stances: Standard, Prospector, Blood Oath;
+- Threat, resource richness, boss territories and future PvP metadata;
+- Frontier Claim / Monster Hunt / Resource Sweep / Ruin Siege objectives;
+- Standard / Prospector / Blood Oath risk stances;
 - deterministic Frontier Mutations;
-- regional equipment targeting;
-- regional Wild Bond targeting;
-- macro tiles now use clear atlas territory art rather than primarily text/color buttons.
+- regional loot families and Wild Bond targeting;
+- atlas-driven territory art.
 
-Every macro World Map territory now advertises a **192×192 local-map target** and a future target capacity of **3 players/Wardens** in that territory.
+Every macro territory currently opens to a **192×192 local-tile target**: 36,864 local tiles / 12,288×12,288 world-space. The architecture reserves a future target capacity of 3 Wardens/players per macro territory.
 
-## Giant local territories
+## Local territory / Necesse layer
 
-The local expedition prototype is no longer a 900×560 one-screen arena.
+Current prototype:
+- lightweight player-following camera rather than 36,864 scene nodes;
+- physical outpost with buildings and roads;
+- biome-weighted resource harvesting;
+- local props;
+- field construction;
+- camera-relative enemy spawning;
+- deterministic local ground variation.
 
-Current local map target:
-- **192 × 192 local tiles**;
-- **64 px tile scale**;
-- **36,864 tiles**;
-- **12,288 × 12,288 px world-space**.
+First field structure is the **Field Watchtower**, built from Wood harvested in the current run. It snaps to the local grid and automatically attacks enemies.
 
-The current prototype renders only the visible grid/content around the Warden and uses a lightweight camera model, rather than creating 36,864 scene nodes.
+The new content pass adds **24 local ground identities** across the six current biomes. They are data-driven rather than individual hardcoded arena cases.
 
-The local territory already contains a physical atlas-driven frontier outpost with buildings, roads, resource nodes and environmental props.
+## Data-driven Content Spine
 
-This is the base for the intended Necesse + Vampire Survivors local layer.
+A new `ContentDB` autoload moves content identity out of giant combat scripts.
 
-## Local building during expeditions
+Shipped catalogs:
+- `data/content/items.json`
+- `data/content/monsters.json`
+- `data/content/attacks.json`
+- `data/content/projectiles.json`
+- `data/content/tiles.json`
 
-Building is now gameplay, not only scenery.
+Current first catalog size:
+- **20 reusable attack definitions**;
+- **13 projectile definitions**;
+- **26 authored weapon/armor definitions**;
+- **36 normal monster identities**;
+- **24 local ground variants**.
 
-First field-building prototype:
-- harvest Wood during the expedition;
-- press **B** on a free local grid position;
-- spend **6 Wood harvested in that run**;
-- build a Field Watchtower;
-- watchtowers automatically attack enemies in range;
-- placement snaps to the 64 px local grid;
-- blocked/overlapping placement is rejected;
-- current per-expedition limit is 12 towers.
+Runtime editor overrides save to `user://marchbound_content_overrides.json`, which is browser-safe and does not mutate the shipped project.
 
-This is the first step toward local walls, traps, camps, turrets, repair/logistics and resource structures.
+Schema / authoring guide: `docs/CONTENT_SYSTEM.md`.
 
-## Action combat
+## Content Lab
 
-- WASD movement;
-- auto attack;
-- dash with invulnerability;
-- Rally and Shockwave;
-- Field Watchtower building on B;
-- Command-limited army followers;
-- biome-specific enemy rosters;
-- melee / rush / tank / ranged enemy behaviors;
-- hostile projectiles;
-- enemy Elites;
-- Momentum kill chains;
-- harvest nodes;
-- 12 stackable Field Doctrines;
-- Warden talent hooks;
-- unit evolution behavior;
-- Wild Bond behavior;
-- regional equipment set bonuses;
-- Frontier Mutation rules;
-- impact feedback / floating text / shake;
-- browser-minded entity caps;
-- player/allies/enemies/resources/buildings now begin using real atlas sprites instead of only programmer primitives.
+`CONTENT LAB` is now a routable scene-driven tool inside the game shell.
 
-## Warband progression
+It supports:
+- Items / Monsters / Attacks / Projectiles / Tiles categories;
+- browse/select entries;
+- editable structured JSON;
+- atlas preview when an existing visual ID is available;
+- relationship summary;
+- persistent local/runtime overrides;
+- reset-to-shipped-entry;
+- attack/projectile reference validation.
 
-### Founding families
-- Militia
-- Archer
-- War Wolf
-- Mage
+Its UI lives in `scenes/ui/ContentEditor.tscn`, so the editor itself is visually adjustable in Godot.
 
-Each has Rank progression and Rank-3 permanent evolution choices:
-- Vanguard / Shieldwall
-- Ranger / Longbow
-- Dire Wolf / Pack Alpha
-- Stormcaller / Lifebinder
+## Weapon / attack architecture
 
-### Wild Bonds
-- Ridgeback
-- Thornkin
-- Stone Golem
-- Mire Leech
-- Ember Imp
-- Frost Wisp
+Weapons now separate **content logic from art**.
 
-Wild Bonds are regional discoveries. Named regional bosses guarantee an undiscovered local bond. Monster Hunt / Elite-heavy territory improves ordinary discovery odds.
+A weapon can independently define:
+- `inventory_sprite` — inventory / loot visual;
+- `equipped_sheet` — world-character equipped overlay / sheet;
+- `attack_sprite` — temporary visible weapon used during the attack motion;
+- `attack_id` — collision + timing behavior;
+- `projectile_id` — ranged payload;
+- attack speed;
+- damage multiplier;
+- knockback;
+- biome / drop identity.
 
-## Individual unit quality
+Current reusable attack modes:
+- **melee arc** — sword / axe style sweep;
+- **melee thrust** — spear / dagger forward collision corridor;
+- **melee slam** — hammer impact radius;
+- **ranged** — bow / crossbow / staff / wand / spell projectile release.
 
-Army families now have a persistent individual-unit layer in `player.unit_roster`.
+All player weapons now have a knockback value, even when small.
 
-Old saves migrate existing troops into Standard individual records. New recruits can roll a prefix and/or rare Elite classification.
+When final weapon art is absent, the combat layer can draw deterministic class-shaped placeholders so attack behavior remains readable: sword, axe, spear, dagger, hammer, bow, crossbow, staff and wand.
 
-Current prefix chance: **42%**.
+## Ranged payloads / spells
 
-Prefixes:
-- **Swift** - faster cadence / slightly more reach;
-- **Ironhide** - stronger frontline damage;
-- **Blessed** - attacks restore some Warden HP;
-- **Vicious** - stronger execution against wounded enemies;
-- **Ancient** - stronger attacks + extended reach;
-- **Stormtouched** - attacks can chain damage.
+Ranged weapon behavior is not welded to one projectile.
 
-### Elite
-Elite is independent of prefix and fills the emotional/collection role of a shiny-quality unit.
+Current projectile foundations include:
+- Wooden / Iron / Ember / Rime arrows;
+- Iron bolt;
+- Arcane Bolt;
+- Ember Orb;
+- Frost Shard;
+- Void Orb;
+- Holy Spark;
+- Thorn Spine;
+- Acid Glob;
+- hostile Hex Bolt.
 
-Current provisional roll: approximately **1 / 96** for a newly generated individual.
+Projectile data can independently control speed, life, collision radius, pierce, damage multiplier, knockback multiplier, splash radius and future status hooks.
 
-Elite units currently gain combat multipliers and a distinct visual aura/card treatment. A unit may be both prefixed and Elite.
+Current spell-flavored attacks include Ember Lance, Frost Shard, Void Orb, Sun Spear and Thorn Burst, alongside Staff Cast and Wand Flick.
 
-The Warband screen surfaces individual quality cards using atlas art.
+## Monster depth
 
-## Warden / equipment progression
+The normal monster catalog now targets six identities per current biome instead of a tiny shared roster.
 
-- Warden XP and levels;
-- six permanent Talent branches;
-- Command progression;
-- procedural equipment power/rarity;
-- slot-specific affixes;
-- six biome-bound equipment families;
-- 54 authored regional item identities;
-- 2pc / 4pc set bonuses;
-- named boss provenance on qualifying drops;
-- equipment comparison;
+Examples:
+- Greenlands: Raider, Wolf, Slime, Tusk Boar, Bandit Archer, Meadow Shaman;
+- Ancient Forest: Bramble Guard, Thorn Hound, Forest Wisp, Bark Guard, Vine Spitter, Lost Dryad;
+- Iron Hills: Stone Golem, Cave Bat, Ironclad Deserter, Quarry Rat, Crystal Shardling, Miner Wraith;
+- Mistfen: Mire Leech, Bog Slime, Fen Crawler, Mire Spitter, Swamp Witch, Lantern Wisp;
+- Ash Wastes: Ember Imp, Cinder Hound, Ash Raider, Magma Beetle, Ember Cultist, Charred Golem;
+- Frostwild: Frostling, Ice Wolf, Snow Wisp, Rime Archer, Crystal Yeti, Frost Seer.
+
+Monsters can define behavior, attack, optional projectile, HP/speed/damage multipliers, sprite ID, biome membership and authored drop candidates.
+
+Existing named regional boss patterns remain in place.
+
+## Equipment / loot
+
+Existing systems remain:
+- procedural rarity / power;
+- affixes;
 - Forge upgrades;
-- scene-driven Paper Doll foundation.
+- six regional equipment families;
+- 54 regional set identities;
+- 2pc / 4pc bonuses;
+- boss provenance;
+- equipment comparison.
 
-The Paper Doll scene is structurally ready for true modular body/armor layers, but final production quality still requires the isolated approved body and modular armor pieces as RGBA/Spine-ready assets rather than relying forever on a cropped combined atlas unit.
+The new authored item catalog adds explicit weapon identities and gives new content drops a stable `content_id`. A generated weapon can carry its class, attack, projectile, attack speed, knockback and art links through the normal inventory/save flow.
 
-## Dawnkeep / economy
+Inventory detail now exposes weapon behavior and its sprite links for debugging/content production.
 
-- draggable visual settlement;
-- atlas-driven building art in the current visual pass;
-- Town Hall, Lumberyard, Quarry, Farm, Barracks, Forge, Arcane Lab, Market;
-- building upgrades;
-- six research branches;
-- passive production;
-- offline production;
-- local layout persistence;
-- Renown / Frontier Season scaffold;
-- NPC Marketplace proof;
-- Frontier Contracts;
-- First March onboarding.
+## Warband
 
-## Frontier Mutations
+Founding families:
+- Militia;
+- Archer;
+- War Wolf;
+- Mage.
 
-- Swarming Brood
-- Frenzied Hunt
-- Ironhide Territory
-- Marked by Elites
-- Rich Veins
-- Arcane Storm
+Rank-3 evolution branches:
+- Vanguard / Shieldwall;
+- Ranger / Longbow;
+- Dire Wolf / Pack Alpha;
+- Stormcaller / Lifebinder.
 
-Mutations stack with risk stances and change live combat/reward rules.
+Wild Bonds:
+- Ridgeback;
+- Thornkin;
+- Stone Golem;
+- Mire Leech;
+- Ember Imp;
+- Frost Wisp.
 
-## Validation status
+Individual units can carry prefixes Swift / Ironhide / Blessed / Vicious / Ancient / Stormtouched plus an independent rare **Elite** classification.
 
-The repository uses a hardened Godot 4.7.2 CI because Godot can sometimes print script errors while returning exit code 0.
+## Visual direction
 
-A valid green pass requires:
-- clean project parse;
-- clean headless main-scene smoke;
-- clean Web export;
-- generated Web artifact;
-- no hidden SCRIPT ERROR/autoload failure in captured logs.
+Two visual scales intentionally coexist:
 
-The **Visual Atlas / Giant Local Map / Unit Quality pass passed all strict gates** after the first CI run correctly caught and forced fixes for one invalid Control preset and strict Variant inference issues in the new local-arena code.
+1. **In-world player / army / enemies:** direction has shifted toward very compact, manually editable pixel sprites. Current production target under exploration is roughly a 24×32 logical character inside a 32×40 cell, with minimal side-view movement cycles and left/right mirroring where useful.
+2. **Inventory / inspect / prestige surfaces:** the scene-driven paper-doll foundation remains available for richer equipment presentation.
 
-## Architecture direction
+The provisional atlas and SVG placeholder kit remain implementation bridges, not a requirement that final world sprites share their detail level.
 
-Current phase:
-- Godot client;
-- GitHub source + strict CI / Web export;
-- local/browser persistence.
+## Scene-driven UI status
 
-Planned online phase:
-- Supabase Auth/profile/Postgres/cloud state;
-- authoritative server-side economy mutations;
-- shared world/profile inspection;
-- marketplace ledger/escrow;
-- realtime authority only where genuinely needed.
+Converted to `.tscn` foundations:
+- `scenes/ui/MainShell.tscn`;
+- `scenes/ui/ExpeditionLayout.tscn`;
+- `scenes/ui/ExpeditionResult.tscn`;
+- `scenes/ui/PaperDoll.tscn`;
+- `scenes/ui/ContentEditor.tscn`.
 
-The 3-player-per-macro-territory target is a **local-map scale/architecture target**, not a claim that multiplayer networking is implemented today.
+Still significantly code-driven:
+- outer Inventory layout;
+- World Map shell;
+- Dawnkeep custom canvas;
+- Warband cards/layout;
+- Contracts / Marketplace.
 
-## Immediate priorities after this pass
+Full visual audit: `docs/VISUAL_UI_AUDIT.md`.
 
-1. Interactive 1920×1080 and 1280×720 playtest.
-2. Verify/correct atlas crop coordinates visually inside Godot.
-3. Continue replacing programmer primitives with atlas/SVG assets.
-4. Upload isolated Warden body + modular armor layers for the true paper doll.
-5. Expand local construction beyond the first watchtower.
-6. Add local-map chunk/content generation so the 192×192 territory becomes worth exploring, not merely large empty coordinates.
-7. Public browser preview and Chrome persistence/performance testing.
-8. Start authoritative online/account slice only after the revised local loop is fun.
+## Browser / validation
 
-## Documentation rule
+Native design target: **1920×1080**. Minimum practical target: **1280×720**.
 
-Every material gameplay/design/architecture change updates this ledger and, when relevant, `MILESTONES.md`, `CHANGELOG.md` or a focused implementation/audit note.
+CI is intentionally strict because Godot may report script errors while returning exit code 0. A green pass requires:
+- project parse;
+- headless Main smoke;
+- Web export;
+- Web artifact;
+- no hidden script/autoload failure in captured logs.
+
+The first Depth Content CI correctly rejected loose Variant inference. The strongly typed rewrite then passed **parse + smoke + Web export**.
+
+## Important remaining near-term work
+
+- first hands-on balance/fun pass of the current large-map build;
+- public browser preview URL / Chrome persistence and focus test;
+- replace provisional in-world art with the newly chosen compact pixel-character language;
+- expand in-expedition building beyond the first Watchtower;
+- add more reusable spell/attack mechanics after the current primitives are proven fun;
+- complete final inventory/item/world sprite asset mapping;
+- sound/music/deeper feedback;
+- Supabase/auth/cloud/authoritative economy phase;
+- shared 2–3 player local-territory prototype later, after the solo loop is strong.
