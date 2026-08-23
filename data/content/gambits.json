@@ -1,0 +1,82 @@
+{
+  "blood_price": {
+    "name": "Blood Price",
+    "boon": "+68% Warden damage",
+    "curse": "-28% maximum HP",
+    "effects": {"damage_mult": 1.68, "hp_mult": 0.72},
+    "victory_bounty": 90,
+    "color": "#d86f78"
+  },
+  "glass_march": {
+    "name": "Glass March",
+    "boon": "+2 projectiles and +22% attack speed",
+    "curse": "Enemies move 32% faster",
+    "effects": {"projectile_bonus": 2, "attack_speed_mult": 1.22, "enemy_speed_mult": 1.32},
+    "victory_bounty": 80,
+    "color": "#9fcff1"
+  },
+  "gold_fever": {
+    "name": "Gold Fever",
+    "boon": "Huge victory bounty and better gear odds",
+    "curse": "Enemies deal 35% more damage",
+    "effects": {"enemy_damage_mult": 1.35, "fortune_add": 0.22},
+    "victory_bounty": 240,
+    "color": "#e7c35f"
+  },
+  "arcane_overflow": {
+    "name": "Arcane Overflow",
+    "boon": "+45% chain chance, +1 projectile",
+    "curse": "Enemies gain 22% max HP",
+    "effects": {"arc_chance_add": 0.45, "projectile_bonus": 1, "enemy_hp_mult": 1.22},
+    "victory_bounty": 110,
+    "color": "#9c8df3"
+  },
+  "iron_funeral": {
+    "name": "Iron Funeral",
+    "boon": "+90% knockback and +32% damage",
+    "curse": "Attack speed reduced by 22%",
+    "effects": {"damage_mult": 1.32, "knockback_mult": 1.9, "attack_speed_mult": 0.78},
+    "victory_bounty": 120,
+    "color": "#b6b8bd"
+  },
+  "wolf_debt": {
+    "name": "Wolf Debt",
+    "boon": "Army damage +75% and cadence +20%",
+    "curse": "Warden damage -24%",
+    "effects": {"army_damage_mult": 1.75, "army_haste_mult": 0.8, "damage_mult": 0.76},
+    "victory_bounty": 100,
+    "color": "#d4a47f"
+  },
+  "grave_invitation": {
+    "name": "Grave Invitation",
+    "boon": "Massive gear-drop boost",
+    "curse": "An elite execution pack arrives immediately",
+    "effects": {"fortune_add": 0.42, "spawn_elites": 5},
+    "victory_bounty": 150,
+    "color": "#c58adb"
+  },
+  "hungry_forge": {
+    "name": "Hungry Forge",
+    "boon": "+55% attack speed",
+    "curse": "Enemies gain 48% max HP",
+    "effects": {"attack_speed_mult": 1.55, "enemy_hp_mult": 1.48},
+    "victory_bounty": 150,
+    "color": "#f08a58"
+  },
+  "builder_kings": {
+    "name": "Builder Kings",
+    "boon": "+40% movement, harvest and field-building tempo",
+    "curse": "Warden damage -18%",
+    "effects": {"move_speed_mult": 1.4, "harvest_add": 0.4, "damage_mult": 0.82},
+    "victory_bounty": 85,
+    "color": "#9fc590"
+  },
+  "black_banner": {
+    "name": "Black Banner",
+    "boon": "+1 projectile, +26% crit chance, +40% army damage",
+    "curse": "Enemy damage +42% and speed +18%",
+    "effects": {"projectile_bonus": 1, "crit_add": 0.26, "army_damage_mult": 1.4, "enemy_damage_mult": 1.42, "enemy_speed_mult": 1.18},
+    "victory_bounty": 210,
+    "color": "#7f7897"
+  }
+}
