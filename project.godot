@@ -57,3 +57,7 @@ ability_burst={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"physical_keycode":69)]
 }
+build_outpost={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":66)]
+}
