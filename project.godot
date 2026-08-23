@@ -62,3 +62,7 @@ build_outpost={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"physical_keycode":66)]
 }
+build_cycle={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":67)]
+}
