@@ -10,6 +10,7 @@ func _ready() -> void:
 	screen_scripts["army"] = preload("res://scripts/screens/ArmyScreenVisual.gd")
 	screen_scripts["inventory"] = preload("res://scripts/screens/InventoryScreenVisual.gd")
 	screen_scripts["expedition"] = preload("res://scripts/screens/ExpeditionScreenVisual.gd")
+	screen_scripts["content"] = preload("res://scripts/screens/ContentLabScreen.gd")
 	super._ready()
 
 func _build_shell() -> void:
@@ -37,7 +38,8 @@ func _build_shell() -> void:
 		"Army":"army",
 		"Inventory":"inventory",
 		"Contracts":"contracts",
-		"Market":"market"
+		"Market":"market",
+		"Content":"content"
 	}
 	for button_name in routes:
 		var button:Button=nav.get_node(String(button_name))
