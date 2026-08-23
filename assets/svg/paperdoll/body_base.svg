@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" width="256" height="512">
+  <g stroke="#182033" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="128" cy="63" r="34" fill="#d9aa92"/>
+    <path d="M102 96 C88 110 81 135 80 164 L76 248 L90 335 L97 474 L120 474 L125 337 L131 337 L136 474 L159 474 L166 335 L180 248 L176 164 C175 135 168 110 154 96 Z" fill="#252d43"/>
+    <path d="M98 111 C88 124 84 143 84 166 L84 245 L102 245 L105 166 L112 120 Z" fill="#d9aa92"/>
+    <path d="M158 111 C168 124 172 143 172 166 L172 245 L154 245 L151 166 L144 120 Z" fill="#d9aa92"/>
+    <path d="M84 245 L77 320 L92 324 L101 248 Z" fill="#d9aa92"/>
+    <path d="M172 245 L179 320 L164 324 L155 248 Z" fill="#d9aa92"/>
+    <path d="M92 324 L86 341 L94 348 L103 331 Z" fill="#d9aa92"/>
+    <path d="M164 324 L170 341 L162 348 L153 331 Z" fill="#d9aa92"/>
+    <path d="M97 474 L94 493 L121 493 L120 474 Z" fill="#d9aa92"/>
+    <path d="M159 474 L162 493 L135 493 L136 474 Z" fill="#d9aa92"/>
+    <path d="M103 104 L128 123 L153 104 L147 190 L109 190 Z" fill="#303953" stroke="#4a5676"/>
+    <path d="M101 204 L155 204 L161 332 L95 332 Z" fill="#2b344b" stroke="#4a5676"/>
+  </g>
+</svg>
