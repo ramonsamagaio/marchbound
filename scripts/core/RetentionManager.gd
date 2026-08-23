@@ -163,8 +163,10 @@ func _create_nemesis(biome:String,tile:Dictionary) -> void:
 	var seed_value:int = abs(hash("nemesis:%s:%s:%s"%[biome,tile.get("x",0),tile.get("y",0)]))
 	var species:String = roster[seed_value%roster.size()]
 	var monster:Dictionary = ContentDB.monster(species)
-	var title:String = NEMESIS_TITLES[(seed_value/7)%NEMESIS_TITLES.size()]
-	var trait:String = NEMESIS_TRAITS[(seed_value/13)%NEMESIS_TRAITS.size()]
+	var title_index:int = int(seed_value/7)%NEMESIS_TITLES.size()
+	var trait_index:int = int(seed_value/13)%NEMESIS_TRAITS.size()
+	var title:String = NEMESIS_TITLES[title_index]
+	var nemesis_trait:String = NEMESIS_TRAITS[trait_index]
 	data["nemesis"] = {
 		"active":true,
 		"species":species,
@@ -172,7 +174,7 @@ func _create_nemesis(biome:String,tile:Dictionary) -> void:
 		"biome":biome,
 		"rank":1,
 		"wins":1,
-		"trait":trait,
+		"trait":nemesis_trait,
 		"defeated":int(Dictionary(data["nemesis"]).get("defeated",0))
 	}
 	GameState.toast_requested.emit("A NEMESIS RISES · %s remembers this defeat."%String(Dictionary(data["nemesis"]).get("name","Unknown")))
@@ -194,7 +196,8 @@ func defeat_nemesis() -> Dictionary:
 	var rank:int = int(n.get("rank",1))
 	var reward_gold:int = 160 + rank*110
 	var reward_renown:int = 8 + rank*5
-	GameState.add_resources({"gold":reward_gold,"mana":maxi(1,rank/2)})
+	var mana_reward:int = maxi(1,int(rank/2))
+	GameState.add_resources({"gold":reward_gold,"mana":mana_reward})
 	GameState.player["renown"] = int(GameState.player.get("renown",0))+reward_renown
 	n["active"] = false
 	n["defeated"] = int(n.get("defeated",0))+1
