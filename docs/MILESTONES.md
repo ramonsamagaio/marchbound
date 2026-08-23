@@ -63,17 +63,19 @@
 - [x] Expedition HUD moved into editable `.tscn`
 - [x] Expedition result moved into editable `.tscn`
 - [x] Paper-doll composition moved into editable `.tscn` foundation
+- [x] Main global shell/navigation moved into editable `.tscn`
+- [x] Content Lab moved into editable `.tscn`
 - [x] Visual/UI audit documented with scene-first rules
-- [ ] Final approved isolated body-base RGBA asset in project
-- [ ] Final isolated modular armor layers / Spine paper-doll rig
-- [ ] First complete production modular armor set
-- [ ] Weapon set
+- [x] First real SVG placeholder pipeline proof imported and Web-exported in Godot
+- [ ] Final compact pixel body/base sheet for in-world player and army
+- [ ] Final side-view run cycle and left/right mirroring convention
+- [ ] First production modular pixel armor/equipment overlay set
+- [ ] Final weapon sprite set
 - [ ] Final resource icon set
 - [ ] Final settlement visual kit assets
 - [ ] Final World Map tile language
 - [ ] Final combat sprite language
 - [ ] Full Inventory shell converted to `.tscn`
-- [ ] Main global shell converted to `.tscn`
 - [ ] Warband card components converted to reusable `.tscn`
 
 ## M1 — I Want One More Expedition
@@ -123,6 +125,7 @@
 - [x] Enemy spawning follows current local camera/player area instead of giant-map borders
 - [x] First actual in-expedition construction: Field Watchtower built from harvested Wood
 - [x] Field Watchtowers snap to local grid and automatically fight enemies
+- [ ] Expand expedition building kit: walls / gates / traps / camp / logistics
 - [x] Macro territory data exposes future target capacity of 3 Wardens / players
 - [x] City placement/building scene instead of management cards only
 - [x] Buildings selectable/upgradable directly from settlement scene
@@ -133,6 +136,32 @@
 - [x] First March onboarding ribbon with four rewarded gameplay goals
 - [x] First March persists in the main save and disappears after completion
 - [x] First March final reward introduces regional set gear
+
+### M1.4 Data-driven content depth
+- [x] `ContentDB` autoload with shipped JSON catalogs and browser-safe local overrides
+- [x] Separate catalogs for Items / Monsters / Attacks / Projectiles / Tiles
+- [x] First reusable attack database with 20 definitions
+- [x] First projectile database with 13 payloads
+- [x] First authored content-item catalog with 26 weapons/armor definitions
+- [x] First expanded normal-monster catalog with 36 identities across six biomes
+- [x] First local-ground catalog with 24 biome variants
+- [x] Weapon data separates inventory sprite / equipped sheet / attack sprite / projectile
+- [x] Weapon attack speed, damage multiplier and knockback are data-driven
+- [x] Sword/axe arc collision attacks
+- [x] Spear/dagger thrust corridor attacks
+- [x] Hammer radial slam attacks
+- [x] Bow/crossbow/staff/wand ranged payload attacks
+- [x] Different arrows/bolts/spells can be assigned independently from the ranged weapon
+- [x] Data-driven monster biome membership, behavior, attack and drop candidates
+- [x] New content drops preserve `content_id` through normal inventory/save flow
+- [x] Content Lab browse/edit/reset/validate UI
+- [x] Content Lab runtime overrides persist to `user://`
+- [x] Inventory exposes weapon behavior and visual-asset links for content debugging
+- [x] Deterministic fallback weapon-motion visuals while final pixel weapon art is absent
+- [ ] Add reusable chain / orbit / beam / delayed-area spell primitives after first combat playtest
+- [ ] Add status-effect runtime (slow / burn / poison / stun / armor break) rather than metadata only
+- [ ] Add building definitions to Content Lab once multiple field structures exist
+- [ ] Add visual sprite-picker UI rather than JSON-only asset IDs
 
 ### Historical validation gates
 - [x] M1 Fun Pass 1 Godot 4.7.2 parse / smoke / Web export
@@ -146,39 +175,39 @@
 - [x] First March Pass Godot 4.7.2 parse / smoke / Web export
 - [x] Frontier Mutations Pass strict Godot 4.7.2 parse / smoke / Web export
 - [x] Wild Bonds Pass strict Godot 4.7.2 parse / smoke / Web export
-- [x] Visual Atlas / Giant Local Map / Unit Quality Pass strict parse validation
-- [x] Visual Atlas / Giant Local Map / Unit Quality Pass strict headless smoke validation
-- [x] Visual Atlas / Giant Local Map / Unit Quality Pass strict Web export validation
+- [x] Visual Atlas / Giant Local Map / Unit Quality Pass strict parse / smoke / Web export
+- [x] Real SVG Placeholder Proof strict parse / smoke / Web export
+- [x] Data-driven Depth Content Pass strict parse / smoke / Web export
 
 ## M2 — Persistent Online Kingdom
-- Supabase Auth
-- profile
-- cloud save
-- authoritative settlement mutations
-- world state stored online
-- marketplace server transactions
-- inspect another profile
-- anti-dupe transaction ledger
-- leaderboards
-- basic telemetry/economy balancing
+- [ ] Supabase Auth
+- [ ] profile
+- [ ] cloud save
+- [ ] authoritative settlement mutations
+- [ ] world state stored online
+- [ ] marketplace server transactions
+- [ ] inspect another profile
+- [ ] anti-dupe transaction ledger
+- [ ] leaderboards
+- [ ] basic telemetry/economy balancing
 
 ## M3 — The World Has Other People
-- map ownership / influence
-- 2–3 player shared local-territory prototype
-- local-territory authority / synchronization
-- caravans and regional trade
-- optional PvP frontier rules
-- asynchronous conflict where appropriate
-- social/guild foundations
-- world events
-- cooperative boss prototype
+- [ ] map ownership / influence
+- [ ] 2–3 player shared local-territory prototype
+- [ ] local-territory authority / synchronization
+- [ ] caravans and regional trade
+- [ ] optional PvP frontier rules
+- [ ] asynchronous conflict where appropriate
+- [ ] social/guild foundations
+- [ ] world events
+- [ ] cooperative boss prototype
 
 ## M4 — Endless Frontier
-- procedural frontier expansion
-- seasons/prestige tuned
-- specialization trees
-- rare regions
-- faction content
-- rare/high-tier Wild Bonds and creature evolution paths
-- world economy sinks
-- long-term live content architecture
+- [ ] procedural frontier expansion
+- [ ] seasons/prestige tuned
+- [ ] specialization trees
+- [ ] rare regions
+- [ ] faction content
+- [ ] rare/high-tier Wild Bonds and creature evolution paths
+- [ ] world economy sinks
+- [ ] long-term live content architecture
