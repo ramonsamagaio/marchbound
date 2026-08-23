@@ -146,9 +146,9 @@
 - [x] First March Pass Godot 4.7.2 parse / smoke / Web export
 - [x] Frontier Mutations Pass strict Godot 4.7.2 parse / smoke / Web export
 - [x] Wild Bonds Pass strict Godot 4.7.2 parse / smoke / Web export
-- [ ] Visual Atlas / Giant Local Map / Unit Quality Pass strict parse validation
-- [ ] Visual Atlas / Giant Local Map / Unit Quality Pass strict headless smoke validation
-- [ ] Visual Atlas / Giant Local Map / Unit Quality Pass strict Web export validation
+- [x] Visual Atlas / Giant Local Map / Unit Quality Pass strict parse validation
+- [x] Visual Atlas / Giant Local Map / Unit Quality Pass strict headless smoke validation
+- [x] Visual Atlas / Giant Local Map / Unit Quality Pass strict Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth
