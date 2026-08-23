@@ -60,6 +60,17 @@ jobs:
           fi
           grep -q 'RETENTION_SMOKE_OK' /tmp/marchbound-retention.log
 
+      - name: Smoke frontier discovery ecosystem
+        shell: bash
+        run: |
+          set -o pipefail
+          godot --headless --path . res://scenes/tests/FrontierSmoke.tscn 2>&1 | tee /tmp/marchbound-frontier.log
+          if grep -Eq 'SCRIPT ERROR:|FRONTIER_SMOKE_FAIL|ERROR: Failed to (load script|create an autoload|instantiate an autoload)' /tmp/marchbound-frontier.log; then
+            echo '::error::Frontier discovery ecosystem smoke reported runtime errors.'
+            exit 1
+          fi
+          grep -q 'FRONTIER_SMOKE_OK' /tmp/marchbound-frontier.log
+
       - name: Export Web
         shell: bash
         run: |
