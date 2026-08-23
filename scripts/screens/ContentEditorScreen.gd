@@ -1,6 +1,6 @@
 extends Control
 
-const CATEGORIES:Array[String] = ["items","monsters","attacks","projectiles","tiles"]
+const CATEGORIES:Array[String] = ["items","monsters","attacks","projectiles","statuses","buildings","tiles"]
 
 @onready var category:OptionButton = $Margin/Root/Header/Category
 @onready var list:ItemList = $Margin/Root/Body/Left/List
@@ -91,6 +91,20 @@ func _update_summary(definition:Dictionary) -> void:
 		"projectiles":
 			lines.append("Speed %d · Radius %.1f · Pierce %d"%[int(definition.get("speed",0)),float(definition.get("radius",0.0)),int(definition.get("pierce",0))])
 			lines.append("Damage ×%.2f · Knockback ×%.2f"%[float(definition.get("damage_mult",1.0)),float(definition.get("knockback_mult",1.0))])
+			if String(definition.get("status_id","")) != "":
+				lines.append("Status: %s · %.0f%%"%[String(definition.get("status_id","")),float(definition.get("status_chance",0.0))*100.0])
+		"statuses":
+			lines.append("Kind: %s · Duration %.2fs · max stacks %d"%[String(definition.get("kind","?")),float(definition.get("duration",0.0)),int(definition.get("max_stacks",1))])
+			if definition.has("damage_per_tick_mult"):
+				lines.append("DOT ×%.2f every %.2fs"%[float(definition.get("damage_per_tick_mult",0.0)),float(definition.get("tick_rate",1.0))])
+			if definition.has("speed_mult"):
+				lines.append("Speed ×%.2f"%float(definition.get("speed_mult",1.0)))
+			if definition.has("damage_taken_mult"):
+				lines.append("Damage taken ×%.2f"%float(definition.get("damage_taken_mult",1.0)))
+		"buildings":
+			lines.append("Role: %s"%String(definition.get("role","?")))
+			lines.append("Cost: "+_dictionary_summary(Dictionary(definition.get("cost",{}))))
+			lines.append(String(definition.get("description","")))
 		"tiles":
 			lines.append("Biome: %s · Kind: %s"%[String(definition.get("biome","?")),String(definition.get("kind","?"))])
 			lines.append("Tags: "+_join_values(Array(definition.get("tags",[]))))
@@ -101,6 +115,12 @@ func _join_values(values:Array) -> String:
 	for value:Variant in values:
 		strings.append(String(value))
 	return ", ".join(strings)
+
+func _dictionary_summary(values:Dictionary) -> String:
+	var parts:Array[String] = []
+	for key:Variant in values.keys():
+		parts.append("%s %s"%[String(values[key]),String(key).capitalize()])
+	return ", ".join(parts)
 
 func _save() -> void:
 	if current_id == "":
@@ -126,7 +146,7 @@ func _reset_entry() -> void:
 func _validate() -> void:
 	var errors:Array[String] = ContentDB.validate_references()
 	if errors.is_empty():
-		footer.text = "All item/monster attack and projectile links are valid"
+		footer.text = "All content references are valid"
 		footer.modulate = Color("#8dd5a6")
 	else:
 		footer.text = "Reference errors: "+" | ".join(errors)
