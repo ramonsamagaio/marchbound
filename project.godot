@@ -12,6 +12,7 @@ config/features=PackedStringArray("4.7", "GL Compatibility")
 GameState="*res://scripts/core/GameState.gd"
 SaveManager="*res://scripts/core/SaveManager.gd"
 ContractManager="*res://scripts/core/ContractManager.gd"
+ContentDB="*res://scripts/core/ContentDB.gd"
 
 [display]
 window/size/viewport_width=1920
