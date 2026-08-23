@@ -34,7 +34,7 @@ func _build()->void:
 	var left_v=VBoxContainer.new()
 	left.add_child(left_v)
 	left_v.add_child(UIFactory.title("Inventory",22))
-	left_v.add_child(UIFactory.label("Regional equipment families make where an item came from matter. Mix affixes, sets and raw power instead of chasing one number.",12,Color("#92a0bf")))
+	left_v.add_child(UIFactory.label("Regional equipment, affixes and Weapon Memories make an item's history matter as much as its raw number.",12,Color("#92a0bf")))
 	left_v.add_child(UIFactory.hsep())
 	var item_scroll=ScrollContainer.new()
 	item_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
@@ -89,7 +89,9 @@ func refresh()->void:
 		var affix_count = item.get("affixes",[]).size()
 		var affix_text = " · %d affix%s"%[affix_count,"es" if affix_count!=1 else ""] if affix_count>0 else ""
 		var family_text = " · %s"%String(item.get("family_name","")) if String(item.get("family_name","")) != "" else ""
-		var txt="%s%s\n%s · Power %d%s%s%s"%[item.name,mark,item.slot.capitalize(),item.power,(" +%d"%item.upgrade) if item.upgrade>0 else "",family_text,affix_text]
+		var memory_rank:int=int(item.get("memory_rank",0))
+		var memory_text:String=" · Memory %d"%memory_rank if memory_rank>0 else ""
+		var txt="%s%s\n%s · Power %d%s%s%s%s"%[item.name,mark,item.slot.capitalize(),item.power,(" +%d"%item.upgrade) if item.upgrade>0 else "",family_text,affix_text,memory_text]
 		var b=UIFactory.button(txt,func(uid=item.uid):select(uid),rarity_color(item.rarity).darkened(0.45))
 		b.custom_minimum_size=Vector2(300,58)
 		item_list.add_child(b)
@@ -145,6 +147,8 @@ func _refresh_detail()->void:
 	detail.add_child(UIFactory.hsep())
 	detail.add_child(UIFactory.label("Item Power  %d"%item.power,22,Color("#f0dfae")))
 	detail.add_child(UIFactory.label("Forge Upgrade  +%d"%item.upgrade,13,Color("#aab5cf")))
+	if String(item.get("slot",""))=="weapon":
+		_add_weapon_memory(item)
 	_add_comparison(item)
 	detail.add_child(UIFactory.hsep())
 	detail.add_child(UIFactory.label("AFFIXES",15,Color("#f0dfae")))
@@ -170,7 +174,22 @@ func _refresh_detail()->void:
 		detail.add_child(UIFactory.label("Build the Forge to upgrade item power.",11,Color("#b38f8f")))
 	detail.add_child(UIFactory.hsep())
 	detail.add_child(UIFactory.label("Inspect Profile Preview",15,Color("#f0dfae")))
-	detail.add_child(UIFactory.label("Other players will eventually see the complete paper-doll plus affixes, regional set identity, level, Renown, Army Power, guild and achievements.",12,Color("#91a0bf")))
+	detail.add_child(UIFactory.label("Other players will eventually see the complete paper-doll plus affixes, regional set identity, Weapon Memories, level, Renown, Army Power, guild and achievements.",12,Color("#91a0bf")))
+
+func _add_weapon_memory(item:Dictionary)->void:
+	var rank:int=int(item.get("memory_rank",0))
+	var xp:int=int(item.get("memory_xp",0))
+	detail.add_child(UIFactory.hsep())
+	detail.add_child(UIFactory.label("WEAPON MEMORY · RANK %d"%rank,14,Color("#c9a9e8") if rank>0 else Color("#7d8292")))
+	var next_text:String="Fully awakened" if rank>=3 else "%d / %d remembered combat XP"%[xp,RetentionManager.MEMORY_THRESHOLDS[rank+1]]
+	detail.add_child(UIFactory.label(next_text,11,Color("#9da9c7")))
+	if rank>0:
+		detail.add_child(UIFactory.label("Memory grants increasing damage, cadence, knockback and class-specific reach/projectile growth while this weapon is equipped.",11,Color("#aa98bc")))
+	var memories:Array=Array(item.get("memories",[]))
+	if not memories.is_empty():
+		detail.add_child(UIFactory.label("REMEMBERS",11,Color("#d7c1ea")))
+		for boss:Variant in memories:
+			detail.add_child(UIFactory.label("✦ %s"%String(boss),11,Color("#9f90af")))
 
 func _add_comparison(item:Dictionary)->void:
 	var equipped_uid=String(GameState.equipped.get(item.slot,""))

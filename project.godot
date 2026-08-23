@@ -13,6 +13,7 @@ GameState="*res://scripts/core/GameState.gd"
 SaveManager="*res://scripts/core/SaveManager.gd"
 ContractManager="*res://scripts/core/ContractManager.gd"
 ContentDB="*res://scripts/core/ContentDB.gd"
+RetentionManager="*res://scripts/core/RetentionManager.gd"
 
 [display]
 window/size/viewport_width=1920

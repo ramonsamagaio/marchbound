@@ -49,6 +49,17 @@ jobs:
             exit 1
           fi
 
+      - name: Smoke retention ecosystem
+        shell: bash
+        run: |
+          set -o pipefail
+          godot --headless --path . res://scenes/tests/RetentionSmoke.tscn 2>&1 | tee /tmp/marchbound-retention.log
+          if grep -Eq 'SCRIPT ERROR:|RETENTION_SMOKE_FAIL|ERROR: Failed to (load script|create an autoload|instantiate an autoload)' /tmp/marchbound-retention.log; then
+            echo '::error::Retention ecosystem smoke reported runtime errors.'
+            exit 1
+          fi
+          grep -q 'RETENTION_SMOKE_OK' /tmp/marchbound-retention.log
+
       - name: Export Web
         shell: bash
         run: |

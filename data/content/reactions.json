@@ -1,0 +1,51 @@
+{
+  "thermal_shock": {
+    "name": "Thermal Shock",
+    "requires": ["burn", "slow"],
+    "damage_mult": 0.85,
+    "radius": 72,
+    "consume": ["slow"],
+    "apply_status": "armor_break",
+    "color": "#ffd19a",
+    "description": "Rapid temperature inversion detonates the target and cracks nearby armor."
+  },
+  "plague_bloom": {
+    "name": "Plague Bloom",
+    "requires": ["poison", "hex"],
+    "damage_mult": 0.55,
+    "radius": 96,
+    "consume": ["hex"],
+    "apply_status": "poison",
+    "color": "#a6e06f",
+    "description": "Hexed poison erupts outward, infecting nearby enemies."
+  },
+  "fracture": {
+    "name": "Fracture",
+    "requires": ["armor_break", "stun"],
+    "damage_mult": 1.45,
+    "radius": 42,
+    "consume": ["stun", "armor_break"],
+    "color": "#f2d6a2",
+    "description": "A disabled, sundered target catastrophically fractures under the next impact."
+  },
+  "witchfire": {
+    "name": "Witchfire",
+    "requires": ["burn", "hex"],
+    "damage_mult": 0.72,
+    "radius": 82,
+    "consume": ["hex"],
+    "apply_status": "burn",
+    "color": "#d98cff",
+    "description": "A curse feeds the flame, creating a violet blast that spreads burning."
+  },
+  "brittle_venom": {
+    "name": "Brittle Venom",
+    "requires": ["poison", "slow"],
+    "damage_mult": 0.62,
+    "radius": 56,
+    "consume": ["slow"],
+    "apply_status": "armor_break",
+    "color": "#9de8c9",
+    "description": "Frozen toxins crystallize in armor and flesh, leaving the victim exposed."
+  }
+}
