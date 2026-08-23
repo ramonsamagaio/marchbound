@@ -9,7 +9,9 @@ const FILES:Dictionary = {
 	"monsters":"res://data/content/monsters.json",
 	"tiles":"res://data/content/tiles.json",
 	"statuses":"res://data/content/statuses.json",
-	"buildings":"res://data/content/buildings.json"
+	"buildings":"res://data/content/buildings.json",
+	"reactions":"res://data/content/reactions.json",
+	"gambits":"res://data/content/gambits.json"
 }
 const OVERRIDE_PATH:String = "user://marchbound_content_overrides.json"
 
@@ -119,6 +121,12 @@ func status(id:String) -> Dictionary:
 func building(id:String) -> Dictionary:
 	return get_entry("buildings",id)
 
+func reaction(id:String) -> Dictionary:
+	return get_entry("reactions",id)
+
+func gambit(id:String) -> Dictionary:
+	return get_entry("gambits",id)
+
 func monsters_for_biome(biome:String) -> Array[String]:
 	var result:Array[String] = []
 	for id:String in ids("monsters"):
@@ -155,4 +163,13 @@ func validate_references() -> Array[String]:
 		var status_id:String = String(projectile_data.get("status_id",""))
 		if status_id != "" and status(status_id).is_empty():
 			errors.append("projectile %s -> missing status %s"%[id,status_id])
+	for id:String in ids("reactions"):
+		var reaction_data:Dictionary = reaction(id)
+		for raw_status:Variant in Array(reaction_data.get("requires",[])):
+			var required_status:String = String(raw_status)
+			if status(required_status).is_empty():
+				errors.append("reaction %s -> missing status %s"%[id,required_status])
+		var applied:String = String(reaction_data.get("apply_status",""))
+		if applied != "" and status(applied).is_empty():
+			errors.append("reaction %s -> missing applied status %s"%[id,applied])
 	return errors
