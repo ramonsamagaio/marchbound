@@ -1,0 +1,15 @@
+{
+  "arrow_wood": {"name":"Wooden Arrow","speed":620,"life":1.8,"radius":5,"pierce":0,"damage_mult":1.0,"knockback_mult":1.0,"visual_id":"fx_arrow","color":"#d8c49a"},
+  "arrow_iron": {"name":"Iron Arrow","speed":650,"life":1.9,"radius":5,"pierce":1,"damage_mult":1.12,"knockback_mult":1.15,"visual_id":"fx_arrow","color":"#c9d1da"},
+  "arrow_fire": {"name":"Ember Arrow","speed":610,"life":1.8,"radius":6,"pierce":0,"damage_mult":1.18,"knockback_mult":0.9,"splash_radius":38,"visual_id":"fx_fireball","color":"#ff9b55"},
+  "arrow_frost": {"name":"Rime Arrow","speed":600,"life":2.0,"radius":6,"pierce":0,"damage_mult":1.08,"knockback_mult":0.85,"slow":0.28,"visual_id":"fx_arcane","color":"#9ee8ff"},
+  "bolt_iron": {"name":"Iron Bolt","speed":760,"life":1.7,"radius":5,"pierce":2,"damage_mult":1.22,"knockback_mult":1.35,"visual_id":"fx_arrow","color":"#d8dde6"},
+  "arcane_bolt": {"name":"Arcane Bolt","speed":520,"life":2.2,"radius":7,"pierce":0,"damage_mult":1.0,"knockback_mult":0.7,"visual_id":"fx_arcane","color":"#7fcfff"},
+  "ember_orb": {"name":"Ember Orb","speed":440,"life":2.3,"radius":9,"pierce":0,"damage_mult":1.14,"knockback_mult":0.9,"splash_radius":52,"visual_id":"fx_fireball","color":"#ff7f4f"},
+  "frost_shard": {"name":"Frost Shard","speed":560,"life":2.0,"radius":7,"pierce":1,"damage_mult":1.02,"knockback_mult":0.75,"slow":0.35,"visual_id":"fx_arcane","color":"#a7efff"},
+  "void_orb": {"name":"Void Orb","speed":360,"life":2.8,"radius":12,"pierce":1,"damage_mult":1.3,"knockback_mult":1.15,"splash_radius":64,"visual_id":"fx_void","color":"#b16de6"},
+  "holy_spark": {"name":"Holy Spark","speed":500,"life":2.1,"radius":8,"pierce":1,"damage_mult":1.12,"knockback_mult":0.9,"visual_id":"fx_holy","color":"#ffe58b"},
+  "thorn_spine": {"name":"Thorn Spine","speed":540,"life":2.0,"radius":6,"pierce":1,"damage_mult":1.04,"knockback_mult":1.0,"visual_id":"fx_arrow","color":"#74b85a"},
+  "acid_spit": {"name":"Acid Glob","speed":320,"life":2.5,"radius":8,"pierce":0,"damage_mult":1.0,"knockback_mult":0.45,"splash_radius":36,"visual_id":"fx_arcane","color":"#8dcc62"},
+  "enemy_hex": {"name":"Hex Bolt","speed":285,"life":3.0,"radius":7,"pierce":0,"damage_mult":1.0,"knockback_mult":0.5,"visual_id":"fx_void","color":"#c68ae8"}
+}

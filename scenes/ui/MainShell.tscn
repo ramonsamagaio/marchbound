@@ -167,46 +167,53 @@ alignment = 1
 theme_override_constants/separation = 8
 
 [node name="City" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(140, 46)
+custom_minimum_size = Vector2(132, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
 text = "SETTLEMENT"
 
 [node name="World" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(140, 46)
+custom_minimum_size = Vector2(132, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
 text = "WORLD MAP"
 
 [node name="Army" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(140, 46)
+custom_minimum_size = Vector2(132, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
 text = "WAR-BAND"
 
 [node name="Inventory" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(140, 46)
+custom_minimum_size = Vector2(132, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
 text = "INVENTORY"
 
 [node name="Contracts" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(140, 46)
+custom_minimum_size = Vector2(132, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
 text = "CONTRACTS"
 
 [node name="Market" type="Button" parent="Root/NavPanel/Nav"]
-custom_minimum_size = Vector2(140, 46)
+custom_minimum_size = Vector2(132, 46)
 layout_mode = 2
 theme_override_styles/normal = SubResource("NavButton")
 theme_override_styles/hover = SubResource("NavHover")
 text = "MARKETPLACE"
+
+[node name="Content" type="Button" parent="Root/NavPanel/Nav"]
+custom_minimum_size = Vector2(132, 46)
+layout_mode = 2
+theme_override_styles/normal = SubResource("NavButton")
+theme_override_styles/hover = SubResource("NavHover")
+text = "CONTENT LAB"
 
 [node name="Toast" type="Label" parent="."]
 layout_mode = 1
