@@ -1,11 +1,11 @@
 {
   "thermal_shock": {
     "name": "Thermal Shock",
-    "requires": ["burn", "chill"],
+    "requires": ["burn", "slow"],
     "damage_mult": 0.85,
     "radius": 72,
-    "consume": ["chill"],
-    "apply_status": "sunder",
+    "consume": ["slow"],
+    "apply_status": "armor_break",
     "color": "#ffd19a",
     "description": "Rapid temperature inversion detonates the target and cracks nearby armor."
   },
@@ -21,10 +21,10 @@
   },
   "fracture": {
     "name": "Fracture",
-    "requires": ["sunder", "stun"],
+    "requires": ["armor_break", "stun"],
     "damage_mult": 1.45,
     "radius": 42,
-    "consume": ["stun", "sunder"],
+    "consume": ["stun", "armor_break"],
     "color": "#f2d6a2",
     "description": "A disabled, sundered target catastrophically fractures under the next impact."
   },
@@ -40,11 +40,11 @@
   },
   "brittle_venom": {
     "name": "Brittle Venom",
-    "requires": ["poison", "chill"],
+    "requires": ["poison", "slow"],
     "damage_mult": 0.62,
     "radius": 56,
-    "consume": ["chill"],
-    "apply_status": "sunder",
+    "consume": ["slow"],
+    "apply_status": "armor_break",
     "color": "#9de8c9",
     "description": "Frozen toxins crystallize in armor and flesh, leaving the victim exposed."
   }
