@@ -7,7 +7,9 @@ var hunter_pack_spawned:bool = false
 func begin(data:Dictionary) -> void:
 	pursuit_level = RetentionManager.chain_count()
 	hunter_pack_spawned = false
-	super.begin(data)
+	var normalized_data:Dictionary = data.duplicate(true)
+	normalized_data["seed"] = str(normalized_data.get("seed",1))
+	super.begin(normalized_data)
 	if pursuit_level > 0:
 		_float_text(player_pos+Vector2(0,-72),"PURSUIT %d · THE FRONTIER IS WATCHING"%pursuit_level,Color("#e79a82"),1.4)
 
