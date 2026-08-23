@@ -45,7 +45,7 @@ func _ready() -> void:
 		return
 	var enemy:Dictionary = arena.enemies[0]
 	arena._apply_status(enemy,"burn",20.0)
-	arena._apply_status(enemy,"chill",20.0)
+	arena._apply_status(enemy,"slow",20.0)
 	if arena.reaction_count <= 0:
 		_fail("Status reaction did not trigger")
 		return
