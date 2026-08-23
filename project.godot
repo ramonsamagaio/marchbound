@@ -14,11 +14,14 @@ SaveManager="*res://scripts/core/SaveManager.gd"
 ContractManager="*res://scripts/core/ContractManager.gd"
 
 [display]
-window/size/viewport_width=1280
-window/size/viewport_height=720
-window/size/window_width_override=1280
-window/size/window_height_override=720
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/window_width_override=1920
+window/size/window_height_override=1080
+window/size/min_width=1280
+window/size/min_height=720
 window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [rendering]
 renderer/rendering_method="gl_compatibility"
@@ -53,4 +56,8 @@ ability_rally={
 ability_burst={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"physical_keycode":69)]
+}
+build_outpost={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":66)]
 }

@@ -35,36 +35,46 @@
 - [x] Procedural gear drops
 - [x] Inventory and equipment
 - [x] Forge upgrades
-- [x] Functional procedural paper-doll preview
 - [x] Marketplace concept with NPC listings
 - [x] Renown / Frontier Season long-game hook
-- [x] Godot 4.7.2 parse validation after frontier/objective update
-- [x] Main-scene headless smoke run after frontier/objective update
-- [x] Web export after frontier/objective update
-- [ ] First user playtest + balance pass
+- [ ] First full user balance/fun pass on the new large-map visual build
 
 ### M0.2 Browser build
 - [x] Web export generated successfully in CI
 - [x] Automatic GitHub Actions build workflow
 - [x] CI rejects hidden Godot script/autoload errors even when Godot returns exit code 0
-- [ ] Web build validated interactively in Chrome
+- [x] Native design target raised to 1920×1080
+- [x] 1280×720 retained as minimum-window target
+- [x] Expedition result redesigned to keep the Continue action reachable with scrollable variable content
+- [ ] Web build validated interactively in Chrome after visual/local-map pass
 - [ ] Public preview URL
 - [ ] Browser save persistence verified
 - [ ] Input/focus/fullscreen UX checked
-- [ ] First performance budget
+- [ ] First performance budget for giant local territory
 
 ### M0.3 Visual foundation
 - [ ] Final visual bible v1
-- [ ] Approved body base
-- [ ] Spine paper-doll rig
-- [ ] First complete modular armor set
+- [x] Approved provisional Marchbound atlas uploaded to project
+- [x] Centralized atlas-region mapper (`VisualAtlas.gd`)
+- [x] Resource bar begins using real atlas icons
+- [x] World Map territory cells begin using atlas biome/hex artwork
+- [x] Combat begins using atlas units/enemies/resources/buildings
+- [x] Dawnkeep begins using atlas building artwork
+- [x] Expedition HUD moved into editable `.tscn`
+- [x] Expedition result moved into editable `.tscn`
+- [x] Paper-doll composition moved into editable `.tscn` foundation
+- [x] Visual/UI audit documented with scene-first rules
+- [ ] Final approved isolated body-base RGBA asset in project
+- [ ] Final isolated modular armor layers / Spine paper-doll rig
+- [ ] First complete production modular armor set
 - [ ] Weapon set
-- [ ] Resource icons
-- [x] First interactive settlement visual scene / procedural kit
+- [ ] Final resource icon set
 - [ ] Final settlement visual kit assets
-- [ ] World-map tile language
-- [ ] Combat sprite language
-- [ ] Inventory/Inspect UI pass
+- [ ] Final World Map tile language
+- [ ] Final combat sprite language
+- [ ] Full Inventory shell converted to `.tscn`
+- [ ] Main global shell converted to `.tscn`
+- [ ] Warband card components converted to reusable `.tscn`
 
 ## M1 — I Want One More Expedition
 - [x] First combat-feel pass: shake, floating feedback, crit callouts, elite callouts and clearer impacts
@@ -100,6 +110,20 @@
 - [x] First Wild Bonds recruitment pass with six biome-specific creatures
 - [x] Wild Bond discovery integrates Monster Hunt, Elite kills, mutations and regional-boss guarantees
 - [x] Wild Bonds persist/migrate, consume Command, can be recruited/trained and deploy in expeditions
+- [x] Individual unit roster layer added beneath aggregate army families
+- [x] Six first unit prefixes: Swift / Ironhide / Blessed / Vicious / Ancient / Stormtouched
+- [x] Prefixes alter live combat behavior rather than only names
+- [x] Rare independent Elite quality added as shiny-like collectible classification
+- [x] Existing saves migrate owned troops to safe Standard individual records
+- [x] Warband UI surfaces prefix / Elite specimens with atlas art
+- [x] Strategic macro territory now opens to a 192×192 local-tile prototype
+- [x] Local map prototype covers 36,864 tiles / 12,288×12,288 world-space
+- [x] Lightweight player-following camera/culling model for giant local territory
+- [x] Physical frontier outpost/buildings exist inside expedition map
+- [x] Enemy spawning follows current local camera/player area instead of giant-map borders
+- [x] First actual in-expedition construction: Field Watchtower built from harvested Wood
+- [x] Field Watchtowers snap to local grid and automatically fight enemies
+- [x] Macro territory data exposes future target capacity of 3 Wardens / players
 - [x] City placement/building scene instead of management cards only
 - [x] Buildings selectable/upgradable directly from settlement scene
 - [x] Draggable Dawnkeep building layout with local persistence
@@ -109,39 +133,22 @@
 - [x] First March onboarding ribbon with four rewarded gameplay goals
 - [x] First March persists in the main save and disappears after completion
 - [x] First March final reward introduces regional set gear
-- [x] M1 Fun Pass 1 Godot 4.7.2 parse validation
-- [x] M1 Fun Pass 1 headless main-scene smoke validation
-- [x] M1 Fun Pass 1 Web export validation
-- [x] Gear Affix Pass Godot 4.7.2 parse validation
-- [x] Gear Affix Pass headless main-scene smoke validation
-- [x] Gear Affix Pass Web export validation
-- [x] Regional Boss Pass Godot 4.7.2 parse validation
-- [x] Regional Boss Pass headless main-scene smoke validation
-- [x] Regional Boss Pass Web export validation
-- [x] Dawnkeep Scene Pass Godot 4.7.2 parse validation
-- [x] Dawnkeep Scene Pass headless main-scene smoke validation
-- [x] Dawnkeep Scene Pass Web export validation
-- [x] Frontier Contracts Pass Godot 4.7.2 parse validation
-- [x] Frontier Contracts Pass headless main-scene smoke validation
-- [x] Frontier Contracts Pass Web export validation
-- [x] Risk Stance Pass Godot 4.7.2 parse validation
-- [x] Risk Stance Pass headless main-scene smoke validation
-- [x] Risk Stance Pass Web export validation
-- [x] Unit Evolution Pass Godot 4.7.2 parse validation
-- [x] Unit Evolution Pass headless main-scene smoke validation
-- [x] Unit Evolution Pass Web export validation
-- [x] Regional Loot Families Pass Godot 4.7.2 parse validation
-- [x] Regional Loot Families Pass headless main-scene smoke validation
-- [x] Regional Loot Families Pass Web export validation
-- [x] First March Pass Godot 4.7.2 parse validation
-- [x] First March Pass headless main-scene smoke validation
-- [x] First March Pass Web export validation
-- [x] Frontier Mutations Pass strict Godot 4.7.2 parse validation
-- [x] Frontier Mutations Pass strict headless smoke validation
-- [x] Frontier Mutations Pass strict Web export validation
-- [x] Wild Bonds Pass strict Godot 4.7.2 parse validation
-- [x] Wild Bonds Pass strict headless smoke validation
-- [x] Wild Bonds Pass strict Web export validation
+
+### Historical validation gates
+- [x] M1 Fun Pass 1 Godot 4.7.2 parse / smoke / Web export
+- [x] Gear Affix Pass Godot 4.7.2 parse / smoke / Web export
+- [x] Regional Boss Pass Godot 4.7.2 parse / smoke / Web export
+- [x] Dawnkeep Scene Pass Godot 4.7.2 parse / smoke / Web export
+- [x] Frontier Contracts Pass Godot 4.7.2 parse / smoke / Web export
+- [x] Risk Stance Pass Godot 4.7.2 parse / smoke / Web export
+- [x] Unit Evolution Pass Godot 4.7.2 parse / smoke / Web export
+- [x] Regional Loot Families Pass Godot 4.7.2 parse / smoke / Web export
+- [x] First March Pass Godot 4.7.2 parse / smoke / Web export
+- [x] Frontier Mutations Pass strict Godot 4.7.2 parse / smoke / Web export
+- [x] Wild Bonds Pass strict Godot 4.7.2 parse / smoke / Web export
+- [x] Visual Atlas / Giant Local Map / Unit Quality Pass strict parse validation
+- [x] Visual Atlas / Giant Local Map / Unit Quality Pass strict headless smoke validation
+- [x] Visual Atlas / Giant Local Map / Unit Quality Pass strict Web export validation
 
 ## M2 — Persistent Online Kingdom
 - Supabase Auth
@@ -157,6 +164,8 @@
 
 ## M3 — The World Has Other People
 - map ownership / influence
+- 2–3 player shared local-territory prototype
+- local-territory authority / synchronization
 - caravans and regional trade
 - optional PvP frontier rules
 - asynchronous conflict where appropriate
