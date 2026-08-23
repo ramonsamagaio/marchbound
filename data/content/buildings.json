@@ -1,0 +1,7 @@
+{
+  "watchtower": {"name":"Field Watchtower","role":"turret","cost":{"wood":6},"range":260,"damage":18,"cadence":0.72,"knockback":0.45,"sprite_id":"building_watchtower","description":"Reliable ranged pressure. The first field-defense baseline."},
+  "spike_trap": {"name":"Spike Trap","role":"trap","cost":{"wood":3,"iron":2},"trigger_radius":42,"damage":34,"cooldown":1.25,"knockback":1.35,"sprite_id":"fx_trap","description":"Cheap burst damage and strong knockback when enemies cross it."},
+  "field_camp": {"name":"Field Camp","role":"support","cost":{"wood":8,"food":4},"radius":115,"heal_per_second":4.0,"sprite_id":"building_camp","description":"Creates a small recovery pocket for the Warden during long expeditions."},
+  "arcane_pylon": {"name":"Arcane Pylon","role":"turret","cost":{"stone":5,"mana":2},"range":225,"damage":13,"cadence":0.48,"knockback":0.25,"chain":2,"sprite_id":"building_research","description":"Fast magical turret whose shots can jump to nearby enemies."},
+  "palisade": {"name":"Palisade","role":"barrier","cost":{"wood":4,"stone":1},"radius":34,"slow_radius":54,"enemy_speed_mult":0.58,"sprite_id":"building_wall_gate","description":"A simple temporary obstacle zone that slows enemies crossing its footprint."}
+}
