@@ -6,7 +6,7 @@ func _build() -> void:
 	var holder:Node = old_arena.get_parent()
 	holder.remove_child(old_arena)
 	old_arena.free()
-	arena = HybridAreaCombatArena.new()
+	arena = HybridRuntimeArena.new()
 	holder.add_child(arena)
 	arena.set_view_size(Vector2(1400,840))
 	arena.hud_changed.connect(_hud)
