@@ -59,7 +59,15 @@ ability_rally={
 }
 ability_burst={
 "deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":88)]
+}
+gather={
+"deadzone": 0.5,
 "events": [Object(InputEventKey,"physical_keycode":69)]
+}
+interact={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":70)]
 }
 build_outpost={
 "deadzone": 0.5,
@@ -72,10 +80,6 @@ build_cycle={
 build_remove={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"physical_keycode":82)]
-}
-interact={
-"deadzone": 0.5,
-"events": [Object(InputEventKey,"physical_keycode":70)]
 }
 stance_1={
 "deadzone": 0.5,
