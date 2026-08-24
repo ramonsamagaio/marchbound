@@ -6,22 +6,22 @@ func _build() -> void:
 	var holder:Node=old_arena.get_parent()
 	holder.remove_child(old_arena)
 	old_arena.free()
-	arena=MicroRTSCombatArena.new()
+	arena=ClaimMicroRTSCombatArena.new()
 	holder.add_child(arena)
 	arena.set_view_size(Vector2(1400,840))
 	arena.hud_changed.connect(_hud)
 	arena.finished.connect(_finished)
 	arena.area_transition_requested.connect(_leave_area_to_world)
 	arena.station_requested.connect(_open_station)
-	# Upgrade/Gambit/Discovery popups remain implemented elsewhere but this mode does not emit them.
 	var map_scale:Label=layout_scene.get_node("Margin/MainRow/SidePanel/SideMargin/Scroll/HUD/MapScale")
-	map_scale.text="1024 × 1024 Claude-layout AREA · 32 px tiles\nLMB attack toward cursor · E gather · F interact/leave\nB build · C next building · R remove\n1 Aggressive · 2 Defensive · 3 Follow · 4 Hold\nLeaving through an edge returns to World Map and costs 0 Food."
+	map_scale.text="1024 × 1024 Claude-layout AREA · 32 px tiles\nLMB attack toward cursor · E gather · F interact/leave\nB build · C next building · R remove\n1 Aggressive · 2 Defensive · 3 Follow · 4 Hold\nTown Hall requires the surrounding claim radius to be cleared."
 	var boss_label:Label=layout_scene.get_node("Margin/MainRow/SidePanel/SideMargin/Scroll/HUD/BossLabel")
 	boss_label.text="MICRO RTS · persistent enemy packs · no timed horde spawner"
 
 func _objective_progress_text(_data:Dictionary) -> String:
-	var alive:int=AreaEcology.alive_count(Vector2i(int(tile.get("x",0)),int(tile.get("y",0))),tile)
-	var claims:int=AreaEcology.claims(Vector2i(int(tile.get("x",0)),int(tile.get("y",0)))).size()
+	var macro:=Vector2i(int(tile.get("x",0)),int(tile.get("y",0)))
+	var alive:int=AreaEcology.alive_count(macro,tile)
+	var claims:int=AreaEcology.claims(macro).size()
 	return "AREA ECOLOGY · %d hostiles remain · %d local claim%s"%[alive,claims,"s" if claims!=1 else ""]
 
 func _hud(data:Dictionary) -> void:
