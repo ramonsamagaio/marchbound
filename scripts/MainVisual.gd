@@ -9,7 +9,7 @@ func _ready() -> void:
 	screen_scripts["world"] = preload("res://scripts/screens/WorldScreenHybrid.gd")
 	screen_scripts["army"] = preload("res://scripts/screens/ArmyScreenHybrid.gd")
 	screen_scripts["inventory"] = preload("res://scripts/screens/InventoryScreenHybrid.gd")
-	screen_scripts["expedition"] = preload("res://scripts/screens/ExpeditionScreenHybrid.gd")
+	screen_scripts["expedition"] = preload("res://scripts/screens/ExpeditionScreenMicroRTS.gd")
 	screen_scripts["content"] = preload("res://scripts/screens/ContentLabScreen.gd")
 	super._ready()
 
@@ -33,13 +33,8 @@ func _build_shell() -> void:
 	first_march_claim.pressed.connect(_claim_first_march)
 
 	var routes:Dictionary={
-		"City":"city",
-		"World":"world",
-		"Army":"army",
-		"Inventory":"inventory",
-		"Contracts":"contracts",
-		"Market":"market",
-		"Content":"content"
+		"City":"city","World":"world","Army":"army","Inventory":"inventory",
+		"Contracts":"contracts","Market":"market","Content":"content"
 	}
 	for button_name:Variant in routes.keys():
 		var button:Button=nav.get_node(String(button_name))
@@ -50,19 +45,14 @@ func _build_shell() -> void:
 	nav.get_node("Army").text="WAR-BAND"
 
 func _refresh_resources() -> void:
-	if not top_resources:
-		return
+	if not top_resources: return
 	UIFactory.clear_children(top_resources)
-	var macro:Vector2i = WorldAreaManager.current_macro()
-	var location:=UIFactory.label("[%d,%d]"%[macro.x,macro.y],11,Color("#9fb2c8"))
-	top_resources.add_child(location)
+	var macro:Vector2i=WorldAreaManager.current_macro()
+	top_resources.add_child(UIFactory.label("[%d,%d]"%[macro.x,macro.y],11,Color("#9fb2c8")))
 	for key in GameState.RESOURCE_ORDER:
-		var item=HBoxContainer.new()
-		item.add_theme_constant_override("separation",3)
-		var icon=TextureRect.new()
-		icon.custom_minimum_size=Vector2(20,20)
-		icon.texture=VisualAtlas.texture("res_"+key)
-		icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+		var item:=HBoxContainer.new(); item.add_theme_constant_override("separation",3)
+		var icon:=TextureRect.new(); icon.custom_minimum_size=Vector2(20,20)
+		icon.texture=VisualAtlas.texture("res_"+key); icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		item.add_child(icon)
 		item.add_child(UIFactory.label(compact(float(GameState.resources[key])),12,Color("#e8dfc8")))
