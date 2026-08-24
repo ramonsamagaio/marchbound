@@ -8,7 +8,7 @@ func _ready() -> void:
 	screen_scripts["city"] = preload("res://scripts/screens/CommandScreenHybrid.gd")
 	screen_scripts["world"] = preload("res://scripts/screens/WorldScreenHybrid.gd")
 	screen_scripts["army"] = preload("res://scripts/screens/ArmyScreenHybrid.gd")
-	screen_scripts["inventory"] = preload("res://scripts/screens/InventoryScreenDiscovery.gd")
+	screen_scripts["inventory"] = preload("res://scripts/screens/InventoryScreenHybrid.gd")
 	screen_scripts["expedition"] = preload("res://scripts/screens/ExpeditionScreenHybrid.gd")
 	screen_scripts["content"] = preload("res://scripts/screens/ContentLabScreen.gd")
 	super._ready()
