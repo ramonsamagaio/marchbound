@@ -5,11 +5,11 @@ const MAIN_SHELL_SCENE:=preload("res://scenes/ui/MainShell.tscn")
 var visual_shell:Control
 
 func _ready() -> void:
-	screen_scripts["city"] = preload("res://scripts/screens/CityScreenDiscovery.gd")
-	screen_scripts["world"] = preload("res://scripts/screens/WorldScreenDiscovery.gd")
-	screen_scripts["army"] = preload("res://scripts/screens/ArmyScreenVisual.gd")
+	screen_scripts["city"] = preload("res://scripts/screens/CommandScreenHybrid.gd")
+	screen_scripts["world"] = preload("res://scripts/screens/WorldScreenHybrid.gd")
+	screen_scripts["army"] = preload("res://scripts/screens/ArmyScreenHybrid.gd")
 	screen_scripts["inventory"] = preload("res://scripts/screens/InventoryScreenDiscovery.gd")
-	screen_scripts["expedition"] = preload("res://scripts/screens/ExpeditionScreenDiscovery.gd")
+	screen_scripts["expedition"] = preload("res://scripts/screens/ExpeditionScreenHybrid.gd")
 	screen_scripts["content"] = preload("res://scripts/screens/ContentLabScreen.gd")
 	super._ready()
 
@@ -41,15 +41,21 @@ func _build_shell() -> void:
 		"Market":"market",
 		"Content":"content"
 	}
-	for button_name in routes:
+	for button_name:Variant in routes.keys():
 		var button:Button=nav.get_node(String(button_name))
 		var target:String=String(routes[button_name])
 		button.pressed.connect(func():show_screen(target))
+	nav.get_node("City").text="COMMAND"
+	nav.get_node("World").text="WORLD MAP"
+	nav.get_node("Army").text="WAR-BAND"
 
 func _refresh_resources() -> void:
 	if not top_resources:
 		return
 	UIFactory.clear_children(top_resources)
+	var macro:Vector2i = WorldAreaManager.current_macro()
+	var location:=UIFactory.label("[%d,%d]"%[macro.x,macro.y],11,Color("#9fb2c8"))
+	top_resources.add_child(location)
 	for key in GameState.RESOURCE_ORDER:
 		var item=HBoxContainer.new()
 		item.add_theme_constant_override("separation",3)
