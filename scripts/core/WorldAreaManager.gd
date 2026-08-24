@@ -3,23 +3,25 @@ extends Node
 signal changed
 signal macro_position_changed(position:Vector2i)
 
-const LOCAL_MAP_TILES:int = 192
-const LOCAL_TILE_PX:int = 64
+# Claude local-world geometry: 1024×1024 logical tiles at 32 px.
+const LOCAL_MAP_TILES:int = 1024
+const LOCAL_TILE_PX:int = 32
 const LOCAL_MAP_PX:int = LOCAL_MAP_TILES * LOCAL_TILE_PX
 const HOME:Vector2i = Vector2i.ZERO
 
 const BIOMES:Array[String] = ["Greenlands","Ancient Forest","Iron Hills","Mistfen","Ash Wastes","Frostwild"]
 const OBJECTIVES:Array[String] = ["Frontier Claim","Monster Hunt","Resource Sweep"]
 
+# Migrated legacy city levels become actual physical buildings around the center.
 const HOME_LEGACY_POSITIONS:Dictionary = {
-	"town_hall":[96,93],
-	"barracks":[90,98],
-	"farm":[102,99],
-	"lumberyard":[88,91],
-	"quarry":[104,91],
-	"forge":[100,88],
-	"arcane_lab":[92,88],
-	"market":[98,103]
+	"town_hall":[512,510],
+	"barracks":[507,516],
+	"farm":[518,517],
+	"lumberyard":[505,508],
+	"quarry":[519,508],
+	"forge":[517,504],
+	"arcane_lab":[508,504],
+	"market":[514,521]
 }
 
 func _ready() -> void:
@@ -102,12 +104,17 @@ func ensure_area(x:int,y:int) -> Dictionary:
 	var area:Dictionary = Dictionary(areas.get(key,{}))
 	if area.is_empty():
 		area = {
-			"x":x,"y":y,"visited":is_home,"safe":is_home,"home":is_home,"entry_side":"center",
-			"player_local":[LOCAL_MAP_PX/2,LOCAL_MAP_PX/2],"structures":[],"removed_nodes":[],"discovered_pois":[],"revision":1
+			"x":x,"y":y,"visited":is_home,"home":is_home,"entry_side":"center",
+			"player_local":[LOCAL_MAP_PX/2,LOCAL_MAP_PX/2],"structures":[],
+			"removed_nodes":[],"discovered_pois":[],"claims":[],"ecology":{},"revision":2
 		}
+	# Migration: old saves considered the entire [0,0] macro tile safe. Safety is now claim-radius only.
+	area.erase("safe")
 	if not area.has("structures") or not area["structures"] is Array: area["structures"] = []
 	if not area.has("removed_nodes") or not area["removed_nodes"] is Array: area["removed_nodes"] = []
 	if not area.has("discovered_pois") or not area["discovered_pois"] is Array: area["discovered_pois"] = []
+	if not area.has("claims") or not area["claims"] is Array: area["claims"] = []
+	if not area.has("ecology") or not area["ecology"] is Dictionary: area["ecology"] = {}
 	if not area.has("player_local") or not area["player_local"] is Array: area["player_local"] = [LOCAL_MAP_PX/2,LOCAL_MAP_PX/2]
 	if not area.has("entry_side"): area["entry_side"] = "center"
 	if is_home and Array(area["structures"]).is_empty(): area["structures"] = _legacy_home_structures()
@@ -134,12 +141,12 @@ func is_home(position:Vector2i) -> bool:
 func current_is_home() -> bool:
 	return current_macro() == HOME
 
-func is_safe(position:Vector2i) -> bool:
-	var area:Dictionary = peek_area(position.x,position.y)
-	return bool(area.get("safe",position==HOME))
+# Macro tiles are never globally safe. AreaEcology claims define local spawn suppression.
+func is_safe(_position:Vector2i) -> bool:
+	return false
 
 func current_is_safe() -> bool:
-	return is_safe(current_macro())
+	return false
 
 func structures(position:Vector2i) -> Array:
 	return Array(area_state(position.x,position.y).get("structures",[])).duplicate(true)
@@ -279,7 +286,7 @@ func tile_data(x:int,y:int) -> Dictionary:
 	var area:Dictionary = peek_area(x,y)
 	return {
 		"x":x,"y":y,"biome":biome,"biome_index":0 if home else biome_index,"threat":threat,
-		"boss":boss,"pvp":pvp,"richness":richness,"seed":hashv,"home":home,"safe":home,
+		"boss":boss,"pvp":pvp,"richness":richness,"seed":hashv,"home":home,"safe":false,
 		"conquered":GameState.is_conquered(x,y),"accessible":GameState.is_accessible(x,y),
 		"visited":bool(area.get("visited",home)),"discovered":is_discovered(x,y),"current":current==Vector2i(x,y),
 		"objective":objective,"boss_name":String(identity.get("name","Frontier Guardian")) if boss else "Frontier Guardian",
